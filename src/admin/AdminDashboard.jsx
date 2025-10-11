@@ -853,15 +853,15 @@ const AdminDashboard = () => {
       
       try {
         const [productsResponse, usersResponse, ordersResponse] = await Promise.all([
-          fetch('http://localhost:3000/products').then(res => {
+          fetch('https://sport-x-backend-3.onrender.com/products').then(res => {
             if (!res.ok) throw new Error('Products API failed');
             return res.json();
           }),
-          fetch('http://localhost:3000/users').then(res => {
+          fetch('https://sport-x-backend-3.onrender.com/users').then(res => {
             if (!res.ok) throw new Error('Users API failed');
             return res.json();
           }),
-          fetch('http://localhost:3000/orders').then(res => {
+          fetch('https://sport-x-backend-3.onrender.com/orders').then(res => {
             if (!res.ok) throw new Error('Orders API failed');
             return res.json();
           })

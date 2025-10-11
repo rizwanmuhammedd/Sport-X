@@ -497,7 +497,7 @@ export default function Profile() {
     if (!user) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/users/${user.id}`);
+      const response = await fetch(`http://localhost:10000/users/${user.id}`);
       if (response.ok) {
         const userData = await response.json();
         setUserOrders(userData.orders || []);
@@ -530,7 +530,7 @@ export default function Profile() {
   const handleSave = async () => {
     setUpdating(true);
     try {
-      const response = await fetch(`http://localhost:3000/users/${user.id}`, {
+      const response = await fetch(`https://sport-x-backend-3.onrender.com/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
