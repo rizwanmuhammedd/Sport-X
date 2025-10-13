@@ -882,7 +882,7 @@ export default function Home() {
                     <h3 className="text-lg font-bold text-slate-900 mb-1">Email Us</h3>
                     <p className="text-slate-600 mb-1 text-sm">Send us your queries anytime</p>
                     <a href="mailto:support@sportx.com" className="text-blue-600 font-semibold hover:text-blue-700">
-                      support@sportx.com
+                      risvanmd172@gmail.com
                     </a>
                   </div>
                 </div>
@@ -895,9 +895,9 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-slate-900 mb-1">Call Us</h3>
-                    <p className="text-slate-600 mb-1 text-sm">Mon-Fri from 9am to 6pm</p>
+                    <p className="text-slate-600 mb-1 text-sm">24 Hours Support</p>
                     <a href="tel:+919876543210" className="text-green-600 font-semibold hover:text-green-700">
-                      +91 98765 43210
+                      6238741289
                     </a>
                   </div>
                 </div>
@@ -925,7 +925,7 @@ export default function Home() {
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
                   <input
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="name"
                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all duration-300 text-slate-900"
                   />
                 </div>
@@ -933,7 +933,7 @@ export default function Home() {
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
                   <input
                     type="email"
-                    placeholder="john@example.com"
+                    placeholder="name@example.com"
                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all duration-300 text-slate-900"
                   />
                 </div>

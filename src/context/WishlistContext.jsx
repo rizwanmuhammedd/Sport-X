@@ -57,7 +57,7 @@ export const WishlistProvider = ({ children }) => {
 
     const updatedWishlist = [...wishlist, product];
     setWishlist(updatedWishlist);
-    toast.success(`${product.name} added to wishlist`);
+    // toast.success(`${product.name} added to wishlist`);
 
     try {
       // Use PATCH to update only the wishlist property
