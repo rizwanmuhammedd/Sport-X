@@ -944,47 +944,47 @@ const AdminDashboard = () => {
 
   const StatCard = ({ title, value, change, icon, color, onClick }) => (
     <div 
-      className={`bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden backdrop-blur-sm`}
+      className={`bg-gray-800 border border-gray-700 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden backdrop-blur-sm`}
       onClick={onClick}
     >
-      <div className="p-4 xs:p-5 sm:p-6">
+      <div className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-xs xs:text-sm font-medium text-gray-400 uppercase tracking-wide">{title}</p>
-            <p className="text-2xl xs:text-3xl font-bold text-white mt-1 xs:mt-2">{value}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-wide">{title}</p>
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mt-1 sm:mt-2">{value}</p>
             {change && (
-              <div className="flex items-center mt-1 xs:mt-2">
-                <span className={`text-xs xs:text-sm font-semibold ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className="flex items-center mt-1 sm:mt-2">
+                <span className={`text-xs sm:text-sm font-semibold ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {change > 0 ? '+' : ''}{change}%
                 </span>
-                <span className="text-gray-500 text-xs xs:text-sm ml-1">vs last month</span>
+                <span className="text-gray-500 text-xs sm:text-sm ml-1">vs last month</span>
               </div>
             )}
           </div>
-          <div className={`p-2 xs:p-3 sm:p-4 rounded-full bg-gradient-to-r ${color} shadow-lg`}>
-            {React.cloneElement(icon, { className: "w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 text-white" })}
+          <div className={`p-2 sm:p-3 lg:p-4 rounded-full bg-gradient-to-r ${color} shadow-lg`}>
+            {React.cloneElement(icon, { className: "w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" })}
           </div>
         </div>
       </div>
-      <div className={`h-1 xs:h-2 bg-gradient-to-r ${color}`}></div>
+      <div className={`h-1 sm:h-2 bg-gradient-to-r ${color}`}></div>
     </div>
   );
 
   const MetricCard = ({ title, value, subtitle, progress, color }) => (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg xs:rounded-xl shadow-lg p-4 xs:p-5 sm:p-6 hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-3 xs:mb-4">
-        <h3 className="text-base xs:text-lg font-semibold text-gray-200">{title}</h3>
-        <div className={`w-2 h-2 xs:w-3 xs:h-3 rounded-full bg-${color}-500`}></div>
+    <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-sm sm:text-lg font-semibold text-gray-200">{title}</h3>
+        <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-${color}-500`}></div>
       </div>
-      <div className="text-2xl xs:text-3xl font-bold text-white mb-1 xs:mb-2">{value}</div>
-      <div className="text-xs xs:text-sm text-gray-400 mb-3 xs:mb-4">{subtitle}</div>
-      <div className="w-full bg-gray-700 rounded-full h-1.5 xs:h-2">
+      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2">{value}</div>
+      <div className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4">{subtitle}</div>
+      <div className="w-full bg-gray-700 rounded-full h-1.5 sm:h-2">
         <div 
-          className={`h-1.5 xs:h-2 rounded-full bg-gradient-to-r from-${color}-400 to-${color}-600 transition-all duration-1000`}
+          className={`h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-${color}-400 to-${color}-600 transition-all duration-1000`}
           style={{ width: `${progress}%` }}
         ></div>
       </div>
-      <div className="text-right text-xs xs:text-sm text-gray-500 mt-1">{progress}%</div>
+      <div className="text-right text-xs sm:text-sm text-gray-500 mt-1">{progress}%</div>
     </div>
   );
 
@@ -998,22 +998,22 @@ const AdminDashboard = () => {
     };
     
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl p-4 xs:p-5 sm:p-6 backdrop-blur-sm">
-        <h3 className="text-lg xs:text-xl font-bold text-white mb-4 xs:mb-6 flex items-center">
-          <div className={`w-2 h-2 xs:w-3 xs:h-3 bg-${color}-500 rounded-full mr-2 xs:mr-3`}></div>
+      <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
+        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center">
+          <div className={`w-2 h-2 sm:w-3 sm:h-3 bg-${color}-500 rounded-full mr-2 sm:mr-3`}></div>
           {title}
         </h3>
-        <div className="space-y-3 xs:space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           {data.map((item, index) => (
             <div key={index} className="group">
-              <div className="flex items-center justify-between mb-1 xs:mb-2">
-                <span className="text-xs xs:text-sm font-medium text-gray-300 truncate max-w-[100px] xs:max-w-none">{item.name || item.label}</span>
-                <span className="text-xs xs:text-sm font-bold text-green-400 whitespace-nowrap">{item.value || item.sales}</span>
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <span className="text-xs sm:text-sm font-medium text-gray-300 truncate max-w-[80px] sm:max-w-none">{item.name || item.label}</span>
+                <span className="text-xs sm:text-sm font-bold text-green-400 whitespace-nowrap">{item.value || item.sales}</span>
               </div>
               <div className="relative">
-                <div className="w-full bg-gray-700 rounded-full h-2 xs:h-3">
+                <div className="w-full bg-gray-700 rounded-full h-2 sm:h-3">
                   <div
-                    className={`h-2 xs:h-3 rounded-full bg-gradient-to-r ${colors[color]} transition-all duration-1000 ease-out group-hover:scale-105`}
+                    className={`h-2 sm:h-3 rounded-full bg-gradient-to-r ${colors[color]} transition-all duration-1000 ease-out group-hover:scale-105`}
                     style={{ width: `${((item.value || item.sales) / maxValue) * 100}%` }}
                   ></div>
                 </div>
@@ -1040,12 +1040,12 @@ const AdminDashboard = () => {
     const gradientPath = `${pathData} L 100 90 L 0 90 Z`;
 
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl p-4 xs:p-5 sm:p-6 backdrop-blur-sm">
-        <h3 className="text-lg xs:text-xl font-bold text-white mb-4 xs:mb-6 flex items-center">
-          <div className="w-2 h-2 xs:w-3 xs:h-3 bg-green-500 rounded-full mr-2 xs:mr-3 animate-pulse"></div>
+      <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
+        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center">
+          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full mr-2 sm:mr-3 animate-pulse"></div>
           {title}
         </h3>
-        <div className="relative h-48 xs:h-56 sm:h-64">
+        <div className="relative h-48 sm:h-56 lg:h-64">
           <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
             <defs>
               <linearGradient id="profitGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -1100,7 +1100,7 @@ const AdminDashboard = () => {
             ))}
           </svg>
           
-          <div className="absolute bottom-0 left-0 right-0 flex justify-between px-1 xs:px-2 text-xs">
+          <div className="absolute bottom-0 left-0 right-0 flex justify-between px-1 sm:px-2 text-xs">
             {data.map((item, index) => (
               <div key={index} className="flex flex-col items-center">
                 <span className="text-gray-400 text-xs">{item.name}</span>
@@ -1136,13 +1136,13 @@ const AdminDashboard = () => {
     const colors = ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4'];
     
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl p-4 xs:p-5 sm:p-6 backdrop-blur-sm">
-        <h3 className="text-lg xs:text-xl font-bold text-white mb-4 xs:mb-6 flex items-center">
-          <div className="w-2 h-2 xs:w-3 xs:h-3 bg-blue-500 rounded-full mr-2 xs:mr-3"></div>
+      <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
+        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center">
+          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full mr-2 sm:mr-3"></div>
           {title}
         </h3>
-        <div className="flex items-center justify-center">
-          <div className="relative w-32 h-32 xs:w-40 xs:h-40 sm:w-48 sm:h-48">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 sm:gap-6">
+          <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 mx-auto">
             <div className="w-full h-full rounded-full overflow-hidden">
               {data.map((item, index) => {
                 const percentage = ((item.sales || 0) / total) * 100;
@@ -1159,25 +1159,27 @@ const AdminDashboard = () => {
               })}
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 bg-gray-800 rounded-full border-2 xs:border-4 border-gray-700"></div>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gray-800 rounded-full border-2 sm:border-4 border-gray-700"></div>
             </div>
           </div>
-        </div>
-        <div className="mt-4 xs:mt-6 space-y-1 xs:space-y-2">
-          {data.map((item, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div 
-                  className="w-2 h-2 xs:w-3 xs:h-3 rounded-full mr-1 xs:mr-2"
-                  style={{ backgroundColor: colors[index % colors.length] }}
-                ></div>
-                <span className="text-gray-300 text-xs xs:text-sm truncate max-w-[80px] xs:max-w-none">{item.name}</span>
-              </div>
-              <span className="text-white font-semibold text-xs xs:text-sm">
-                {Math.round(((item.sales || 0) / total) * 100)}%
-              </span>
+          <div className="flex-1 min-w-0">
+            <div className="space-y-1 sm:space-y-2">
+              {data.map((item, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center min-w-0">
+                    <div 
+                      className="w-2 h-2 sm:w-3 sm:h-3 rounded-full mr-2 flex-shrink-0"
+                      style={{ backgroundColor: colors[index % colors.length] }}
+                    ></div>
+                    <span className="text-gray-300 text-xs sm:text-sm truncate">{item.name}</span>
+                  </div>
+                  <span className="text-white font-semibold text-xs sm:text-sm whitespace-nowrap ml-2">
+                    {Math.round(((item.sales || 0) / total) * 100)}%
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     );
@@ -1187,8 +1189,8 @@ const AdminDashboard = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 xs:h-16 xs:w-16 border-4 border-green-500 border-t-transparent"></div>
-          <p className="mt-3 xs:mt-4 text-gray-300 font-medium text-base xs:text-lg">Loading Dashboard...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-4 border-green-500 border-t-transparent"></div>
+          <p className="mt-3 sm:mt-4 text-gray-300 font-medium text-base sm:text-lg">Loading Dashboard...</p>
         </div>
       </div>
     );
@@ -1198,28 +1200,28 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <div className="max-w-7xl mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 py-4 xs:py-6 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         
         {/* Header */}
-        <div className="mb-6 xs:mb-8">
-          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-4 xs:gap-0">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-4">
             <div className="flex items-center">
-              <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 xs:p-3 rounded-lg xs:rounded-xl mr-3 xs:mr-4 shadow-lg">
-                <svg className="w-8 h-8 xs:w-10 xs:h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 sm:p-3 rounded-xl mr-3 sm:mr-4 shadow-lg">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.06 3.75c.29-.14.62-.14.91 0L16.5 7.5c.14.07.25.2.3.35l1.5 4.5c.07.2.04.42-.08.6L16.5 16.5c-.05.15-.16.28-.3.35l-4.65 1.75c-.29.14-.62.14-.91 0L5.99 16.85c-.14-.07-.25-.2-.3-.35L4.19 12c-.07-.2-.04-.42.08-.6L5.99 7.85c.05-.15.16-.28.3-.35L10.94 5.75z"/>
                 </svg>
               </div>
               <div>
-                <h1 className="text-2xl xs:text-3xl sm:text-4xl font-bold text-white">Football Store Analytics</h1>
-                <p className="text-gray-400 text-sm xs:text-base sm:text-lg mt-1">Professional dashboard for business insights</p>
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Football Store Analytics</h1>
+                <p className="text-gray-400 text-sm sm:text-base lg:text-lg mt-1">Professional dashboard for business insights</p>
               </div>
             </div>
             <button
               onClick={refreshData}
               disabled={refreshing}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 xs:px-6 py-2 xs:py-3 rounded-lg xs:rounded-xl font-semibold shadow-lg transition-all duration-200 disabled:opacity-50 flex items-center justify-center w-full xs:w-auto text-sm xs:text-base"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 disabled:opacity-50 flex items-center w-full xs:w-auto justify-center"
             >
-              <svg className={`w-4 h-4 xs:w-5 xs:h-5 mr-2 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
               {refreshing ? 'Updating...' : 'Refresh Data'}
@@ -1227,33 +1229,33 @@ const AdminDashboard = () => {
           </div>
 
           {error && (
-            <div className="mt-3 xs:mt-4 bg-blue-900 bg-opacity-50 border border-blue-600 p-3 xs:p-4 rounded-lg xs:rounded-lg backdrop-blur-sm">
+            <div className="mt-3 sm:mt-4 bg-blue-900 bg-opacity-50 border border-blue-600 p-3 sm:p-4 rounded-lg backdrop-blur-sm">
               <div className="flex">
-                <svg className="h-4 w-4 xs:h-5 xs:w-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
-                <span className="text-blue-200 font-medium text-sm xs:text-base">{error}</span>
+                <span className="text-blue-200 font-medium text-sm sm:text-base">{error}</span>
               </div>
             </div>
           )}
         </div>
 
         {/* Navigation */}
-        <div className="mb-6 xs:mb-8">
-          <div className="border border-gray-700 bg-gray-800 rounded-lg xs:rounded-xl shadow-lg backdrop-blur-sm overflow-x-auto">
-            <nav className="flex min-w-max px-4 xs:px-6">
+        <div className="mb-6 sm:mb-8">
+          <div className="border border-gray-700 bg-gray-800 rounded-xl shadow-lg backdrop-blur-sm overflow-x-auto">
+            <nav className="flex min-w-max px-4 sm:px-6">
               {['overview', 'analytics'].map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-3 xs:py-4 px-4 xs:px-8 font-semibold text-xs xs:text-sm capitalize transition-all duration-300 border-b-2 whitespace-nowrap ${
+                  className={`py-3 px-4 sm:py-4 sm:px-8 font-semibold text-xs sm:text-sm capitalize transition-all duration-300 border-b-2 whitespace-nowrap ${
                     activeTab === tab
                       ? 'border-green-500 text-green-400 bg-gray-700'
                       : 'border-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-700'
                   }`}
                 >
-                  {tab === 'overview' && <span className="mr-1 xs:mr-2">📊</span>}
-                  {tab === 'analytics' && <span className="mr-1 xs:mr-2">📈</span>}
+                  {tab === 'overview' && <span className="mr-1 sm:mr-2">📊</span>}
+                  {tab === 'analytics' && <span className="mr-1 sm:mr-2">📈</span>}
                   {tab}
                 </button>
               ))}
@@ -1263,10 +1265,10 @@ const AdminDashboard = () => {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6 xs:space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 xs:gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               <StatCard
                 title="Total Revenue"
                 value={`${(mockData.totalRevenue || 487650).toLocaleString()}`}
@@ -1314,13 +1316,13 @@ const AdminDashboard = () => {
             </div>
 
             {/* Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xs:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               <ProfitLineChart data={mockData.monthlyRevenue || []} title="Monthly Profit Trend" />
               <PieChart data={mockData.categoryPerformance || []} title="Category Performance" />
             </div>
 
             {/* Performance Metrics */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 xs:gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               <MetricCard 
                 title="Customer Satisfaction" 
                 value="92%" 
@@ -1352,28 +1354,28 @@ const AdminDashboard = () => {
             </div>
 
             {/* Additional Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xs:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               <BarChart data={mockData.topProducts?.slice(0, 6) || []} title="Top Products Performance" color="green" />
               
               {/* Quick Stats Grid */}
-              <div className="bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl p-4 xs:p-5 sm:p-6 backdrop-blur-sm">
-                <h3 className="text-lg xs:text-xl font-bold text-white mb-4 xs:mb-6">Quick Stats</h3>
-                <div className="grid grid-cols-2 gap-3 xs:gap-4">
-                  <div className="bg-gray-700 p-3 xs:p-4 rounded-lg text-center">
-                    <div className="text-xl xs:text-2xl font-bold text-green-400">24</div>
-                    <div className="text-gray-300 text-xs xs:text-sm">Countries</div>
+              <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Quick Stats</h3>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
+                    <div className="text-xl sm:text-2xl font-bold text-green-400">24</div>
+                    <div className="text-gray-300 text-xs sm:text-sm">Countries</div>
                   </div>
-                  <div className="bg-gray-700 p-3 xs:p-4 rounded-lg text-center">
-                    <div className="text-xl xs:text-2xl font-bold text-blue-400">1.2M</div>
-                    <div className="text-gray-300 text-xs xs:text-sm">Page Views</div>
+                  <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
+                    <div className="text-xl sm:text-2xl font-bold text-blue-400">1.2M</div>
+                    <div className="text-gray-300 text-xs sm:text-sm">Page Views</div>
                   </div>
-                  <div className="bg-gray-700 p-3 xs:p-4 rounded-lg text-center">
-                    <div className="text-xl xs:text-2xl font-bold text-purple-400">4.8</div>
-                    <div className="text-gray-300 text-xs xs:text-sm">Avg Rating</div>
+                  <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
+                    <div className="text-xl sm:text-2xl font-bold text-purple-400">4.8</div>
+                    <div className="text-gray-300 text-xs sm:text-sm">Avg Rating</div>
                   </div>
-                  <div className="bg-gray-700 p-3 xs:p-4 rounded-lg text-center">
-                    <div className="text-xl xs:text-2xl font-bold text-orange-400">156</div>
-                    <div className="text-gray-300 text-xs xs:text-sm">Products</div>
+                  <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
+                    <div className="text-xl sm:text-2xl font-bold text-orange-400">156</div>
+                    <div className="text-gray-300 text-xs sm:text-sm">Products</div>
                   </div>
                 </div>
               </div>
@@ -1384,112 +1386,112 @@ const AdminDashboard = () => {
 
         {/* Analytics Tab */}
         {activeTab === 'analytics' && (
-          <div className="space-y-6 xs:space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             
             {/* Advanced KPIs */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 xs:gap-5 sm:gap-6">
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl xs:rounded-2xl p-4 xs:p-5 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-                <h4 className="text-base xs:text-lg font-semibold opacity-90">Customer LTV</h4>
-                <p className="text-2xl xs:text-3xl font-bold mt-1 xs:mt-2">$892</p>
-                <p className="text-xs xs:text-sm opacity-80 mt-1 xs:mt-2">18% increase from last quarter</p>
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
+                <h4 className="text-sm sm:text-lg font-semibold opacity-90">Customer LTV</h4>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">$892</p>
+                <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">18% increase from last quarter</p>
               </div>
-              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl xs:rounded-2xl p-4 xs:p-5 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-                <h4 className="text-base xs:text-lg font-semibold opacity-90">Cart Abandonment</h4>
-                <p className="text-2xl xs:text-3xl font-bold mt-1 xs:mt-2">24.3%</p>
-                <p className="text-xs xs:text-sm opacity-80 mt-1 xs:mt-2">5% improvement this month</p>
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
+                <h4 className="text-sm sm:text-lg font-semibold opacity-90">Cart Abandonment</h4>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">24.3%</p>
+                <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">5% improvement this month</p>
               </div>
-              <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl xs:rounded-2xl p-4 xs:p-5 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-                <h4 className="text-base xs:text-lg font-semibold opacity-90">Average Order Value</h4>
-                <p className="text-2xl xs:text-3xl font-bold mt-1 xs:mt-2">$147</p>
-                <p className="text-xs xs:text-sm opacity-80 mt-1 xs:mt-2">$23 increase from last month</p>
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
+                <h4 className="text-sm sm:text-lg font-semibold opacity-90">Average Order Value</h4>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">$147</p>
+                <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">$23 increase from last month</p>
               </div>
-              <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl xs:rounded-2xl p-4 xs:p-5 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-                <h4 className="text-base xs:text-lg font-semibold opacity-90">Customer Retention</h4>
-                <p className="text-2xl xs:text-3xl font-bold mt-1 xs:mt-2">76.8%</p>
-                <p className="text-xs xs:text-sm opacity-80 mt-1 xs:mt-2">8.2% improvement</p>
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
+                <h4 className="text-sm sm:text-lg font-semibold opacity-90">Customer Retention</h4>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">76.8%</p>
+                <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">8.2% improvement</p>
               </div>
             </div>
 
             {/* Advanced Analytics Charts */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xs:gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               <BarChart data={mockData.categoryPerformance || []} title="Revenue Breakdown by Category" color="blue" />
               
               {/* Sales Funnel */}
-              <div className="bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl p-4 xs:p-5 sm:p-6 backdrop-blur-sm">
-                <h3 className="text-lg xs:text-xl font-bold text-white mb-4 xs:mb-6">Sales Funnel Analysis</h3>
-                <div className="space-y-3 xs:space-y-4">
-                  <div className="flex items-center justify-between p-3 xs:p-4 bg-gray-700 rounded-lg">
-                    <span className="text-gray-300 font-medium text-sm xs:text-base">Website Visitors</span>
-                    <span className="text-white font-bold text-base xs:text-lg">10,847</span>
+              <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Sales Funnel Analysis</h3>
+                <div className="space-y-2 sm:space-y-4">
+                  <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg">
+                    <span className="text-gray-300 font-medium text-sm sm:text-base">Website Visitors</span>
+                    <span className="text-white font-bold text-base sm:text-lg">10,847</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 xs:p-4 bg-gray-700 rounded-lg ml-2 xs:ml-4">
-                    <span className="text-gray-300 font-medium text-sm xs:text-base">Product Views</span>
-                    <span className="text-blue-400 font-bold text-base xs:text-lg">4,923</span>
+                  <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-2 sm:ml-4">
+                    <span className="text-gray-300 font-medium text-sm sm:text-base">Product Views</span>
+                    <span className="text-blue-400 font-bold text-base sm:text-lg">4,923</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 xs:p-4 bg-gray-700 rounded-lg ml-4 xs:ml-8">
-                    <span className="text-gray-300 font-medium text-sm xs:text-base">Add to Cart</span>
-                    <span className="text-green-400 font-bold text-base xs:text-lg">1,687</span>
+                  <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-4 sm:ml-8">
+                    <span className="text-gray-300 font-medium text-sm sm:text-base">Add to Cart</span>
+                    <span className="text-green-400 font-bold text-base sm:text-lg">1,687</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 xs:p-4 bg-gray-700 rounded-lg ml-6 xs:ml-12">
-                    <span className="text-gray-300 font-medium text-sm xs:text-base">Checkout Started</span>
-                    <span className="text-yellow-400 font-bold text-base xs:text-lg">892</span>
+                  <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-6 sm:ml-12">
+                    <span className="text-gray-300 font-medium text-sm sm:text-base">Checkout Started</span>
+                    <span className="text-yellow-400 font-bold text-base sm:text-lg">892</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 xs:p-4 bg-gray-700 rounded-lg ml-8 xs:ml-16">
-                    <span className="text-gray-300 font-medium text-sm xs:text-base">Completed Orders</span>
-                    <span className="text-purple-400 font-bold text-base xs:text-lg">456</span>
+                  <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-8 sm:ml-16">
+                    <span className="text-gray-300 font-medium text-sm sm:text-base">Completed Orders</span>
+                    <span className="text-purple-400 font-bold text-base sm:text-lg">456</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Comprehensive Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 xs:gap-5 sm:gap-6">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg xs:rounded-xl shadow-lg p-4 xs:p-5 sm:p-6 text-center backdrop-blur-sm">
-                <div className="text-2xl xs:text-3xl font-bold text-green-400 mb-1 xs:mb-2">94.2%</div>
-                <div className="text-gray-300 font-medium text-sm xs:text-base">Customer Satisfaction</div>
-                <div className="text-gray-500 text-xs xs:text-sm">Based on 1,247 reviews</div>
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+              <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 text-center backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-400 mb-1 sm:mb-2">94.2%</div>
+                <div className="text-gray-300 font-medium text-sm sm:text-base">Customer Satisfaction</div>
+                <div className="text-gray-500 text-xs sm:text-sm">Based on 1,247 reviews</div>
               </div>
-              <div className="bg-gray-800 border border-gray-700 rounded-lg xs:rounded-xl shadow-lg p-4 xs:p-5 sm:p-6 text-center backdrop-blur-sm">
-                <div className="text-2xl xs:text-3xl font-bold text-blue-400 mb-1 xs:mb-2">3.8s</div>
-                <div className="text-gray-300 font-medium text-sm xs:text-base">Page Load Time</div>
-                <div className="text-gray-500 text-xs xs:text-sm">15% faster than industry avg</div>
+              <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 text-center backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400 mb-1 sm:mb-2">3.8s</div>
+                <div className="text-gray-300 font-medium text-sm sm:text-base">Page Load Time</div>
+                <div className="text-gray-500 text-xs sm:text-sm">15% faster than industry avg</div>
               </div>
-              <div className="bg-gray-800 border border-gray-700 rounded-lg xs:rounded-xl shadow-lg p-4 xs:p-5 sm:p-6 text-center backdrop-blur-sm">
-                <div className="text-2xl xs:text-3xl font-bold text-purple-400 mb-1 xs:mb-2">67%</div>
-                <div className="text-gray-300 font-medium text-sm xs:text-base">Mobile Traffic</div>
-                <div className="text-gray-500 text-xs xs:text-sm">Growing 23% monthly</div>
+              <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 text-center backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-400 mb-1 sm:mb-2">67%</div>
+                <div className="text-gray-300 font-medium text-sm sm:text-base">Mobile Traffic</div>
+                <div className="text-gray-500 text-xs sm:text-sm">Growing 23% monthly</div>
               </div>
             </div>
 
             {/* Real-time Activity */}
-            <div className="bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl p-4 xs:p-5 sm:p-6 backdrop-blur-sm">
-              <h3 className="text-lg xs:text-xl font-bold text-white mb-4 xs:mb-6">Real-time Activity</h3>
-              <div className="space-y-3 xs:space-y-4">
-                <div className="flex items-center p-2 xs:p-3 bg-gray-700 rounded-lg">
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-green-500 rounded-full animate-pulse mr-2 xs:mr-3"></div>
-                  <div className="flex-1">
-                    <p className="text-white text-sm">New order from Manchester</p>
+            <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Real-time Activity</h3>
+              <div className="space-y-2 sm:space-y-4">
+                <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs sm:text-sm truncate">New order from Manchester</p>
                     <p className="text-gray-400 text-xs">2 minutes ago</p>
                   </div>
                 </div>
-                <div className="flex items-center p-2 xs:p-3 bg-gray-700 rounded-lg">
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-blue-500 rounded-full animate-pulse mr-2 xs:mr-3"></div>
-                  <div className="flex-1">
-                    <p className="text-white text-sm">Football boots restocked</p>
+                <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs sm:text-sm truncate">Football boots restocked</p>
                     <p className="text-gray-400 text-xs">5 minutes ago</p>
                   </div>
                 </div>
-                <div className="flex items-center p-2 xs:p-3 bg-gray-700 rounded-lg">
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-yellow-500 rounded-full animate-pulse mr-2 xs:mr-3"></div>
-                  <div className="flex-1">
-                    <p className="text-white text-sm">High traffic detected</p>
+                <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs sm:text-sm truncate">High traffic detected</p>
                     <p className="text-gray-400 text-xs">8 minutes ago</p>
                   </div>
                 </div>
-                <div className="flex items-center p-2 xs:p-3 bg-gray-700 rounded-lg">
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-purple-500 rounded-full animate-pulse mr-2 xs:mr-3"></div>
-                  <div className="flex-1">
-                    <p className="text-white text-sm">New user registered</p>
+                <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-purple-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs sm:text-sm truncate">New user registered</p>
                     <p className="text-gray-400 text-xs">12 minutes ago</p>
                   </div>
                 </div>
@@ -1497,13 +1499,13 @@ const AdminDashboard = () => {
             </div>
 
             {/* Performance Heat Map */}
-            <div className="bg-gray-800 border border-gray-700 rounded-xl xs:rounded-2xl shadow-xl p-4 xs:p-5 sm:p-6 backdrop-blur-sm">
-              <h3 className="text-lg xs:text-xl font-bold text-white mb-4 xs:mb-6">Performance Heat Map</h3>
-              <div className="grid grid-cols-7 gap-1 xs:gap-2">
+            <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Performance Heat Map</h3>
+              <div className="grid grid-cols-7 gap-1 sm:gap-2">
                 {Array.from({ length: 35 }, (_, i) => (
                   <div 
                     key={i}
-                    className={`aspect-square rounded-sm xs:rounded-lg ${
+                    className={`aspect-square rounded sm:rounded-lg ${
                       Math.random() > 0.7 ? 'bg-green-500' :
                       Math.random() > 0.5 ? 'bg-green-400' :
                       Math.random() > 0.3 ? 'bg-green-300' :
@@ -1513,14 +1515,14 @@ const AdminDashboard = () => {
                   ></div>
                 ))}
               </div>
-              <div className="flex items-center justify-between mt-3 xs:mt-4 text-xs text-gray-400">
+              <div className="flex items-center justify-between mt-3 sm:mt-4 text-xs text-gray-400">
                 <span>Less</span>
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-gray-700 rounded"></div>
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-green-200 rounded"></div>
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-green-300 rounded"></div>
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-green-400 rounded"></div>
-                  <div className="w-2 h-2 xs:w-3 xs:h-3 bg-green-500 rounded"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-700 rounded"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-200 rounded"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-300 rounded"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded"></div>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded"></div>
                 </div>
                 <span>More</span>
               </div>
