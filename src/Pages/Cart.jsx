@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, Trash2, Plus, Minus, Package, CreditCard, ShoppingBag } from "lucide-react";
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity, clearCart, getTotal } = useCart();
+  // const { cart, removeFromCart, updateQuantity, clearCart, getTotal } = useCart();
+
+   const { cart, removeFromCart, addToCart, clearCart, getTotal } = useCart();
   const navigate = useNavigate();
 
   // Calculate total items in cart
@@ -92,7 +94,7 @@ export default function Cart() {
                 </div>
 
                 {/* Quantity Controls */}
-                <div className="flex items-center gap-2 xs:gap-3 mb-3 xs:mb-0">
+                {/* <div className="flex items-center gap-2 xs:gap-3 mb-3 xs:mb-0">
                   <button
                     onClick={() =>
                       updateQuantity(item.id, Math.max(1, item.quantity - 1))
@@ -112,7 +114,33 @@ export default function Cart() {
                   >
                     <Plus size={14} xs:size={16} className="text-slate-600" />
                   </button>
-                </div>
+                </div> */}
+
+
+
+
+                <div className="flex items-center gap-2 xs:gap-3 mb-3 xs:mb-0">
+  <button
+    onClick={() =>
+      addToCart(item, -1)
+    }
+    disabled={item.quantity <= 1}
+    className="p-1.5 xs:p-2 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200"
+  >
+    <Minus size={14} />
+  </button>
+
+  <span className="font-medium text-lg">{item.quantity}</span>
+
+  <button
+    onClick={() => addToCart(item, 1)}
+    disabled={item.quantity >= stock}
+    className="p-1.5 xs:p-2 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200"
+  >
+    <Plus size={14} />
+  </button>
+</div>
+
 
                 {/* Price & Remove */}
                 <div className="flex items-center gap-4 xs:gap-6 w-full sm:w-auto justify-between sm:justify-end">

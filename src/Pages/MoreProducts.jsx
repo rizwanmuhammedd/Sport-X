@@ -17,7 +17,7 @@ export default function MoreProducts({ searchTerm }) {
 
   const { user } = useAuth();
   const { addToCart } = useCart();
-  const { wishlist, toggleWishlist } = useWishlist();
+const { wishlist = [], toggleWishlist } = useWishlist();
 
   const categoryParam = searchParams.get("category");
 
@@ -70,40 +70,55 @@ export default function MoreProducts({ searchTerm }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch products
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const { data } = await api.get("/products");
-        const productsWithRating = data.map(product => ({
-          ...product,
-          rating: generateRandomRating(),
-          views: Math.floor(Math.random() * 1000) + 100,
-          trending: Math.random() > 0.7
-        }));
-        setProducts(productsWithRating);
-        
-        // Calculate price range and stats
-        const prices = productsWithRating.map(p => Number(p.price) || 0);
-        const ratings = productsWithRating.map(p => p.rating || 0);
-        setPriceRange({
-          min: Math.floor(Math.min(...prices)),
-          max: Math.ceil(Math.max(...prices))
-        });
-        setStats({
-          totalProducts: productsWithRating.length,
-          avgPrice: (prices.reduce((a, b) => a + b, 0) / prices.length).toFixed(2),
-          avgRating: (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
-        });
-      } catch {
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+     const res = await api.get("/Products/GetAll");
+
+
+
+      const productsWithRating = res.data.data.map(product => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        category: product.category,
+        image: product.imageUrl?.startsWith("http")
+          ? product.imageUrl
+          : "/placeholder.png",
+        stock: product.stockQuantity,
+        rating: generateRandomRating(),
+        views: Math.floor(Math.random() * 1000) + 100,
+        trending: Math.random() > 0.7
+      }));
+
+      setProducts(productsWithRating);
+
+      const prices = productsWithRating.map(p => p.price);
+      const ratings = productsWithRating.map(p => p.rating);
+
+      setPriceRange({
+        min: Math.floor(Math.min(...prices)),
+        max: Math.ceil(Math.max(...prices))
+      });
+
+      setStats({
+        totalProducts: productsWithRating.length,
+        avgPrice: (prices.reduce((a, b) => a + b, 0) / prices.length).toFixed(2),
+        avgRating: (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
+      });
+
+    } catch (err) {
+      console.error("Fetch failed", err);
+      setProducts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, []);
+
 
   // Apply filters & search
   useEffect(() => {
@@ -186,7 +201,7 @@ export default function MoreProducts({ searchTerm }) {
     return pages;
   };
 
-  const handleProductClick = (item) => navigate(`/product/${item.id}`, { state: item });
+  const handleProductClick = (item) => navigate(`/Product/${item.id}`, { state: item });
   
   const handleAddToCart = (item, e) => {
     e.stopPropagation();
@@ -551,7 +566,9 @@ export default function MoreProducts({ searchTerm }) {
             : "flex flex-col gap-4"
           }>
             {displayedProducts.map((item, index) => {
-              const isInWishlist = wishlist.some((p) => p.id === item.id);
+const isInWishlist = (wishlist || []).some(p => p.productId === item.id);
+
+
               const stockStatus = getStockStatus(item.stock || 0);
               const isOutOfStock = (item.stock || 0) <= 0;
               const isHovered = hoveredCard === item.id;
@@ -672,15 +689,16 @@ export default function MoreProducts({ searchTerm }) {
                 >
                   <div className="relative mb-4">
                     {/* Wishlist Button */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); toggleWishlist(item); }}
-                      className={`absolute top-0 right-0 p-2 rounded-xl transition-all z-20 transform hover:scale-110 ${
-                        isInWishlist ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30" : "bg-white/90 backdrop-blur-sm text-slate-400 hover:bg-white"
-                      }`}
-                      aria-label="Add to wishlist"
-                    >
-                      <Heart size={18} className={isInWishlist ? "fill-current" : ""} />
-                    </button>
+                   <button
+  onClick={(e) => { e.stopPropagation(); toggleWishlist(item); }}
+  className={`absolute top-0 right-0 p-2 rounded-xl transition-all z-20 transform hover:scale-110 ${
+    isInWishlist ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30"
+                 : "bg-white/90 backdrop-blur-sm text-slate-400 hover:bg-white"
+  }`}
+>
+  <Heart size={18} className={isInWishlist ? "fill-current" : ""} />
+</button>
+
 
                     {/* Stock Badge */}
                     <span className={`absolute top-0 left-0 px-3 py-1.5 rounded-xl text-xs font-bold border backdrop-blur-sm z-20 flex items-center gap-1.5 ${stockStatus.color} ${stockStatus.border}`}>
@@ -904,12 +922,13 @@ export default function MoreProducts({ searchTerm }) {
                         toggleWishlist(quickViewProduct);
                       }}
                       className={`p-4 rounded-xl transition-all transform hover:scale-110 ${
-                        wishlist.some((p) => p.id === quickViewProduct.id)
+                        wishlist.some((p) => p.productId === quickViewProduct.id)
+
                           ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30"
                           : "bg-slate-100 text-slate-400 hover:bg-slate-200"
                       }`}
                     >
-                      <Heart size={24} className={wishlist.some((p) => p.id === quickViewProduct.id) ? "fill-current" : ""} />
+                      <Heart size={24} className={wishlist.some((p) => p.productId === quickViewProduct.id) ? "fill-current" : ""} />
                     </button>
                     <button
                       onClick={() => handleProductClick(quickViewProduct)}
@@ -937,7 +956,7 @@ export default function MoreProducts({ searchTerm }) {
       </div>
 
       {/* Custom Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }

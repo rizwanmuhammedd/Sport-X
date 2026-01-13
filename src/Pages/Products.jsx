@@ -398,7 +398,7 @@ export default function Products({ searchTerm = "" }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await api.get("/products");
+        const { data } = await api.get("/Products/GetAll");
 
         // Handle different response structures
         const productsData = data.data || data;

@@ -241,17 +241,18 @@ export default function Wishlist() {
       }
 
       try {
-        const updatedProducts = await Promise.all(
-          wishlist.map(async (item) => {
-            try {
-              const response = await api.get(`/products/${item.id}`);
-              return { ...item, stock: response.data.stock };
-            } catch (error) {
-              console.error(`Failed to fetch stock for ${item.name}:`, error);
-              return { ...item, stock: 0 };
-            }
-          })
-        );
+       const updatedProducts = await Promise.all(
+  wishlist.map(async (item) => {
+    try {
+      const response = await api.get(`/Products/${item.productId}`);
+      return { ...item, stock: response.data.stockQuantity };
+    } catch (error) {
+      console.error(`Failed to fetch stock for ${item.name}:`, error);
+      return { ...item, stock: item.stock }; // fallback
+    }
+  })
+);
+
         setProductsWithStock(updatedProducts);
       } catch (error) {
         console.error("Error fetching stock data:", error);
@@ -412,7 +413,7 @@ export default function Wishlist() {
                       </span>
                     </button>
                     <button
-                      onClick={() => removeFromWishlist(item.id)}
+                      onClick={() => removeFromWishlist(item.productId)}
                       className="w-full bg-slate-50 text-slate-700 py-2 xs:py-2.5 rounded-lg font-medium hover:bg-slate-100 transition-all duration-300 border border-slate-200 hover:border-slate-300 flex items-center justify-center gap-1 xs:gap-2 text-sm xs:text-base"
                     >
                       <Trash2 size={16} xs:size={18} />

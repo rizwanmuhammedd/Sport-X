@@ -273,53 +273,19 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const result = await login(email, password);
+  try {
+    await login(email, password);   // don't expect any return
+  } catch {
+    setError("Login failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const success = result?.success ?? result?.data?.success;
-      const user = result?.user ?? result?.data?.user;
-      const errorCode = result?.error ?? result?.data?.error;
-      const message = result?.message ?? result?.data?.message;
-
-      if (success) {
-        if (user?.status === "blocked") {
-          setError("Your account has been blocked. Please contact support for assistance.");
-          setLoading(false);
-          return;
-        }
-
-        if (user?.status === "inactive") {
-          setError("Your account is inactive. Please contact support to activate your account.");
-          setLoading(false);
-          return;
-        }
-
-        if (user?.status === "active") {
-          navigate("/");
-        } else {
-          setError("Account status not recognized. Please contact support.");
-        }
-      } else {
-        if (errorCode === "USER_NOT_FOUND") {
-          alert("This account does not exist. Please register first.");
-          navigate("/register");
-        } else if (errorCode === "INVALID_CREDENTIALS") {
-          setError("Invalid email or password. Please try again.");
-        } else {
-          setError(message || "Login failed. Please try again.");
-        }
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -414,21 +380,17 @@ export default function Login() {
                   <div className="absolute inset-y-0 left-0 pl-3 xs:pl-4 flex items-center pointer-events-none transition-colors duration-200">
                     <Lock className="h-4 w-4 xs:h-5 xs:w-5 text-slate-400 group-focus-within:text-slate-600" />
                   </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 8);
-                      setPassword(value);
-                    }}
-                    required
-                    placeholder="Enter 8-digit password"
-                    disabled={loading}
-                    pattern="\d{8}"
-                    maxLength={8}
-                    inputMode="numeric"
-                    className="w-full pl-9 xs:pl-12 pr-9 xs:pr-12 py-2.5 xs:py-3.5 border border-slate-200 xs:border-2 rounded-lg xs:rounded-xl bg-white/50 focus:bg-white focus:border-slate-900 focus:ring-2 xs:focus:ring-4 focus:ring-slate-900 focus:ring-opacity-10 transition-all duration-300 text-slate-900 placeholder-slate-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:border-slate-300 text-sm xs:text-base"
-                  />
+                 <input
+  type={showPassword ? "text" : "password"}
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  required
+  placeholder="Enter your password"
+  disabled={loading}
+  className="w-full pl-9 xs:pl-12 pr-9 xs:pr-12 py-2.5 xs:py-3.5 border border-slate-200 xs:border-2 rounded-lg xs:rounded-xl bg-white/50 focus:bg-white focus:border-slate-900 focus:ring-2 xs:focus:ring-4 focus:ring-slate-900 focus:ring-opacity-10 transition-all duration-300 text-slate-900 placeholder-slate-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:border-slate-300 text-sm xs:text-base"
+/>
+
+
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}

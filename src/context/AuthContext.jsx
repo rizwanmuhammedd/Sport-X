@@ -1,6 +1,3 @@
-
-
-
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../Api/Axios_Instance";
 import toast from "react-hot-toast";
@@ -14,121 +11,84 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Load user from localStorage
-  useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) setUser(JSON.parse(storedUser));
-    setLoading(false);
-  }, []);
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("currentUser");
+  //   if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  //   setLoading(false);
+  // }, []);
 
-  // Save updated user to localStorage and update users array
-  const saveUser = (updatedUser) => {
-    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const index = users.findIndex((u) => u.email === updatedUser.email);
-    if (index !== -1) {
-      users[index] = updatedUser;
-      localStorage.setItem("users", JSON.stringify(users));
-    }
-    setUser(updatedUser);
-  };
+
+  useEffect(() => {
+  const storedUser = localStorage.getItem("currentUser");
+  const storedToken = localStorage.getItem("token");
+
+  if (storedUser && storedToken) {
+    setUser(JSON.parse(storedUser));
+  } else {
+    localStorage.clear();
+    setUser(null);
+  }
+
+  setLoading(false);
+}, []);
 
   const signup = async ({ name, email, password }) => {
-    try {
-      const response = await api.get(`/users?email=${email}`)
-      if (response.data.length > 0) {
-        toast.error("Email id Already Exists")
-      } else {
-        const newuser = { name, email, password }
-        const userData = { ...newuser, role: "user", status: "active", isAuthenticated: true, cart: [], wishlist: [], shippingAddress: [], orders: [] }
-
-        const Postresponse = await api.post('/users', userData)
-        console.log(Postresponse)
-
-        localStorage.setItem("currentUser", JSON.stringify(Postresponse.data));
-        setUser(Postresponse.data);
-        toast.success("Signup SuccessFull")
-        navigate('/')
-      }
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-
-
-
-
-  const login = async (email, password) => {
   try {
-    const response = await api.get(`/users?email=${email}&&password=${password}`)
+    await api.post("/auth/register", { name, email, password });
 
-    if (response.data.length === 0) {
-      toast.error("The UserName or Password doesn't Match")
-      return
-    }
-
-    const userData = response.data[0];
-
-    // Check legacy isAuthenticated field first 
-    if (userData.isAuthenticated === false) {
-      toast.error("You Have Been Blocked By Admin")
-      return
-    }
-
-    // For ALL users (including admin), check if they are specifically blocked
-    if (userData.status === 'blocked') {
-      toast.error("Your account has been blocked. Please contact support for assistance.")
-      return
-    }
-
-    // FIXED: Store complete user data in localStorage for BOTH users and admins
-    localStorage.setItem("currentUser", JSON.stringify(userData))
-    localStorage.setItem("role", userData.role)
-    setUser(userData)
-
-    // Navigate based on role
-    if (userData.role === "user") {
-      navigate("/")
-    } else {
-      navigate("/admin/dashboard")
-    }
-    
-    toast.success("Logined Successfully")
-
-  } catch (e) {
-    console.log(e)
-    toast.error("Login failed. Please try again.")
+    toast.success("Registration successful! Please login.");
+    navigate("/login");
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Signup failed");
+    throw err;
   }
-}
+};
+const login = async (email, password) => {
+  try {
+    const res = await api.post("/auth/login", { email, password });
 
- 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("currentUser");
-  };
+    const token = res.data.data.accessToken;
 
-  // Add order to current user
-  const addOrder = (order) => {
-    if (!user) return;
-    const updatedUser = {
-      ...user,
-      orders: [...(user.orders || []), order],
+    // ✅ STORE TOKEN CORRECTLY
+    localStorage.setItem("token", token);
+
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    const userData = {
+      id: payload.uid,
+      role: payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+      email: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]
     };
-    saveUser(updatedUser);
-  };
 
-  // Update user info (for Profile edit)
-  const updateUser = (updatedFields) => {
-    if (!user) return;
-    const updatedUser = { ...user, ...updatedFields };
-    saveUser(updatedUser);
+    localStorage.setItem("currentUser", JSON.stringify(userData));
+    setUser(userData);
+
+    toast.success("Logged in successfully");
+
+    if (userData.role === "Admin") navigate("/admin/dashboard");
+    else navigate("/");
+
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Login failed");
+    throw err;
+  }
+};
+
+
+
+
+  const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("currentUser");
+
+    setUser(null);
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, login, signup, logout, addOrder, updateUser, loading }}
-    >
+    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

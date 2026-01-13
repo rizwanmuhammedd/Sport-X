@@ -1,5 +1,313 @@
 
 
+// import { createContext, useContext, useState, useEffect } from "react";
+// import { useAuth } from "./AuthContext";
+// import { useCart } from "./CartContext";
+// import toast from "react-hot-toast";
+// import api from "../Api/Axios_Instance";
+
+// const WishlistContext = createContext();
+// export const useWishlist = () => useContext(WishlistContext);
+
+// export const WishlistProvider = ({ children }) => {
+//   const { user } = useAuth();
+//   const { addToCart } = useCart();
+//   const [wishlist, setWishlist] = useState([]);
+//   const [orders, setOrders] = useState([]);
+
+//   // Load wishlist
+//   useEffect(() => {
+//     if (!user) {
+//       setWishlist([]);
+//       setOrders([]);
+//       return;
+//     }
+
+//     api.get("/Wishlist")
+//       .then(res => setWishlist(res.data))
+//       .catch(() => setWishlist([]));
+//   }, [user]);
+
+//   // Toggle Wishlist (matches backend toggle)
+//   const toggleWishlist = async (product) => {
+//     if (!user) return toast.error("Please login");
+
+//     try {
+//       await api.post(`/Wishlist/${product.id}`);
+
+//       setWishlist(prev => {
+//         const exists = prev.some(p => p.productId === product.id);
+
+//         if (exists) {
+//           toast("Removed from wishlist 💔");
+//           return prev.filter(p => p.productId !== product.id);
+//         } else {
+//           toast.success("Added to wishlist ❤️");
+//           return [...prev, {
+//             productId: product.id,
+//             productName: product.name,
+//             imageUrl: product.imageUrl,
+//             price: product.price
+//           }];
+//         }
+//       });
+//     } catch {
+//       toast.error("Wishlist update failed");
+//     }
+//   };
+
+//   // Manual remove
+//   const removeFromWishlist = async (id) => {
+//     try {
+//       await api.delete(`/Wishlist/${id}`);
+//       setWishlist(prev => prev.filter(p => p.productId !== id));
+//       toast("Removed from wishlist");
+//     } catch {
+//       toast.error("Failed to remove");
+//     }
+//   };
+
+//   // Move to cart
+//   const moveToCart = async (product) => {
+//     if (!user) return toast.error("Please login");
+
+//     try {
+//       const productRes = await api.get(`/products/${product.id}`);
+//       const currentProduct = productRes.data;
+
+//       if (!currentProduct.stock || currentProduct.stock <= 0) {
+//         toast.error("Out of stock");
+//         return;
+//       }
+
+//       addToCart({ ...product, stock: currentProduct.stock }, 1);
+//       removeFromWishlist(product.id);
+//     } catch {
+//       toast.error("Failed to move to cart");
+//     }
+//   };
+
+//   // Orders
+//   const addOrder = async (order) => {
+//     if (!user) return;
+
+//     try {
+//       const updatedOrders = [...orders, order];
+//       setOrders(updatedOrders);
+//       await api.patch(`/users/${user.id}`, { orders: updatedOrders });
+//       toast.success("Order saved");
+//     } catch {
+//       toast.error("Failed to save order");
+//     }
+//   };
+
+//   return (
+//     <WishlistContext.Provider value={{
+//       wishlist,
+//       orders,
+//       toggleWishlist,
+//       removeFromWishlist,
+//       moveToCart,
+//       addOrder,
+//     }}>
+//       {children}
+//     </WishlistContext.Provider>
+//   );
+// };
+
+
+
+
+
+
+
+
+// import { createContext, useContext, useState, useEffect } from "react";
+// import { useAuth } from "./AuthContext";
+// import { useCart } from "./CartContext";
+// import toast from "react-hot-toast";
+// import api from "../Api/Axios_Instance";
+
+// const WishlistContext = createContext();
+// export const useWishlist = () => useContext(WishlistContext);
+
+// export const WishlistProvider = ({ children }) => {
+//   const { user } = useAuth();
+//   const { addToCart } = useCart();
+//   const [wishlist, setWishlist] = useState([]);
+//   const [orders, setOrders] = useState([]);
+
+//   // LOAD WISHLIST (hydrate with full product info)
+//   // useEffect(() => {
+//   //   if (!user) {
+//   //     setWishlist([]);
+//   //     return;
+//   //   }
+
+//   //   const loadWishlist = async () => {
+//   //     try {
+//   //       const res = await api.get("/Wishlist");
+//   //       const wishlistRows = res.data.data || [];
+
+//   //       const fullProducts = await Promise.all(
+//   //         wishlistRows.map(w =>
+//   //           api.get(`/products/${w.productId}`).then(r => r.data)
+//   //         )
+//   //       );
+
+//   //       setWishlist(fullProducts);
+//   //     } catch {
+//   //       setWishlist([]);
+//   //     }
+//   //   };
+
+//   //   loadWishlist();
+//   // }, [user]);
+
+
+
+//   useEffect(() => {
+//   if (!user) {
+//     setWishlist([]);
+//     setOrders([]);
+//     return;
+//   }
+
+//   const loadWishlist = async () => {
+//     try {
+//       const res = await api.get("/Wishlist");
+//       const ids = res.data.data || [];
+
+//       if (ids.length === 0) {
+//         setWishlist([]);
+//         return;
+//       }
+
+//       // Fetch product details
+//       const productRes = await api.get("/Products/GetAll");
+
+//       const products = productRes.data.data;
+
+//       const fullWishlist = ids
+//         .map(w => products.find(p => p.id === w.productId))
+//         .filter(Boolean)
+//         .map(p => ({
+//           productId: p.id,
+//           name: p.name,
+//           price: p.price,
+//           image: p.imageUrl,
+//           stock: p.stockQuantity
+//         }));
+
+//       setWishlist(fullWishlist);
+//     } catch {
+//       setWishlist([]);
+//     }
+//   };
+
+//   loadWishlist();
+// }, [user]);
+
+
+//   // TOGGLE WISHLIST
+//  const toggleWishlist = async (product) => {
+//   if (!user) return toast.error("Please login");
+
+//   try {
+//     const exists = wishlist.some(w => w.productId === product.id);
+
+//     if (exists) {
+//       await api.delete(`/Wishlist/${product.id}`);
+//       setWishlist(prev => prev.filter(w => w.productId !== product.id));
+//       toast("Removed from wishlist 💔");
+//     } else {
+//       await api.post(`/Wishlist/${product.id}`);
+
+//       setWishlist(prev => [
+//         ...prev,
+//         {
+//           productId: product.id,
+//           name: product.name,
+//           price: product.price,
+//           image: product.image,
+//           stock: product.stock
+//         }
+//       ]);
+
+//       toast.success("Added to wishlist ❤️");
+//     }
+//   } catch {
+//     toast.error("Wishlist update failed");
+//   }
+// };
+
+
+//   // REMOVE
+//   const removeFromWishlist = async (id) => {
+//     try {
+//       await api.delete(`/Wishlist/${id}`);
+//    setWishlist(prev => prev.filter(w => w.productId !== id));
+//       toast("Removed from wishlist");
+//     } catch {
+//       toast.error("Failed to remove");
+//     }
+//   };
+
+//   // MOVE TO CART
+//   const moveToCart = async (product) => {
+//     if (!user) return toast.error("Please login");
+
+//     try {
+//       const res = await api.get(`/products/${product.id}`);
+//       const currentProduct = res.data;
+
+//       if (!currentProduct.stock || currentProduct.stock <= 0) {
+//         toast.error("Out of stock");
+//         return;
+//       }
+
+//       addToCart(product, 1);
+//       removeFromWishlist(product.id);
+//     } catch {
+//       toast.error("Failed to move to cart");
+//     }
+//   };
+
+//   // ORDERS
+//   const addOrder = async (order) => {
+//     if (!user) return;
+
+//     try {
+//       const updatedOrders = [...orders, order];
+//       setOrders(updatedOrders);
+//       await api.patch(`/users/${user.id}`, { orders: updatedOrders });
+//       toast.success("Order saved");
+//     } catch {
+//       toast.error("Failed to save order");
+//     }
+//   };
+
+//   return (
+//     <WishlistContext.Provider value={{
+//       wishlist,
+//       orders,
+//       toggleWishlist,
+//       removeFromWishlist,
+//       moveToCart,
+//       addOrder,
+//     }}>
+//       {children}
+//     </WishlistContext.Provider>
+//   );
+// };
+
+
+
+
+
+
+
+
 
 
 
@@ -7,7 +315,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
 import toast from "react-hot-toast";
-import api from "../Api/Axios_Instance.jsx";
+import api from "../Api/Axios_Instance";
 
 const WishlistContext = createContext();
 export const useWishlist = () => useContext(WishlistContext);
@@ -16,140 +324,134 @@ export const WishlistProvider = ({ children }) => {
   const { user } = useAuth();
   const { addToCart } = useCart();
   const [wishlist, setWishlist] = useState([]);
-  const [orders, setOrders] = useState([]); // State for orders
+  const [orders, setOrders] = useState([]);
 
-  // Fetch initial wishlist and orders from the database
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) {
-        setWishlist([]);
-        setOrders([]);
-        return;
-      }
-      
+    if (!user) {
+      setWishlist([]);
+      setOrders([]);
+      return;
+    }
+
+    const loadWishlist = async () => {
       try {
-        const userRes = await api.get(`/users/${user.id}`);
-        const userData = userRes.data;
-        setWishlist(userData.wishlist || []);
-        setOrders(userData.orders || []);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-        toast.error("Failed to load your data from the server");
-        setWishlist([]);
-        setOrders([]);
+        const res = await api.get("/Wishlist");
+        // const ids = res.data.data || [];
+
+        // if (ids.length === 0) return;
+
+        // const productRes = await api.get("/Products/GetAll");
+        // const products = productRes.data.data;
+
+        // const fullWishlist = ids
+        //   .map(w => products.find(p => p.id === w.productId))
+        //   .filter(Boolean)
+        //   .map(p => ({
+        //     productId: p.id,
+        //     name: p.name,
+        //     price: p.price,
+        //     image: p.imageUrl,
+        //     stock: p.stockQuantity
+        //   }));
+
+        // setWishlist(fullWishlist);
+
+
+
+        const rows = res.data.data || [];
+
+const fullWishlist = rows.map(w => ({
+  productId: w.productId,
+  name: w.productName,
+  price: w.price,
+  image: w.imageUrl,
+  stock: w.stockQuantity        // 🔥 REAL DB STOCK
+}));
+
+setWishlist(fullWishlist);
+
+      } catch {
+        console.log("Wishlist load failed");
       }
     };
-    fetchUserData();
+
+    loadWishlist();
   }, [user]);
 
-  // Add to Wishlist
-  const addToWishlist = async (product) => {
-    if (!user) {
-      toast.error("Please login to add items to wishlist");
-      return;
-    }
-
-    // Prevent duplicates
-    if (wishlist.find((item) => item.id === product.id)) {
-      toast("Already in wishlist", { icon: "⚠️" });
-      return;
-    }
-
-    const updatedWishlist = [...wishlist, product];
-    setWishlist(updatedWishlist);
-    // toast.success(`${product.name} added to wishlist`);
+  const toggleWishlist = async (product) => {
+    if (!user) return toast.error("Please login");
 
     try {
-      // Use PATCH to update only the wishlist property
-      await api.patch(`/users/${user.id}`, { wishlist: updatedWishlist });
-    } catch (error) {
-      console.error("Error updating wishlist:", error);
-      toast.error("Failed to update wishlist on server");
+      const exists = wishlist.some(w => w.productId === product.id);
+
+      if (exists) {
+        await api.delete(`/Wishlist/${product.id}`);
+        setWishlist(prev => prev.filter(w => w.productId !== product.id));
+        toast("Removed from wishlist 💔");
+      } else {
+        await api.post(`/Wishlist/${product.id}`);
+      setWishlist(prev => [
+  ...prev,
+  {
+    productId: product.id || product.productId,
+    name: product.name,
+    price: product.price,
+    image: product.imageUrl || product.image,
+    stock: product.stockQuantity ?? product.stock ?? 0   // ✅ FIXED
+  }
+]);
+
+        toast.success("Added to wishlist ❤️");
+      }
+    } catch {
+      toast.error("Wishlist update failed");
     }
   };
 
   const removeFromWishlist = async (id) => {
-    if (!user) return;
-    
-    const updatedWishlist = wishlist.filter((item) => item.id !== id);
-    setWishlist(updatedWishlist);
-    toast("Removed from wishlist");
-
     try {
-      // Use PATCH to update only the wishlist property
-      await api.patch(`/users/${user.id}`, { wishlist: updatedWishlist });
-    } catch (error) {
-      console.error("Error updating wishlist:", error);
-      toast.error("Failed to update wishlist on server");
+      await api.delete(`/Wishlist/${id}`);
+      setWishlist(prev => prev.filter(w => w.productId !== id));   // 🔥 FIXED
+      toast("Removed from wishlist");
+    } catch {
+      toast.error("Failed to remove");
     }
   };
 
-  const toggleWishlist = (product) => {
-    if (wishlist.find((p) => p.id === product.id)) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist(product);
-    }
-  };
-
-  // Move to cart with stock validation
   const moveToCart = async (product) => {
-    if (!user) {
-      toast.error("Please login to move items to cart");
-      return;
-    }
-    
+    if (!user) return toast.error("Please login");
+
     try {
-      // Fetch current product data to check stock
-      const productRes = await api.get(`/products/${product.id}`);
-      const currentProduct = productRes.data;
-      
-      // Check if product is out of stock
-      if (!currentProduct.stock || currentProduct.stock <= 0) {
-        toast.error("Sorry, this product is out of stock!");
-        return;
-      }
-      
-      // Call the original addToCart function from CartContext
-      if (addToCart) {
-        addToCart({ ...product, stock: currentProduct.stock }, 1);
-        removeFromWishlist(product.id); // Remove silently
-      }
-    } catch (error) {
-      console.error("Error checking product stock:", error);
-      toast.error("Failed to add to cart. Please try again.");
+      addToCart({ id: product.productId }, 1);
+
+      removeFromWishlist(product.productId || product.id);
+    } catch {
+      toast.error("Failed to move to cart");
     }
   };
-  
-  // This is a placeholder for adding new orders to the user's orders list
+
   const addOrder = async (order) => {
     if (!user) return;
-    
+
     try {
       const updatedOrders = [...orders, order];
       setOrders(updatedOrders);
-      
-      // PATCH to update just the orders array on the user object
       await api.patch(`/users/${user.id}`, { orders: updatedOrders });
-      toast.success("Order saved to profile!");
-    } catch (error) {
-      console.error("Failed to add order to user profile:", error);
-      toast.error("Failed to save order to profile");
+      toast.success("Order saved");
+    } catch {
+      toast.error("Failed to save order");
     }
   };
 
   return (
-    <WishlistContext.Provider
-      value={{
-        wishlist,
-        orders,
-        addToWishlist,
-        removeFromWishlist,
-        toggleWishlist,
-        moveToCart,
-        addOrder, // Now available for other components to use
-      }}
-    >
+    <WishlistContext.Provider value={{
+      wishlist,
+      orders,
+      toggleWishlist,
+      removeFromWishlist,
+      moveToCart,
+      addOrder,
+    }}>
       {children}
     </WishlistContext.Provider>
   );

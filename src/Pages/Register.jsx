@@ -312,19 +312,16 @@ export default function Register() {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    // For password fields, only allow digits and limit to 8
-    if (name === "password" || name === "confirmPassword") {
-      const numericValue = value.replace(/\D/g, '').slice(0, 8);
-      setForm({ ...form, [name]: numericValue });
-    } else {
-      setForm({ ...form, [name]: value });
-    }
-    
-    // Clear error when user starts typing
-    if (error) setError("");
-  };
+  const { name, value } = e.target;
+
+  setForm(prev => ({
+    ...prev,
+    [name]: value
+  }));
+
+  if (error) setError("");
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -454,19 +451,17 @@ export default function Register() {
                   <div className="absolute inset-y-0 left-0 pl-3 xs:pl-4 flex items-center pointer-events-none">
                     <Lock className="h-4 w-4 xs:h-5 xs:w-5 text-slate-400" />
                   </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter 8-digit password"
-                    disabled={loading}
-                    pattern="\d{8}"
-                    maxLength={8}
-                    inputMode="numeric"
-                    className="w-full pl-9 xs:pl-11 pr-9 xs:pr-11 py-2.5 xs:py-3 border border-slate-200 rounded-lg bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-opacity-20 transition-all duration-300 text-slate-900 placeholder-slate-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm xs:text-base"
-                  />
+                 <input
+  type={showPassword ? "text" : "password"}
+  name="password"
+  value={form.password}
+  onChange={handleChange}
+  required
+  placeholder="Enter your password"
+  disabled={loading}
+  className="w-full pl-9 xs:pl-11 pr-9 xs:pr-11 py-2.5 xs:py-3 border border-slate-200 rounded-lg bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-opacity-20 transition-all duration-300 text-slate-900 placeholder-slate-400"
+/>
+
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
@@ -491,19 +486,17 @@ export default function Register() {
                   <div className="absolute inset-y-0 left-0 pl-3 xs:pl-4 flex items-center pointer-events-none">
                     <Lock className="h-4 w-4 xs:h-5 xs:w-5 text-slate-400" />
                   </div>
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    placeholder="Confirm 8-digit password"
-                    disabled={loading}
-                    pattern="\d{8}"
-                    maxLength={8}
-                    inputMode="numeric"
-                    className="w-full pl-9 xs:pl-11 pr-9 xs:pr-11 py-2.5 xs:py-3 border border-slate-200 rounded-lg bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-opacity-20 transition-all duration-300 text-slate-900 placeholder-slate-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm xs:text-base"
-                  />
+                 <input
+  type={showConfirmPassword ? "text" : "password"}
+  name="confirmPassword"
+  value={form.confirmPassword}
+  onChange={handleChange}
+  required
+  placeholder="Confirm your password"
+  disabled={loading}
+  className="w-full pl-9 xs:pl-11 pr-9 xs:pr-11 py-2.5 xs:py-3 border border-slate-200 rounded-lg bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-opacity-20 transition-all duration-300 text-slate-900 placeholder-slate-400"
+/>
+
                   <button
                     type="button"
                     onClick={toggleConfirmPasswordVisibility}
