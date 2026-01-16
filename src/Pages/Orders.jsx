@@ -17,50 +17,30 @@ const Orders = () => {
   const [expandedOrder, setExpandedOrder] = useState(null);
 
   useEffect(() => {
-    const fetchUserOrders = async () => {
-      if (!user) {
-        setLoading(false);
-        setError("Please login to view your orders.");
-        return;
-      }
+   const fetchUserOrders = async () => {
+  if (!user) {
+    setLoading(false);
+    setError("Please login to view your orders.");
+    return;
+  }
 
-      try {
-        const userResponse = await fetch(`https://sport-x-backend-3.onrender.com/users/${user.id}`);
-        
-        if (!userResponse.ok) {
-          throw new Error(`Failed to fetch user data: ${userResponse.status}`);
-        }
-        
-        const userData = await userResponse.json();
-        const userOrders = userData.orders || [];
+  try {
+    const res = await api.get("/order/myorders");
 
-        const enrichedOrders = userOrders.map(order => ({
-          ...order,
-          userId: user.id,
-          userName: userData.name || userData.username || user.name || user.username || "Guest User",
-          userEmail: userData.email || user.email || "No email provided",
-          total: Array.isArray(order.items)
-            ? order.items.reduce((sum, item) => {
-                const price = item && !isNaN(Number(item.price)) ? Number(item.price) : 0;
-                const qty = item && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 1;
-                return sum + price * qty;
-              }, 0)
-            : 0,
-        }));
+    const sorted = res.data.data.sort(
+      (a, b) => new Date(b.orderDate) - new Date(a.orderDate)
+    );
 
-        const sortedOrders = enrichedOrders.sort((a, b) => 
-          new Date(b.date || 0) - new Date(a.date || 0)
-        );
+    setOrders(sorted);
+    setError(null);
+  } catch (e) {
+    console.error(e);
+    setError("Failed to load your orders.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-        setOrders(sortedOrders);
-        setError(null);
-      } catch (e) {
-        console.error("Failed to fetch user orders:", e);
-        setError("Failed to load your orders. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchUserOrders();
   }, [user]);
@@ -115,44 +95,18 @@ const Orders = () => {
     }
   };
 
-  const refreshOrders = async () => {
-    if (!user) return;
-    
-    setRefreshing(true);
-    try {
-      const userResponse = await fetch(`http://localhost:10000/users/${user.id}`);
-      if (!userResponse.ok) throw new Error("Failed to refresh orders");
-      
-      const userData = await userResponse.json();
-      const userOrders = userData.orders || [];
+ const refreshOrders = async () => {
+  setRefreshing(true);
+  try {
+    const res = await api.get("/order/myorders");
+    setOrders(res.data.data);
+  } catch {
+    alert("Failed to refresh orders");
+  } finally {
+    setRefreshing(false);
+  }
+};
 
-      const enrichedOrders = userOrders.map(order => ({
-        ...order,
-        userId: user.id,
-        userName: user.name || user.username || "N/A",
-        userEmail: user.email || "N/A",
-        total: Array.isArray(order.items)
-          ? order.items.reduce((sum, item) => {
-              const price = item && !isNaN(Number(item.price)) ? Number(item.price) : 0;
-              const qty = item && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 1;
-              return sum + price * qty;
-            }, 0)
-          : 0,
-      }));
-
-      const sortedOrders = enrichedOrders.sort((a, b) => 
-        new Date(b.date || 0) - new Date(a.date || 0)
-      );
-
-      setOrders(sortedOrders);
-      setError(null);
-    } catch (e) {
-      console.error("Failed to refresh orders:", e);
-      setError("Failed to refresh orders. Please try again.");
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   const toggleOrderExpansion = (orderId) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
@@ -253,7 +207,7 @@ const Orders = () => {
                         <div className="space-y-1">
                           <p className="text-base font-semibold text-slate-900">#{order.id}</p>
                           <p className="text-sm text-slate-600">
-                            {order.date ? new Date(order.date).toLocaleDateString('en-US', { 
+                            {order.orderDate ? new Date(order.orderDate).toLocaleDateString('en-US', { 
                               year: 'numeric', 
                               month: 'long', 
                               day: 'numeric' 
@@ -275,9 +229,9 @@ const Orders = () => {
                       <div className="space-y-2">
                         <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Amount</p>
                         <p className="text-2xl font-semibold text-slate-900">
-                          ${order.total.toFixed(2)}
+                          ${order.totalAmount.toFixed(2)}
                         </p>
-                      </div>
+                      </div>  
 
                       {/* Status */}
                       <div className="space-y-2">
@@ -331,10 +285,10 @@ const Orders = () => {
                           <div key={itemIndex} className="bg-white rounded-xl p-4 border border-slate-200 hover:border-slate-300 transition-all duration-200">
                             <div className="flex items-center gap-4">
                               <div className="w-16 h-16 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
-                                {item.image ? (
+                                {item.imageUrl ? (
                                   <img
-                                    src={item.image}
-                                    alt={item.name}
+                                    src={item.imageUrl}
+                                    alt={item.productName}
                                     className="w-full h-full object-contain"
                                     onError={(e) => {
                                       e.target.style.display = 'none';

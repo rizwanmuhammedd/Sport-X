@@ -5,6 +5,11 @@
 //   withCredentials: true,
 //   headers: { "Content-Type": "application/json" }
 // });
+// api.interceptors.request.use((req) => {
+//   const token = localStorage.getItem("token");   // <-- YOUR JWT
+//   if (token) req.headers.Authorization = `Bearer ${token}`;
+//   return req;
+// });
 
 // export default api;
 
@@ -17,7 +22,7 @@ const api = axios.create({
 
 api.interceptors.request.use(config => {
   const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {config.headers.Authorization = `Bearer ${token}`;}
   return config;
 });
 

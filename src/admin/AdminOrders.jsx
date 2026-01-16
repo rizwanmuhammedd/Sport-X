@@ -1,9 +1,4 @@
-
-
-
-
-
-
+import api from "../Api/Axios_Instance";
 
 import React, { useState, useEffect } from "react";
 import { 
@@ -79,90 +74,35 @@ const AdminOrders = () => {
   };
 
   // Update order status - IMPROVED VERSION
-  const updateOrderStatus = async (orderId, newStatus, userId) => {
-    setUpdatingStatus(true);
-    let success = false;
-    let errorMessage = '';
-    
-    try {
-      // Method 1: Update in users endpoint
-      try {
-        const userResponse = await fetch(`https://sport-x-backend-3.onrender.com/users/${userId}`);
-        if (!userResponse.ok) throw new Error('Failed to fetch user data');
-        
-        const userData = await userResponse.json();
-        
-        // Update the specific order status in user data
-        const updatedUserOrders = userData.orders.map(order => 
-          order.id === orderId ? { ...order, status: newStatus } : order
-        );
-        
-        // Update the user with new order data
-        const updateUserResponse = await fetch(`https://sport-x-backend-3.onrender.com/users/${userId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...userData,
-            orders: updatedUserOrders
-          })
-        });
+ const updateOrderStatus = async (orderId, newStatus) => {
+  setUpdatingStatus(true);
 
-        if (!updateUserResponse.ok) throw new Error('Failed to update user orders');
-        success = true;
-      } catch (userError) {
-        handleError(userError, 'users');
-        errorMessage = userError.message;
-      }
-      
-      // Method 2: Update in orders endpoint
-      try {
-        const orderResponse = await fetch(`https://sport-x-backend-3.onrender.com/orders/${orderId}`);
-        if (orderResponse.ok) {
-          const orderData = await orderResponse.json();
-          
-          const updateOrderResponse = await fetch(`https://sport-x-backend-3.onrender.com/orders/${orderId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ...orderData,
-              status: newStatus
-            })
-          });
+  try {
+    await api.patch(`/order/admin/status/${orderId}?status=${newStatus}`);
 
-          if (!updateOrderResponse.ok) {
-            handleError(new Error('Failed to update order in orders endpoint'), 'orders');
-          } else {
-            success = true;
-          }
-        }
-      } catch (orderError) {
-        handleError(orderError, 'orders');
-        if (!success) errorMessage = orderError.message;
-      }
+    // Update UI state immediately
+    setOrders(prev =>
+      prev.map(order =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
 
-      if (success) {
-        // Update local state
-        setOrders(prevOrders => 
-          prevOrders.map(order => 
-            order.id === orderId ? { ...order, status: newStatus } : order
-          )
-        );
-        showNotification(`Order #${orderId} status updated to ${newStatus}`, 'success');
-        setEditingStatus(null);
-      } else {
-        showNotification(`Failed to update order status: ${errorMessage}`, 'error');
-      }
-    } catch (error) {
-      handleError(error, 'updateOrderStatus');
-      showNotification('Failed to update order status. Please try again.', 'error');
-    } finally {
-      setUpdatingStatus(false);
-    }
-  };
+    showNotification(
+      `Order #${orderId} status updated to ${newStatus}`,
+      "success"
+    );
+    setEditingStatus(null);
+  } catch (error) {
+    console.error("Update status failed:", error);
+    showNotification(
+      error.response?.data?.message || "Failed to update order status",
+      "error"
+    );
+  } finally {
+    setUpdatingStatus(false);
+  }
+};
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -185,97 +125,51 @@ const AdminOrders = () => {
   };
 
   // ENHANCED fetchOrders function
-  const fetchOrders = async () => {
-    try {
-      setRefreshing(true);
-      setApiErrors({ usersError: null, ordersError: null });
-      setError(null);
-      
-      // Try to fetch from both endpoints and merge data
-      const [usersResponse, ordersResponse] = await Promise.allSettled([
-        fetch("https://sport-x-backend-3.onrender.com/users"),
-        fetch("https://sport-x-backend-3.onrender.com/orders")
-      ]);
+const fetchOrders = async () => {
+  try {
+    setRefreshing(true);
+    setError(null);
 
-      let allOrders = [];
-      
-      // Get orders from users endpoint (primary source)
-      if (usersResponse.status === 'fulfilled' && usersResponse.value.ok) {
-        try {
-          const allUsers = await usersResponse.value.json();
-          
-          allUsers.forEach(user => {
-            if (user.orders && user.orders.length > 0) {
-              const enrichedOrders = user.orders.map(order => ({
-                ...order,
-                userName: user.name || user.username,
-                userEmail: user.email,
-                userId: user.id
-              }));
-              allOrders = [...allOrders, ...enrichedOrders];
-            }
-          });
-        } catch (err) {
-          handleError(err, 'users');
-        }
-      } else if (usersResponse.status === 'rejected') {
-        handleError(usersResponse.reason, 'users');
-      }
-      
-      // If we have orders endpoint, sync any missing data
-      if (ordersResponse.status === 'fulfilled' && ordersResponse.value.ok) {
-        try {
-          const ordersData = await ordersResponse.value.json();
-          
-          // Check for orders that exist in orders endpoint but not in users
-          ordersData.forEach(orderEndpointOrder => {
-            const existsInUserData = allOrders.some(order => order.id === orderEndpointOrder.id);
-            
-            if (!existsInUserData && orderEndpointOrder.userId) {
-              // Try to get user info for this orphaned order
-              fetch(`https://sport-x-backend-3.onrender.com/users/${orderEndpointOrder.userId}`)
-                .then(userRes => {
-                  if (!userRes.ok) throw new Error('User not found');
-                  return userRes.json();
-                })
-                .then(userData => {
-                  const enrichedOrder = {
-                    ...orderEndpointOrder,
-                    userName: userData.name || userData.username || 'Unknown User',
-                    userEmail: userData.email || 'No email',
-                    userId: userData.id
-                  };
-                  
-                  setOrders(prevOrders => {
-                    const orderExists = prevOrders.some(order => order.id === enrichedOrder.id);
-                    if (!orderExists) {
-                      return [...prevOrders, enrichedOrder];
-                    }
-                    return prevOrders;
-                  });
-                })
-                .catch(err => {
-                  handleError(err, 'users');
-                });
-            }
-          });
-        } catch (err) {
-          handleError(err, 'orders');
-        }
-      } else if (ordersResponse.status === 'rejected') {
-        handleError(ordersResponse.reason, 'orders');
-      }
-      
-      const sortedOrders = allOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
-      setOrders(sortedOrders);
-      
-    } catch (e) {
-      handleError(e, 'fetchOrders');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+    const res = await api.get("/order/admin");
+
+    const apiOrders = res.data.data || [];
+
+    const normalizedOrders = apiOrders.map(order => ({
+      ...order,
+      total: order.totalAmount ?? 0,
+      date: order.createdOn,
+
+      // 🔥 SAFE FALLBACKS (no /users call)
+      userName:
+        order.userName ||
+        order.customerName ||
+        order.shippingAddress?.fullName ||
+        `User #${order.userId}`,
+
+      userEmail:
+        order.userEmail ||
+        order.shippingAddress?.email ||
+        "No email",
+    }));
+
+    const sorted = normalizedOrders.sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
+
+    setOrders(sorted);
+  } catch (error) {
+    console.error("Failed to fetch orders:", error);
+    setError(
+      error.response?.data?.message || "Failed to load orders"
+    );
+  } finally {
+    setLoading(false);
+    setRefreshing(false);
+  }
+};
+
+
+
 
   useEffect(() => {
     fetchOrders();
@@ -296,13 +190,23 @@ const AdminOrders = () => {
   };
 
   // Filter and search functionality
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.id.toString().includes(searchTerm);
-    const matchesStatus = statusFilter === "All" || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+ const filteredOrders = orders.filter(order => {
+  const userName = (order.userName || "").toString().toLowerCase();
+  const userEmail = (order.userEmail || "").toString().toLowerCase();
+  const search = searchTerm.toLowerCase();
+
+  const matchesSearch =
+    userName.includes(search) ||
+    userEmail.includes(search) ||
+    String(order.id || "").includes(search);
+
+
+  const matchesStatus =
+    statusFilter === "All" || order.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
+
 
   if (loading) {
     return (
@@ -545,10 +449,11 @@ const AdminOrders = () => {
                               <select
                                 defaultValue={order.status}
                                 className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:border-purple-500"
-                                onChange={(e) => {
-                                  const newStatus = e.target.value;
-                                  updateOrderStatus(order.id, newStatus, order.userId);
-                                }}
+                              onChange={(e) => {
+  const newStatus = e.target.value;
+  updateOrderStatus(order.id, newStatus);
+}}
+
                                 disabled={updatingStatus}
                               >
                                 <option value="Processing">Processing</option>
@@ -649,22 +554,23 @@ const AdminOrders = () => {
                                 <div className="mb-6 p-4 bg-slate-900/50 rounded-lg border border-slate-600">
                                   <h5 className="text-lg font-semibold text-white mb-3">Update Order Status</h5>
                                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                    {['Processing', 'Shipped', 'Delivered', 'Canceled'].map(status => (
-                                      <button
-                                        key={status}
-                                        onClick={() => updateOrderStatus(order.id, status, order.userId)}
-                                        disabled={updatingStatus || order.status === status}
-                                        className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all duration-200 ${
-                                          order.status === status
-                                            ? 'bg-purple-700 border-purple-600 text-white cursor-default'
-                                            : 'bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-purple-500 hover:text-white'
-                                        } ${updatingStatus ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                      >
-                                        {getStatusIcon(status)}
-                                        <span className="text-sm font-medium">{status}</span>
-                                        {order.status === status && <Check size={16} />}
-                                      </button>
-                                    ))}
+                                  {['Processing', 'Shipped', 'Delivered', 'Canceled'].map(status => (
+  <button
+    key={status}
+    onClick={() => updateOrderStatus(order.id, status)}
+    disabled={updatingStatus || order.status === status}
+    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all duration-200 ${
+      order.status === status
+        ? 'bg-purple-700 border-purple-600 text-white cursor-default'
+        : 'bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-purple-500 hover:text-white'
+    } ${updatingStatus ? 'opacity-50 cursor-not-allowed' : ''}`}
+  >
+    {getStatusIcon(status)}
+    <span className="text-sm font-medium">{status}</span>
+    {order.status === status && <Check size={16} />}
+  </button>
+))}
+
                                   </div>
                                   <div className="flex justify-end mt-4">
                                     <button

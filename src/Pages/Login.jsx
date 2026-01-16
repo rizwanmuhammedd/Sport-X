@@ -1,263 +1,6 @@
 
 
 
-
-
-// import { useState } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-// import { useAuth } from "../context/AuthContext";
-// import { Eye, EyeOff, Mail, Lock, User, AlertCircle, Shield } from "lucide-react";
-
-// export default function Login() {
-//   const { login } = useAuth();
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
-//   const navigate = useNavigate();
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setError("");
-
-//     try {
-//       const result = await login(email, password);
-
-//       const success = result?.success ?? result?.data?.success;
-//       const user = result?.user ?? result?.data?.user;
-//       const errorCode = result?.error ?? result?.data?.error;
-//       const message = result?.message ?? result?.data?.message;
-
-//       if (success) {
-//         if (user?.status === "blocked") {
-//           setError("Your account has been blocked. Please contact support for assistance.");
-//           setLoading(false);
-//           return;
-//         }
-
-//         if (user?.status === "inactive") {
-//           setError("Your account is inactive. Please contact support to activate your account.");
-//           setLoading(false);
-//           return;
-//         }
-
-//         if (user?.status === "active") {
-//           navigate("/");
-//         } else {
-//           setError("Account status not recognized. Please contact support.");
-//         }
-//       } else {
-//         if (errorCode === "USER_NOT_FOUND") {
-//           alert("This account does not exist. Please register first.");
-//           navigate("/register");
-//         } else if (errorCode === "INVALID_CREDENTIALS") {
-//           setError("Invalid email or password. Please try again.");
-//         } else {
-//           setError(message || "Login failed. Please try again.");
-//         }
-//       }
-//     } catch (error) {
-//       console.error("Login error:", error);
-//       setError("An unexpected error occurred. Please try again.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const togglePasswordVisibility = () => {
-//     setShowPassword(!showPassword);
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-//       {/* Animated Background Elements */}
-//       <div className="absolute inset-0 overflow-hidden">
-//         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-//         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-//         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-//       </div>
-
-//       <div className="w-full max-w-3xl relative z-10">
-//         {/* Login Card - Two Column Layout */}
-//         <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
-//           {/* Left Section - Enhanced Branding */}
-//           <div className="w-full md:w-2/5 h-48 md:h-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center relative overflow-hidden">
-//             {/* Decorative Elements */}
-//             <div className="absolute inset-0 opacity-10">
-//               <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-2xl"></div>
-//               <div className="absolute bottom-0 left-0 w-40 h-40 bg-cyan-400 rounded-full blur-3xl"></div>
-//             </div>
-            
-//             <div className="text-center p-4 relative z-10">
-//               <div className="w-20 h-20 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/30 shadow-xl transform hover:scale-105 transition-transform duration-300">
-//                 <User className="w-10 h-10 text-white" />
-//               </div>
-//               <h1 className="text-3xl font-serif font-light text-white mb-3 tracking-wide">Sport-X</h1>
-//               <div className="h-px w-24 mx-auto bg-gradient-to-r from-transparent via-white/50 to-transparent mb-3"></div>
-//               <p className="text-slate-300 text-sm font-light tracking-wide">Your Premium Sports Store</p>
-//               <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 text-xs">
-//                 <Shield className="w-3 h-3" />
-//                 <span>Trusted by Athletes</span>
-//               </div>
-//             </div>
-//           </div>
-          
-//           {/* Right Section - Login Form */}
-//           <div className="w-full md:w-3/5 p-6 md:p-8 bg-white/80 backdrop-blur-sm">
-//             {/* Header Section */}
-//             <div className="mb-6">
-//               <h2 className="text-3xl font-serif font-light text-slate-900 mb-2 tracking-tight">
-//                 Welcome Back
-//               </h2>
-//               <div className="h-1 w-16 bg-gradient-to-r from-slate-900 to-slate-400 rounded-full mb-3"></div>
-//               <p className="text-slate-600 text-sm font-light">
-//                 Sign in to continue your journey
-//               </p>
-//             </div>
-
-//             {/* Error Message */}
-//             {error && (
-//               <div className="mb-4 p-3 bg-gradient-to-r from-rose-50 to-red-50 border border-rose-300 text-rose-700 rounded-2xl text-sm shadow-sm">
-//                 <div className="flex items-center gap-2">
-//                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-//                   <span>{error}</span>
-//                 </div>
-//               </div>
-//             )}
-
-//             {/* Form */}
-//             <form onSubmit={handleSubmit} className="space-y-4">
-//               {/* Email Field */}
-//               <div className="group">
-//                 <label className="block text-sm font-medium text-slate-700 mb-1.5 transition-colors duration-200 group-focus-within:text-slate-900">
-//                   Email Address
-//                 </label>
-//                 <div className="relative">
-//                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 group-focus-within:text-slate-900">
-//                     <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-slate-600" />
-//                   </div>
-//                   <input
-//                     type="email"
-//                     value={email}
-//                     onChange={(e) => setEmail(e.target.value)}
-//                     required
-//                     placeholder="Enter your email"
-//                     disabled={loading}
-//                     className="w-full pl-12 pr-4 py-3.5 border-2 border-slate-200 rounded-xl bg-white/50 focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900 focus:ring-opacity-10 transition-all duration-300 text-slate-900 placeholder-slate-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:border-slate-300"
-//                   />
-//                 </div>
-//               </div>
-
-//               {/* Password Field */}
-//               <div className="group">
-//                 <label className="block text-sm font-medium text-slate-700 mb-1.5 transition-colors duration-200 group-focus-within:text-slate-900">
-//                   Password (8 digits)
-//                 </label>
-//                 <div className="relative">
-//                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200">
-//                     <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-slate-600" />
-//                   </div>
-//                   <input
-//                     type={showPassword ? "text" : "password"}
-//                     value={password}
-//                     onChange={(e) => {
-//                       const value = e.target.value.replace(/\D/g, '').slice(0, 8);
-//                       setPassword(value);
-//                     }}
-//                     required
-//                     placeholder="Enter 8-digit password"
-//                     disabled={loading}
-//                     pattern="\d{8}"
-//                     maxLength={8}
-//                     inputMode="numeric"
-//                     className="w-full pl-12 pr-12 py-3.5 border-2 border-slate-200 rounded-xl bg-white/50 focus:bg-white focus:border-slate-900 focus:ring-4 focus:ring-slate-900 focus:ring-opacity-10 transition-all duration-300 text-slate-900 placeholder-slate-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:border-slate-300"
-//                   />
-//                   <button
-//                     type="button"
-//                     onClick={togglePasswordVisibility}
-//                     disabled={loading}
-//                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors duration-200 disabled:opacity-50"
-//                   >
-//                     {showPassword ? (
-//                       <EyeOff className="h-5 w-5" />
-//                     ) : (
-//                       <Eye className="h-5 w-5" />
-//                     )}
-//                   </button>
-//                 </div>
-//               </div>
-
-//               {/* Submit Button */}
-//               <button
-//                 type="submit"
-//                 disabled={loading}
-//                 className="w-full py-4 px-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white font-medium rounded-xl transition-all duration-300 hover:from-slate-800 hover:to-slate-700 hover:shadow-lg hover:shadow-slate-900/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-8 transform hover:scale-[1.02] active:scale-[0.98]"
-//               >
-//                 {loading ? (
-//                   <>
-//                     <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>
-//                     Signing in...
-//                   </>
-//                 ) : (
-//                   <>
-//                     <Lock className="w-5 h-5" />
-//                     Sign In
-//                   </>
-//                 )}
-//               </button>
-//             </form>
-
-//             {/* Footer Links */}
-//             <div className="mt-8">
-//               <div className="relative mb-6">
-//                 <div className="absolute inset-0 flex items-center">
-//                   <div className="w-full border-t border-slate-200"></div>
-//                 </div>
-//                 <div className="relative flex justify-center text-sm">
-//                   <span className="px-4 bg-white/80 text-slate-500 font-light">New to Sport-X?</span>
-//                 </div>
-//               </div>
-              
-//               <p className="text-center text-sm text-slate-600">
-//                 Don't have an account?{" "}
-//                 <Link 
-//                   to="/register" 
-//                   className="font-semibold text-slate-900 hover:underline hover:text-slate-700 transition-all duration-300 underline-offset-4"
-//                 >
-//                   Create Account
-//                 </Link>
-//               </p>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Security Badge */}
-//         <div className="mt-8 text-center">
-//           <div className="inline-flex items-center gap-2.5 bg-white/90 backdrop-blur-md border border-white/40 rounded-full px-8 py-4 shadow-xl shadow-slate-900/10 hover:shadow-2xl hover:shadow-slate-900/20 transition-all duration-300">
-//             <Lock className="w-4 h-4 text-slate-600" />
-//             <span className="text-slate-700 text-sm font-medium tracking-wide">Secure Login • SSL Protected</span>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -278,9 +21,14 @@ export default function Login() {
   setError("");
 
   try {
-    await login(email, password);   // don't expect any return
-  } catch {
-    setError("Login failed. Please try again.");
+    await login(email, password);
+  } catch (err) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      "Login failed. Please try again.";
+
+    setError(message);
   } finally {
     setLoading(false);
   }
@@ -340,7 +88,7 @@ export default function Login() {
 
             {/* Error Message */}
             {error && (
-              <div className="mb-3 xs:mb-4 p-2 xs:p-3 bg-gradient-to-r from-rose-50 to-red-50 border border-rose-300 text-rose-700 rounded-xl xs:rounded-2xl text-xs xs:text-sm shadow-sm">
+<div className="mb-3 xs:mb-4 p-2 xs:p-3 bg-gradient-to-r from-red-50 to-rose-50 border border-red-400 text-red-700 rounded-xl xs:rounded-2xl text-xs xs:text-sm shadow-sm">
                 <div className="flex items-center gap-1 xs:gap-2">
                   <AlertCircle className="w-3 h-3 xs:w-4 xs:h-4 flex-shrink-0" />
                   <span>{error}</span>

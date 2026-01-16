@@ -437,7 +437,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await api.get("/products");
+        const { data } = await api.get("/Products");
         setProducts(data.slice(0, 6));
       } catch {
         setProducts([]);
@@ -448,7 +448,7 @@ export default function Home() {
 
   const handleProductClick = (item) => {
     if (!user) return navigate("/login");
-    navigate(`/product/${item.id}`, { state: item });
+    navigate(`/Product/${item.id}`, { state: item });
   };
 
   const handleBuyNow = (item, e) => {

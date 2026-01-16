@@ -1,4 +1,8 @@
 
+
+
+
+
 // import { useState } from "react";
 // import { Routes, Route, useLocation } from "react-router-dom";
 // import { Toaster } from "react-hot-toast";
@@ -46,7 +50,7 @@
 //             <RoutesWrapper searchTerm={searchTerm} onSearch={setSearchTerm} />
 
 //             {/* Footer (user side only) */}
-//             <Footer />
+//             <FooterWrapper />
 //           </div>
 //         </WishlistProvider>
 //       </CartProvider>
@@ -98,6 +102,14 @@
 //   );
 // }
 
+// // Wrapper to conditionally render Footer
+// function FooterWrapper() {
+//   const location = useLocation();
+//   const isAdmin = location.pathname.startsWith("/admin");
+
+//   return !isAdmin ? <Footer /> : null;
+// }
+
 
 
 
@@ -107,7 +119,7 @@
 
 
 import { useState } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -132,11 +144,11 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Admin imports
+import AdminLayout from "./admin/AdminLayout";
 import AdminDashboard from "./admin/AdminDashboard";
 import AdminProducts from "./admin/AdminProducts";
 import AdminOrders from "./admin/AdminOrders";
 import AdminUsers from "./admin/AdminUsers";
-import AdminInterface from "./admin/AdminInterface";
 import AdminSettings from "./admin/AdminSettings";
 
 export default function App() {
@@ -168,7 +180,6 @@ function RoutesWrapper({ searchTerm, onSearch }) {
   const isAdmin = location.pathname.startsWith("/admin");
 
   return (
-    // FIX: Apply padding only if it's NOT the home page AND NOT an admin page.
     <main className={isHome || isAdmin ? "pt-0 flex-grow" : "pt-28 flex-grow"}>
       {!isAdmin && <Navbar onSearch={onSearch} />}
       <Routes>
@@ -191,8 +202,11 @@ function RoutesWrapper({ searchTerm, onSearch }) {
         </Route>
 
         {/* Admin-Only Protected Routes (users blocked) */}
-        <Route element={<ProtectedRoute adminOnly={true} />}>
-          <Route path="/admin/*" element={<AdminInterface />}>
+        {/* Fix: AdminLayout should wrap the ProtectedRoute, not the other way around */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          {/* Nested routes inside AdminLayout with ProtectedRoute */}
+          <Route element={<ProtectedRoute adminOnly={true} />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="orders" element={<AdminOrders />} />

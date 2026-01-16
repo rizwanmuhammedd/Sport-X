@@ -57,97 +57,72 @@ export default function Checkout() {
   }, 0);
 
   // Function to update stock after successful order
-  const updateProductStock = async (products) => {
-    try {
-      for (const product of products) {
-        const newStock = product.stock - product.quantity;
-        await api.patch(`/products/${product.id}`, {
-          stock: newStock
+  // const updateProductStock = async (products) => {
+  //   try {
+  //     for (const product of products) {
+  //       const newStock = product.stock - product.quantity;
+  //       await api.patch(`/products/${product.id}`, {
+  //         stock: newStock
+  //       });
+  //       console.log(`✅ Stock updated: ${product.name} (${product.stock} → ${newStock})`);
+  //     }
+  //     return true;
+  //   } catch (error) {
+  //     console.error("❌ Stock update failed:", error);
+  //     return false;
+  //   }
+  // };
+const handlePayment = async (e) => {
+  e.preventDefault();
+  if (!user) return alert("Login first");
+
+  try {
+    // 1️⃣ CREATE ORDER
+    const orderRes = source === "cart"
+      ? await api.post("/order/add", { shippingAddress: address })
+      :await api.post("/order/direct", {
+  shippingAddress: address,
+  items: products.map(p => ({
+    productId: p.id,
+    quantity: p.quantity || 1
+  }))
+});
+
+
+    const orderId = orderRes.data.data.orderId;
+
+    // 2️⃣ CREATE RAZORPAY ORDER
+    const rp = await api.post(`/payment/create/${orderId}`);
+
+    const options = {
+      key: rp.data.key,
+      amount: rp.data.amount * 100,
+      currency: "INR",
+      order_id: rp.data.razorpayOrderId,
+      name: "Sportex",
+      handler: async (response) => {
+
+        // 3️⃣ VERIFY
+        await api.post("/payment/verify", {
+          RazorpayOrderId: response.razorpay_order_id,
+          RazorpayPaymentId: response.razorpay_payment_id,
+          RazorpaySignature: response.razorpay_signature,
+          OrderId: orderId
         });
-        console.log(`✅ Stock updated: ${product.name} (${product.stock} → ${newStock})`);
-      }
-      return true;
-    } catch (error) {
-      console.error("❌ Stock update failed:", error);
-      return false;
-    }
-  };
 
-  const handlePayment = async (e) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    setErrorMessage(null);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const orderItems = products.map((item) => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-        quantity: item.quantity,
-      }));
-
-      const newOrder = {
-        userId: user.id,
-        items: orderItems,
-        total: total,
-        status: "Processing",
-        paymentMethod,
-        date: new Date().toISOString().slice(0, 10),
-      };
-
-      const newShippingAddress = {
-        address,
-        city,
-        postalCode,
-      };
-
-      const orderRes = await api.post("/orders", newOrder);
-
-      const userRes = await api.get(`/users/${user.id}`);
-      const userData = userRes.data;
-
-      const updatedOrders = [...(userData.orders || []), orderRes.data];
-      const updatedShippingAddresses = [
-        ...(userData.shippingAddress || []),
-        newShippingAddress,
-      ];
-
-      await api.patch(`/users/${user.id}`, {
-        orders: updatedOrders,
-        shippingAddress: updatedShippingAddresses,
-      });
-
-      console.log("Updating product stock...");
-      const stockUpdated = await updateProductStock(products);
-      
-      if (!stockUpdated) {
-        console.warn("Stock update failed, but order was placed successfully");
-      }
-
-      if (source === "cart") {
         clearCart();
-      } else {
-        const removePromises = products.map(async (item) => {
-          const existsInCart = cart.find(cartItem => cartItem.id === item.id);
-          if (existsInCart) {
-            await removeFromCart(item.id);
-          }
-        });
-        
-        await Promise.all(removePromises);
+        navigate(`/payment-success/${orderId}`);
       }
+    };
 
-      navigate(`/payment-success/${orderRes.data.id}`);
-    } catch (error) {
-      console.error("Payment failed:", error);
-      setErrorMessage("Payment failed. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+    new window.Razorpay(options).open();
+
+  } catch (err) {
+    alert("Payment failed");
+    console.error(err);
+  }
+};
+
 
   if (!products.length) {
     return (

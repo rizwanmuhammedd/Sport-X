@@ -17,7 +17,7 @@
 //     if (!user) return setCart([]);
 
 //     api.get("/cart")
-//       .then(res => setCart(res.data.data || []))
+//       .then(res => setCart(res.data.data || []))     // 🔥 FIXED
 //       .catch(() => setCart([]));
 //   }, [user]);
 
@@ -31,7 +31,7 @@
 //         quantity
 //       });
 
-//       setCart(res.data.data);
+//       setCart(res.data.data || []);                  // 🔥 FIXED
 //       toast.success("Added to cart 🛒");
 //     } catch (err) {
 //       toast.error(err.response?.data?.message || "Failed to add to cart");
@@ -42,7 +42,7 @@
 //   const removeFromCart = async (cartItemId) => {
 //     try {
 //       const res = await api.delete(`/cart/${cartItemId}`);
-//       setCart(res.data.data);
+//       setCart(res.data.data || []);                  // 🔥 FIXED
 //       toast("Removed from cart");
 //     } catch {
 //       toast.error("Failed to remove");
@@ -61,8 +61,7 @@
 //   };
 
 //   const getTotal = () =>
-//   cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+//     cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
 //   return (
 //     <CartContext.Provider value={{
@@ -79,6 +78,10 @@
 
 
 
+
+
+
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 import toast from "react-hot-toast";
@@ -91,12 +94,21 @@ export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [cart, setCart] = useState([]);
 
-  // LOAD CART
+  // LOAD CART  — UPDATED (Admin-safe)
   useEffect(() => {
-    if (!user) return setCart([]);
+    if (!user) {
+      setCart([]);
+      return;
+    }
+
+    // 🚫 Skip cart API for Admin
+    if (user.role === "Admin") {
+      setCart([]);
+      return;
+    }
 
     api.get("/cart")
-      .then(res => setCart(res.data.data || []))     // 🔥 FIXED
+      .then(res => setCart(res.data.data || []))     
       .catch(() => setCart([]));
   }, [user]);
 
@@ -110,7 +122,7 @@ export const CartProvider = ({ children }) => {
         quantity
       });
 
-      setCart(res.data.data || []);                  // 🔥 FIXED
+      setCart(res.data.data || []);                  
       toast.success("Added to cart 🛒");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add to cart");
@@ -121,7 +133,7 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (cartItemId) => {
     try {
       const res = await api.delete(`/cart/${cartItemId}`);
-      setCart(res.data.data || []);                  // 🔥 FIXED
+      setCart(res.data.data || []);                  
       toast("Removed from cart");
     } catch {
       toast.error("Failed to remove");

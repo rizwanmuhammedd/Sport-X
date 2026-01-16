@@ -13,6 +13,9 @@ export default function MoreProducts({ searchTerm }) {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [displayedProducts, setDisplayedProducts] = useState([]);
   const [searchParams] = useSearchParams();
+  const [searchBase, setSearchBase] = useState([]);
+
+
   const navigate = useNavigate();
 
   const { user } = useAuth();
@@ -70,46 +73,27 @@ const { wishlist = [], toggleWishlist } = useWishlist();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
+ useEffect(() => {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-     const res = await api.get("/Products/GetAll");
-
-
+const res = await api.get("/Products/User/GetAll");
 
       const productsWithRating = res.data.data.map(product => ({
         id: product.id,
         name: product.name,
         price: product.price,
         category: product.category,
-        image: product.imageUrl?.startsWith("http")
-          ? product.imageUrl
-          : "/placeholder.png",
+        image: product.imageUrl?.startsWith("http") ? product.imageUrl : "/placeholder.png",
         stock: product.stockQuantity,
         rating: generateRandomRating(),
         views: Math.floor(Math.random() * 1000) + 100,
         trending: Math.random() > 0.7
       }));
 
-      setProducts(productsWithRating);
-
-      const prices = productsWithRating.map(p => p.price);
-      const ratings = productsWithRating.map(p => p.rating);
-
-      setPriceRange({
-        min: Math.floor(Math.min(...prices)),
-        max: Math.ceil(Math.max(...prices))
-      });
-
-      setStats({
-        totalProducts: productsWithRating.length,
-        avgPrice: (prices.reduce((a, b) => a + b, 0) / prices.length).toFixed(2),
-        avgRating: (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
-      });
-
-    } catch (err) {
-      console.error("Fetch failed", err);
+setProducts(productsWithRating);
+setSearchBase(productsWithRating);
+    } catch {
       setProducts([]);
     } finally {
       setIsLoading(false);
@@ -119,39 +103,41 @@ const { wishlist = [], toggleWishlist } = useWishlist();
   fetchProducts();
 }, []);
 
+useEffect(() => {
+  if (!searchTerm || !searchTerm.trim()) {
+    setSearchBase(products);
+  } else {
+    setSearchBase(
+      products.filter(p =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }
+}, [searchTerm, products]);
+
+
 
   // Apply filters & search
   useEffect(() => {
-    let filtered = [...products];
+  let data = [...searchBase];
 
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter(
-        (item) => item.category?.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    }
+  if (selectedCategory !== "All")
+    data = data.filter(p => p.category === selectedCategory);
 
-    filtered = filtered.filter((item) => {
-      const price = Number(item.price) || 0;
-      return (!minPrice || price >= Number(minPrice)) && (!maxPrice || price <= Number(maxPrice));
-    });
+  if (minPrice) data = data.filter(p => p.price >= Number(minPrice));
+  if (maxPrice) data = data.filter(p => p.price <= Number(maxPrice));
+  if (minRating) data = data.filter(p => p.rating >= minRating);
 
-    filtered = filtered.filter((item) => (item.rating || 4) >= minRating);
+  if (sortOption === "price-low") data.sort((a,b)=>a.price-b.price);
+  if (sortOption === "price-high") data.sort((a,b)=>b.price-a.price);
+  if (sortOption === "newest") data.sort((a,b)=>b.id-a.id);
+  if (sortOption === "popular") data.sort((a,b)=>b.rating-a.rating);
+  if (sortOption === "trending") data.sort((a,b)=>b.views-a.views);
 
-    if (searchTerm) {
-      filtered = filtered.filter((item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  setFilteredProducts(data);
+  setCurrentPage(1);
+}, [searchBase, selectedCategory, minPrice, maxPrice, minRating, sortOption]);
 
-    if (sortOption === "price-low") filtered.sort((a, b) => a.price - b.price);
-    if (sortOption === "price-high") filtered.sort((a, b) => b.price - a.price);
-    if (sortOption === "newest") filtered.sort((a, b) => b.id - a.id);
-    if (sortOption === "popular") filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    if (sortOption === "trending") filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
-
-    setFilteredProducts(filtered);
-    setCurrentPage(1);
-  }, [products, selectedCategory, minPrice, maxPrice, minRating, searchTerm, sortOption]);
 
   // Update displayed products based on current page
   useEffect(() => {
@@ -222,6 +208,8 @@ const { wishlist = [], toggleWishlist } = useWishlist();
     setQuickViewProduct(item);
   };
 
+
+
   const clearFilters = () => {
     setSelectedCategory("All");
     setMinPrice("");
@@ -241,7 +229,7 @@ const { wishlist = [], toggleWishlist } = useWishlist();
     setImageLoadStates(prev => ({ ...prev, [id]: true }));
   };
 
-  const categories = ["All", ...new Set(products.map((p) => p.category))];
+const categories = ["All", ...new Set(filteredProducts.map(p => p.category))];
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
