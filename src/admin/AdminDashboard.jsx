@@ -1,751 +1,1033 @@
+// import { useEffect, useState } from "react";
+// import api from "../Api/Axios_Instance";
+// import { Users, ShoppingCart, Package, AlertTriangle } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
+
+// export default function AdminDashboard() {
+//   const navigate = useNavigate();
+
+//   const [stats, setStats] = useState({
+//     totalUsers: 0,
+//     blockedUsers: 0,
+//     totalOrders: 0,
+//     pendingOrders: 0,
+//     completedOrders: 0,
+//     totalProducts: 0,
+//     lowStock: 0,
+//   });
+
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+
+//   useEffect(() => {
+//     fetchDashboardStats();
+//   }, []);
+
+//   const fetchDashboardStats = async () => {
+//     try {
+//       setLoading(true);
+//       setError("");
+
+//       const [
+//         usersRes,
+//         blockedUsersRes,
+//         ordersRes,
+//         productsRes,
+//         lowStockRes
+//       ] = await Promise.all([
+//         api.get("/admin/users"),
+//         api.get("/admin/users/blocked"),
+//         api.get("/order/admin"),
+//         api.get("/Products/GetAll"),
+//         api.get("/Products/low-stock"),
+//       ]);
+
+//       const users = usersRes.data.data || [];
+//       const blockedUsers = blockedUsersRes.data.data || [];
+//       const orders = ordersRes.data.data || [];
+//       const products = productsRes.data.data || [];
+//       const lowStock = lowStockRes.data.data || [];
+
+//       setStats({
+//         totalUsers: users.length,
+//         blockedUsers: blockedUsers.length,
+//         totalOrders: orders.length,
+//         pendingOrders: orders.filter(o => o.status === "Pending").length,
+//         completedOrders: orders.filter(o => o.status === "Completed").length,
+//         totalProducts: products.length,
+//         lowStock: lowStock.length,
+//       });
+
+//     } catch (err) {
+//       console.error(err);
+//       setError("Failed to load admin dashboard data");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="flex justify-center items-center h-screen text-white">
+//         Loading Admin Dashboard...
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="p-6 text-white space-y-6">
+
+//       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+
+//       {error && (
+//         <div className="bg-red-500/20 border border-red-500 p-3 rounded">
+//           {error}
+//         </div>
+//       )}
+
+//       {/* STATS GRID */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+//         <StatCard
+//           title="Total Users"
+//           value={stats.totalUsers}
+//           icon={<Users />}
+//           onClick={() => navigate("/admin/users")}
+//         />
+
+//         <StatCard
+//           title="Blocked Users"
+//           value={stats.blockedUsers}
+//           icon={<Users />}
+//           onClick={() => navigate("/admin/users")}
+//         />
+
+//         <StatCard
+//           title="Total Orders"
+//           value={stats.totalOrders}
+//           icon={<ShoppingCart />}
+//           onClick={() => navigate("/admin/orders")}
+//         />
+
+//         <StatCard
+//           title="Products"
+//           value={stats.totalProducts}
+//           icon={<Package />}
+//           onClick={() => navigate("/admin/products")}
+//         />
+//       </div>
+
+//       {/* SECOND ROW */}
+//       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+//         <InfoCard
+//           title="Pending Orders"
+//           value={stats.pendingOrders}
+//         />
+
+//         <InfoCard
+//           title="Completed Orders"
+//           value={stats.completedOrders}
+//         />
+
+//         <InfoCard
+//           title="Low Stock Products"
+//           value={stats.lowStock}
+//           warning
+//           onClick={() => navigate("/admin/products")}
+//         />
+//       </div>
+
+//     </div>
+//   );
+// }
+
+// /* ---------------- COMPONENTS ---------------- */
+
+// function StatCard({ title, value, icon, onClick }) {
+//   return (
+//     <div
+//       onClick={onClick}
+//       className="cursor-pointer bg-gray-800 hover:bg-gray-700 transition p-5 rounded-xl flex items-center justify-between"
+//     >
+//       <div>
+//         <p className="text-gray-400 text-sm">{title}</p>
+//         <h2 className="text-2xl font-bold">{value}</h2>
+//       </div>
+//       <div className="text-green-400">{icon}</div>
+//     </div>
+//   );
+// }
+
+// function InfoCard({ title, value, warning, onClick }) {
+//   return (
+//     <div
+//       onClick={onClick}
+//       className={`p-5 rounded-xl ${
+//         warning
+//           ? "bg-red-600/20 border border-red-500 cursor-pointer"
+//           : "bg-gray-800"
+//       }`}
+//     >
+//       <p className="text-sm text-gray-300">{title}</p>
+//       <h2 className="text-2xl font-bold flex items-center gap-2">
+//         {warning && <AlertTriangle className="text-red-400" />}
+//         {value}
+//       </h2>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+import { useEffect, useState } from "react";
 import api from "../Api/Axios_Instance";
-import React, { useState, useEffect } from "react";
+import { 
+  Users, ShoppingCart, Package, AlertTriangle, TrendingUp, TrendingDown,
+  CreditCard, DollarSign, Clock, CheckCircle, XCircle, RefreshCw, Eye,
+  BarChart3, PieChart, LineChart, Download, Filter, Calendar, MoreVertical,
+  UserCheck, UserX, Truck, Star, MessageSquare, Bell, Loader2, ShoppingBag,
+  ArrowUpRight, ArrowDownRight, Shield, Database, Home, Grid, List,
+  Plus, Minus, ChevronRight, ChevronLeft, Search, Settings
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const AdminDashboard = () => {
-  const [data, setData] = useState({ products: [], analytics: {} });
+export default function AdminDashboard() {
+  const navigate = useNavigate();
+
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    blockedUsers: 0,
+    totalOrders: 0,
+    pendingOrders: 0,
+    completedOrders: 0,
+    cancelledOrders: 0,
+    totalProducts: 0,
+    lowStock: 0,
+    outOfStock: 0,
+    totalRevenue: 0,
+    averageOrderValue: 0,
+    conversionRate: 0,
+  });
+
+  const [recentData, setRecentData] = useState({
+    recentOrders: [],
+    recentUsers: [],
+    topProducts: [],
+    lowStockItems: [],
+    recentActivity: []
+  });
+
+  const [timeFilter, setTimeFilter] = useState("today");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
   const [refreshing, setRefreshing] = useState(false);
-  const [usingMockData, setUsingMockData] = useState(false);
-
-  // Generate comprehensive mock data
-  const generateMockData = () => {
-    const categories = ['Football Boots', 'Jerseys', 'Training Gear', 'Balls', 'Goalkeeper Gear', 'Accessories'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
-    return {
-      products: Array.from({ length: 150 }, (_, i) => ({
-        id: i + 1,
-        name: `Product ${i + 1}`,
-        price: Math.floor(Math.random() * 300) + 20,
-        category: categories[Math.floor(Math.random() * categories.length)],
-        stock: Math.floor(Math.random() * 200),
-        sales: Math.floor(Math.random() * 500),
-        rating: (Math.random() * 2 + 3).toFixed(1)
-      })),
-      analytics: {
-        totalRevenue: 487650,
-        totalOrders: 1247,
-        activeUsers: 892,
-        conversionRate: 4.2,
-        monthlyRevenue: months.map(month => ({
-          name: month,
-          revenue: Math.floor(Math.random() * 50000) + 30000,
-          orders: Math.floor(Math.random() * 150) + 80,
-          users: Math.floor(Math.random() * 100) + 60
-        })),
-        categoryPerformance: categories.map(category => ({
-          name: category,
-          sales: Math.floor(Math.random() * 15000) + 5000,
-          profit: Math.floor(Math.random() * 8000) + 2000,
-          growth: Math.floor(Math.random() * 30) + 5
-        })),
-        topProducts: Array.from({ length: 10 }, (_, i) => ({
-          name: `Top Product ${i + 1}`,
-          sales: Math.floor(Math.random() * 1000) + 500,
-          revenue: Math.floor(Math.random() * 50000) + 20000
-        }))
-      }
-    };
-  };
-
-  // Process orders data for analytics
-  const processOrdersForAnalytics = (orders, users, products) => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
-    const totalRevenue = orders.reduce((sum, order) => sum + (parseFloat(order.total) || 0), 0);
-    const activeUsers = users.filter(user => user.isAuthenticated).length;
-    const conversionRate = users.length > 0 ? ((orders.length / users.length) * 100).toFixed(1) : 0;
-    
-    const monthlyRevenue = months.map(month => {
-      const monthOrders = orders.filter(order => {
-        if (order.createdAt || order.date) {
-          const orderDate = new Date(order.createdAt || order.date);
-          return orderDate.getMonth() === months.indexOf(month);
-        }
-        return false;
-      });
-      
-      const monthRevenue = monthOrders.reduce((sum, order) => sum + (parseFloat(order.total) || 0), 0);
-      return {
-        name: month,
-        revenue: monthRevenue,
-        orders: monthOrders.length,
-        users: Math.floor(monthOrders.length * 1.5)
-      };
-    });
-    
-    const categoryMap = {};
-    products.forEach(product => {
-      const category = product.category || 'Other';
-      if (!categoryMap[category]) {
-        categoryMap[category] = { name: category, sales: 0, profit: 0, growth: 0 };
-      }
-      categoryMap[category].sales += parseFloat(product.price || 0) * (product.stock || 1);
-      categoryMap[category].profit += parseFloat(product.price || 0) * 0.3;
-      categoryMap[category].growth = Math.floor(Math.random() * 30) + 5;
-    });
-    
-    const categoryPerformance = Object.values(categoryMap);
-    
-    const topProducts = products
-      .sort((a, b) => (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0))
-      .slice(0, 10)
-      .map(product => ({
-        name: product.name || `Product ${product.id}`,
-        sales: Math.floor(Math.random() * 1000) + 100,
-        revenue: parseFloat(product.price || 0) * Math.floor(Math.random() * 50) + 10
-      }));
-    
-    return {
-      totalRevenue,
-      totalOrders: orders.length,
-      activeUsers,
-      conversionRate: parseFloat(conversionRate),
-      monthlyRevenue,
-      categoryPerformance,
-      topProducts
-    };
-  };
-
- const fetchDashboardData = async () => {
-  try {
-    setError(null);
-    setRefreshing(true);
-
-    const [productsRes, usersRes, ordersRes] = await Promise.all([
-      api.get("/Products/GetAll"),
-      api.get("/users"),
-      api.get("/orders") // if you have this endpoint, otherwise this may fail
-    ]);
-
-    const products = productsRes.data.data || productsRes.data;
-    const users = usersRes.data.data || usersRes.data;
-    const orders = ordersRes.data?.data || ordersRes.data || [];
-
-    const analytics = processOrdersForAnalytics(orders, users, products);
-
-    setData({
-      products,
-      users,
-      orders,
-      analytics
-    });
-
-    setUsingMockData(false);
-  } catch (error) {
-    console.log("Backend not available, using mock data:", error);
-    const mockData = generateMockData();
-    setData(mockData);
-    setUsingMockData(true);
-    setError("Backend not connected. Using demo data.");
-  } finally {
-    setLoading(false);
-    setRefreshing(false);
-  }
-};
-
+  const [error, setError] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    fetchDashboardStats();
+  }, [timeFilter]);
 
-  const refreshData = async () => {
-    await fetchDashboardData();
-  };
+  const fetchDashboardStats = async () => {
+    try {
+      setRefreshing(true);
+      setError("");
 
-  const StatCard = ({ title, value, change, icon, color, onClick }) => (
-    <div 
-      className={`bg-gray-800 border border-gray-700 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden backdrop-blur-sm`}
-      onClick={onClick}
-    >
-      <div className="p-4 sm:p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-wide">{title}</p>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mt-1 sm:mt-2">{value}</p>
-            {change && (
-              <div className="flex items-center mt-1 sm:mt-2">
-                <span className={`text-xs sm:text-sm font-semibold ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {change > 0 ? '+' : ''}{change}%
-                </span>
-                <span className="text-gray-500 text-xs sm:text-sm ml-1">vs last month</span>
-              </div>
-            )}
-          </div>
-          <div className={`p-2 sm:p-3 lg:p-4 rounded-full bg-gradient-to-r ${color} shadow-lg`}>
-            {React.cloneElement(icon, { className: "w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" })}
-          </div>
-        </div>
-      </div>
-      <div className={`h-1 sm:h-2 bg-gradient-to-r ${color}`}></div>
-    </div>
-  );
+      const [
+        usersRes,
+        blockedUsersRes,
+        ordersRes,
+        productsRes,
+        lowStockRes
+      ] = await Promise.all([
+        api.get("/admin/users"),
+        api.get("/admin/users/blocked"),
+        api.get("/order/admin"),
+        api.get("/Products/GetAll"),
+        api.get("/Products/low-stock"),
+      ]);
 
-  const MetricCard = ({ title, value, subtitle, progress, color }) => (
-    <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <h3 className="text-sm sm:text-lg font-semibold text-gray-200">{title}</h3>
-        <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-${color}-500`}></div>
-      </div>
-      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2">{value}</div>
-      <div className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4">{subtitle}</div>
-      <div className="w-full bg-gray-700 rounded-full h-1.5 sm:h-2">
-        <div 
-          className={`h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-${color}-400 to-${color}-600 transition-all duration-1000`}
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
-      <div className="text-right text-xs sm:text-sm text-gray-500 mt-1">{progress}%</div>
-    </div>
-  );
+      // Safely extract data with fallbacks
+      const users = Array.isArray(usersRes.data?.data) 
+        ? usersRes.data.data 
+        : Array.isArray(usersRes.data) 
+        ? usersRes.data 
+        : [];
 
-  const BarChart = ({ data, title, color = "green" }) => {
-    const maxValue = Math.max(...data.map(item => item.value || item.sales || 0));
-    const colors = {
-      green: 'from-green-500 to-green-600',
-      blue: 'from-blue-500 to-blue-600',
-      purple: 'from-purple-500 to-purple-600',
-      orange: 'from-orange-500 to-orange-600'
-    };
-    
-    return (
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center">
-          <div className={`w-2 h-2 sm:w-3 sm:h-3 bg-${color}-500 rounded-full mr-2 sm:mr-3`}></div>
-          {title}
-        </h3>
-        <div className="space-y-2 sm:space-y-4">
-          {data.map((item, index) => (
-            <div key={index} className="group">
-              <div className="flex items-center justify-between mb-1 sm:mb-2">
-                <span className="text-xs sm:text-sm font-medium text-gray-300 truncate max-w-[80px] sm:max-w-none">{item.name || item.label}</span>
-                <span className="text-xs sm:text-sm font-bold text-green-400 whitespace-nowrap">{item.value || item.sales}</span>
-              </div>
-              <div className="relative">
-                <div className="w-full bg-gray-700 rounded-full h-2 sm:h-3">
-                  <div
-                    className={`h-2 sm:h-3 rounded-full bg-gradient-to-r ${colors[color]} transition-all duration-1000 ease-out group-hover:scale-105`}
-                    style={{ width: `${((item.value || item.sales) / maxValue) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
+      const blockedUsers = Array.isArray(blockedUsersRes.data?.data) 
+        ? blockedUsersRes.data.data 
+        : Array.isArray(blockedUsersRes.data) 
+        ? blockedUsersRes.data 
+        : [];
 
-  const ProfitLineChart = ({ data, title }) => {
-    const maxValue = Math.max(...data.map(item => item.revenue || 0));
-    const points = data.map((item, index) => {
-      const x = (index / (data.length - 1)) * 100;
-      const y = 100 - ((item.revenue || 0) / maxValue) * 70 - 10;
-      return { x, y, value: item.revenue || 0, name: item.name };
-    });
+      const orders = Array.isArray(ordersRes.data?.data) 
+        ? ordersRes.data.data 
+        : Array.isArray(ordersRes.data) 
+        ? ordersRes.data 
+        : [];
 
-    const pathData = points.map((p, i) => 
-      `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`
-    ).join(' ');
+      const products = Array.isArray(productsRes.data?.data) 
+        ? productsRes.data.data 
+        : Array.isArray(productsRes.data) 
+        ? productsRes.data 
+        : [];
 
-    const gradientPath = `${pathData} L 100 90 L 0 90 Z`;
+      const lowStock = Array.isArray(lowStockRes.data?.data) 
+        ? lowStockRes.data.data 
+        : Array.isArray(lowStockRes.data) 
+        ? lowStockRes.data 
+        : [];
 
-    return (
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center">
-          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full mr-2 sm:mr-3 animate-pulse"></div>
-          {title}
-        </h3>
-        <div className="relative h-48 sm:h-56 lg:h-64">
-          <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="profitGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#10B981" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.05" />
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            
-            <path
-              d={gradientPath}
-              fill="url(#profitGradient)"
-              className="animate-[fadeIn_1s_ease-in]"
-            />
-            
-            <path
-              d={pathData}
-              fill="none"
-              stroke="#10B981"
-              strokeWidth="0.5"
-              filter="url(#glow)"
-              strokeDasharray="200"
-              strokeDashoffset="200"
-              style={{
-                animation: 'drawLine 2s ease-in-out forwards'
-              }}
-            />
-            
-            {points.map((point, index) => (
-              <g key={index}>
-                <circle
-                  cx={point.x}
-                  cy={point.y}
-                  r="1"
-                  fill="#10B981"
-                  className="animate-pulse"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                />
-                <circle
-                  cx={point.x}
-                  cy={point.y}
-                  r="0.5"
-                  fill="#fff"
-                />
-              </g>
-            ))}
-          </svg>
+      // Calculate additional statistics
+      const totalRevenue = orders.reduce((sum, order) => {
+        const amount = order?.totalAmount || order?.total || order?.amount || 0;
+        return sum + (parseFloat(amount) || 0);
+      }, 0);
+      
+      const averageOrderValue = orders.length > 0 
+        ? totalRevenue / orders.length 
+        : 0;
+      
+      const completedOrdersCount = orders.filter(o => {
+        const status = (o?.status || "").toLowerCase();
+        return status === "completed" || status === "delivered" || status === "success";
+      }).length;
+      
+      const conversionRate = users.length > 0 
+        ? ((completedOrdersCount / users.length) * 100).toFixed(1)
+        : 0;
+      
+      const cancelledOrders = orders.filter(o => {
+        const status = (o?.status || "").toLowerCase();
+        return status === "cancelled" || status === "canceled" || status === "failed";
+      }).length;
+      
+      const outOfStock = products.filter(p => {
+        const stock = parseInt(p?.stock || p?.quantity || 0);
+        return stock <= 0;
+      }).length;
+
+      // Get recent orders (last 5)
+      const recentOrders = orders
+        .filter(order => order?.createdAt || order?.orderDate || order?.date)
+        .sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.orderDate || a.date || 0);
+          const dateB = new Date(b.createdAt || b.orderDate || b.date || 0);
+          return dateB - dateA;
+        })
+        .slice(0, 5)
+        .map(order => ({
+          id: order.id || order._id || order.orderId || `order-${Math.random().toString(36).substr(2, 9)}`,
+          orderNumber: order.orderNumber || order.orderId || order.id || "N/A",
+          customerName: order.customer?.name || order.user?.name || order.customerName || "Customer",
+          amount: order.totalAmount || order.total || order.amount || 0,
+          status: order.status || "pending",
+          createdAt: order.createdAt || order.orderDate || order.date || new Date().toISOString()
+        }));
+      
+      // Get recent users (last 5)
+      const recentUsers = users
+        .filter(user => user?.createdAt || user?.registeredDate || user?.dateJoined)
+        .sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.registeredDate || a.dateJoined || 0);
+          const dateB = new Date(b.createdAt || b.registeredDate || b.dateJoined || 0);
+          return dateB - dateA;
+        })
+        .slice(0, 5)
+        .map(user => ({
+          id: user.id || user._id || user.userId || `user-${Math.random().toString(36).substr(2, 9)}`,
+          name: user.name || user.username || user.fullName || "User",
+          email: user.email || "No email",
+          createdAt: user.createdAt || user.registeredDate || user.dateJoined || new Date().toISOString(),
+          isActive: !user.isBlocked
+        }));
+
+      // Get top products (by price or sales)
+      const topProducts = products
+        .sort((a, b) => {
+          const priceA = parseFloat(a.price || a.priceAmount || 0);
+          const salesA = parseInt(a.sales || a.soldCount || 0);
+          const revenueA = priceA * salesA;
           
-          <div className="absolute bottom-0 left-0 right-0 flex justify-between px-1 sm:px-2 text-xs">
-            {data.map((item, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <span className="text-gray-400 text-xs">{item.name}</span>
-                <span className="text-green-400 font-semibold text-xs">
-                  ${((item.revenue || 0) / 1000).toFixed(0)}k
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <style jsx>{`
-          @keyframes drawLine {
-            to {
-              stroke-dashoffset: 0;
-            }
-          }
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 1;
-            }
-          }
-        `}</style>
-      </div>
-    );
+          const priceB = parseFloat(b.price || b.priceAmount || 0);
+          const salesB = parseInt(b.sales || b.soldCount || 0);
+          const revenueB = priceB * salesB;
+          
+          return revenueB - revenueA;
+        })
+        .slice(0, 5)
+        .map(product => ({
+          id: product.id || product._id || product.productId || `product-${Math.random().toString(36).substr(2, 9)}`,
+          name: product.name || product.productName || "Product",
+          price: parseFloat(product.price || product.priceAmount || 0),
+          category: product.category || product.categoryName || "Uncategorized",
+          sales: parseInt(product.sales || product.soldCount || 0),
+          stock: parseInt(product.stock || product.quantity || 0)
+        }));
+
+      // Get low stock items
+      const lowStockItems = products
+        .filter(p => {
+          const stock = parseInt(p.stock || p.quantity || 0);
+          return stock > 0 && stock < 10;
+        })
+        .slice(0, 5);
+
+      // Generate recent activity
+      const recentActivity = [
+        ...recentOrders.map(order => ({
+          id: order.id,
+          type: 'order',
+          title: 'New Order',
+          description: `Order #${order.orderNumber} received`,
+          time: new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: order.status
+        })),
+        ...recentUsers.map(user => ({
+          id: user.id,
+          type: 'user',
+          title: 'New User',
+          description: `${user.name} registered`,
+          time: new Date(user.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: user.isActive ? 'active' : 'inactive'
+        }))
+      ];
+
+      setStats({
+        totalUsers: users.length,
+        blockedUsers: blockedUsers.length,
+        totalOrders: orders.length,
+        pendingOrders: orders.filter(o => (o?.status || "").toLowerCase() === "pending").length,
+        completedOrders: completedOrdersCount,
+        cancelledOrders,
+        totalProducts: products.length,
+        lowStock: lowStock.length,
+        outOfStock,
+        totalRevenue,
+        averageOrderValue,
+        conversionRate: parseFloat(conversionRate)
+      });
+
+      setRecentData({
+        recentOrders,
+        recentUsers,
+        topProducts,
+        lowStockItems,
+        recentActivity
+      });
+
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+      setError("Failed to load dashboard data. Please check your connection and try again.");
+      
+      // Fallback to mock data
+      const mockData = getMockData();
+      setStats(mockData.stats);
+      setRecentData(mockData.recentData);
+      
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   };
 
-  const PieChart = ({ data, title }) => {
-    const total = data.reduce((sum, item) => sum + (item.sales || 0), 0);
-    const colors = ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4'];
+  // Mock data for fallback
+  const getMockData = () => ({
+    stats: {
+      totalUsers: 892,
+      blockedUsers: 23,
+      totalOrders: 1247,
+      pendingOrders: 45,
+      completedOrders: 985,
+      cancelledOrders: 32,
+      totalProducts: 156,
+      lowStock: 12,
+      outOfStock: 8,
+      totalRevenue: 487650,
+      averageOrderValue: 391,
+      conversionRate: 4.2
+    },
+    recentData: {
+      recentOrders: [
+        { id: 'ORD-1001', orderNumber: 'ORD-1001', customerName: 'John Doe', amount: 299.99, status: 'completed', createdAt: new Date().toISOString() },
+        { id: 'ORD-1002', orderNumber: 'ORD-1002', customerName: 'Jane Smith', amount: 189.50, status: 'processing', createdAt: new Date(Date.now() - 86400000).toISOString() },
+        { id: 'ORD-1003', orderNumber: 'ORD-1003', customerName: 'Bob Wilson', amount: 425.75, status: 'pending', createdAt: new Date(Date.now() - 172800000).toISOString() },
+        { id: 'ORD-1004', orderNumber: 'ORD-1004', customerName: 'Alice Johnson', amount: 156.99, status: 'delivered', createdAt: new Date(Date.now() - 259200000).toISOString() },
+        { id: 'ORD-1005', orderNumber: 'ORD-1005', customerName: 'Charlie Brown', amount: 289.50, status: 'completed', createdAt: new Date(Date.now() - 345600000).toISOString() }
+      ],
+      recentUsers: [
+        { id: 'USR-1001', name: 'Alice Johnson', email: 'alice@example.com', createdAt: new Date().toISOString(), isActive: true },
+        { id: 'USR-1002', name: 'Charlie Brown', email: 'charlie@example.com', createdAt: new Date(Date.now() - 86400000).toISOString(), isActive: true },
+        { id: 'USR-1003', name: 'David Wilson', email: 'david@example.com', createdAt: new Date(Date.now() - 172800000).toISOString(), isActive: true },
+        { id: 'USR-1004', name: 'Eva Davis', email: 'eva@example.com', createdAt: new Date(Date.now() - 259200000).toISOString(), isActive: true },
+        { id: 'USR-1005', name: 'Frank Miller', email: 'frank@example.com', createdAt: new Date(Date.now() - 345600000).toISOString(), isActive: true }
+      ],
+      topProducts: [
+        { id: 'PROD-1001', name: 'Nike Mercurial Superfly', price: 299.99, category: 'Football Boots', sales: 145, stock: 15 },
+        { id: 'PROD-1002', name: 'Adidas Predator League', price: 249.99, category: 'Football Boots', sales: 98, stock: 8 },
+        { id: 'PROD-1003', name: 'Manchester United Home Jersey', price: 89.99, category: 'Jerseys', sales: 230, stock: 45 },
+        { id: 'PROD-1004', name: 'Training Ball Pro', price: 49.99, category: 'Balls', sales: 189, stock: 32 },
+        { id: 'PROD-1005', name: 'Goalkeeper Gloves Elite', price: 79.99, category: 'Goalkeeper Gear', sales: 67, stock: 5 }
+      ],
+      lowStockItems: [],
+      recentActivity: []
+    }
+  });
+
+  const handleExportData = () => {
+    const dataStr = JSON.stringify({ stats, recentData }, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `dashboard-data-${new Date().toISOString().split('T')[0]}.json`;
     
-    return (
-      <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center">
-          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full mr-2 sm:mr-3"></div>
-          {title}
-        </h3>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 sm:gap-6">
-          <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 mx-auto">
-            <div className="w-full h-full rounded-full overflow-hidden">
-              {data.map((item, index) => {
-                const percentage = ((item.sales || 0) / total) * 100;
-                return (
-                  <div
-                    key={index}
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      background: `conic-gradient(${colors[index % colors.length]} 0% ${percentage}%, transparent ${percentage}% 100%)`,
-                      transform: `rotate(${data.slice(0, index).reduce((sum, prev) => sum + ((prev.sales || 0) / total) * 360, 0)}deg)`
-                    }}
-                  ></div>
-                );
-              })}
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gray-800 rounded-full border-2 sm:border-4 border-gray-700"></div>
-            </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="space-y-1 sm:space-y-2">
-              {data.map((item, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center min-w-0">
-                    <div 
-                      className="w-2 h-2 sm:w-3 sm:h-3 rounded-full mr-2 flex-shrink-0"
-                      style={{ backgroundColor: colors[index % colors.length] }}
-                    ></div>
-                    <span className="text-gray-300 text-xs sm:text-sm truncate">{item.name}</span>
-                  </div>
-                  <span className="text-white font-semibold text-xs sm:text-sm whitespace-nowrap ml-2">
-                    {Math.round(((item.sales || 0) / total) * 100)}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
   };
 
-  if (loading) {
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount || 0);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return 'Invalid date';
+    }
+  };
+
+  const getStatusColor = (status) => {
+    if (!status) return 'text-gray-400 bg-gray-400/10';
+    const statusLower = status.toLowerCase();
+    
+    if (statusLower.includes('complete') || statusLower.includes('delivered') || statusLower.includes('success')) {
+      return 'text-green-400 bg-green-400/10';
+    } else if (statusLower.includes('pending')) {
+      return 'text-yellow-400 bg-yellow-400/10';
+    } else if (statusLower.includes('processing') || statusLower.includes('shipping')) {
+      return 'text-blue-400 bg-blue-400/10';
+    } else if (statusLower.includes('cancel') || statusLower.includes('failed')) {
+      return 'text-red-400 bg-red-400/10';
+    } else {
+      return 'text-gray-400 bg-gray-400/10';
+    }
+  };
+
+  const getStatusDotColor = (status) => {
+    if (!status) return 'bg-gray-500';
+    const statusLower = status.toLowerCase();
+    
+    if (statusLower.includes('complete') || statusLower.includes('delivered') || statusLower.includes('success')) {
+      return 'bg-green-500';
+    } else if (statusLower.includes('pending')) {
+      return 'bg-yellow-500';
+    } else if (statusLower.includes('processing') || statusLower.includes('shipping')) {
+      return 'bg-blue-500';
+    } else if (statusLower.includes('cancel') || statusLower.includes('failed')) {
+      return 'bg-red-500';
+    } else {
+      return 'bg-gray-500';
+    }
+  };
+
+  if (loading && !refreshing) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-4 border-green-500 border-t-transparent"></div>
-          <p className="mt-3 sm:mt-4 text-gray-300 font-medium text-base sm:text-lg">Loading Dashboard...</p>
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+          <p className="mt-4 text-gray-300 font-medium text-lg">Loading Dashboard...</p>
         </div>
       </div>
     );
   }
 
-  const mockData = data.analytics || {};
-
   return (
-    // FIXED: Changed from min-h-screen with background to just w-full
-    <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-4 md:p-6 lg:p-8">
       
       {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-4">
-          <div className="flex items-center">
-            <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 sm:p-3 rounded-xl mr-3 sm:mr-4 shadow-lg">
-              <svg className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.06 3.75c.29-.14.62-.14.91 0L16.5 7.5c.14.07.25.2.3.35l1.5 4.5c.07.2.04.42-.08.6L16.5 16.5c-.05.15-.16.28-.3.35l-4.65 1.75c-.29.14-.62.14-.91 0L5.99 16.85c-.14-.07-.25-.2-.3-.35L4.19 12c-.07-.2-.04-.42.08-.6L5.99 7.85c.05-.15.16-.28.3-.35L10.94 5.75z"/>
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Football Store Analytics</h1>
-              <p className="text-gray-400 text-sm sm:text-base lg:text-lg mt-1">Professional dashboard for business insights</p>
-            </div>
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-400 mt-1">Welcome back, Administrator</p>
           </div>
-          <button
-            onClick={refreshData}
-            disabled={refreshing}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 disabled:opacity-50 flex items-center w-full xs:w-auto justify-center"
-          >
-            <svg className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            {refreshing ? 'Updating...' : 'Refresh Data'}
-          </button>
+          
+          <div className="flex items-center space-x-3">
+            <select 
+              value={timeFilter}
+              onChange={(e) => setTimeFilter(e.target.value)}
+              className="bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 backdrop-blur-sm"
+            >
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+            </select>
+            
+            <button
+              onClick={fetchDashboardStats}
+              disabled={refreshing}
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50"
+            >
+              {refreshing ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4 mr-2" />
+              )}
+              Refresh
+            </button>
+
+            <button
+              onClick={handleExportData}
+              className="flex items-center px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg hover:bg-gray-700/50 transition-all"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </button>
+          </div>
         </div>
 
         {error && (
-          <div className="mt-3 sm:mt-4 bg-blue-900 bg-opacity-50 border border-blue-600 p-3 sm:p-4 rounded-lg backdrop-blur-sm">
-            <div className="flex">
-              <svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              <span className="text-blue-200 font-medium text-sm sm:text-base">{error}</span>
+          <div className="mt-4 bg-red-900/30 border border-red-800 rounded-xl p-4 flex items-center">
+            <AlertTriangle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-red-200 font-medium">{error}</p>
             </div>
+            <button
+              onClick={() => setError("")}
+              className="text-red-300 hover:text-red-100 ml-4"
+            >
+              <XCircle className="w-5 h-5" />
+            </button>
           </div>
         )}
       </div>
 
-      {/* Navigation */}
-      <div className="mb-6 sm:mb-8">
-        <div className="border border-gray-700 bg-gray-800 rounded-xl shadow-lg backdrop-blur-sm overflow-x-auto">
-          <nav className="flex min-w-max px-4 sm:px-6">
-            {['overview', 'analytics'].map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-3 px-4 sm:py-4 sm:px-8 font-semibold text-xs sm:text-sm capitalize transition-all duration-300 border-b-2 whitespace-nowrap ${
-                  activeTab === tab
-                    ? 'border-green-500 text-green-400 bg-gray-700'
-                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                {tab === 'overview' && <span className="mr-1 sm:mr-2">📊</span>}
-                {tab === 'analytics' && <span className="mr-1 sm:mr-2">📈</span>}
-                {tab}
-              </button>
-            ))}
-          </nav>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+        {/* Total Revenue */}
+        <StatCard
+          title="Total Revenue"
+          value={formatCurrency(stats.totalRevenue)}
+          icon={<DollarSign className="w-6 h-6" />}
+          trend="+12.5%"
+          trendUp={true}
+          color="blue"
+          onClick={() => navigate("/admin/orders")}
+        />
+
+        {/* Total Orders */}
+        <StatCard
+          title="Total Orders"
+          value={stats.totalOrders.toLocaleString()}
+          icon={<ShoppingBag className="w-6 h-6" />}
+          subtext={`${stats.pendingOrders} pending`}
+          color="green"
+          warning={stats.pendingOrders > 10}
+          onClick={() => navigate("/admin/orders")}
+        />
+
+        {/* Active Users */}
+        <StatCard
+          title="Total Users"
+          value={stats.totalUsers.toLocaleString()}
+          icon={<Users className="w-6 h-6" />}
+          subtext={`${stats.blockedUsers} blocked`}
+          trend="+8.2%"
+          trendUp={true}
+          color="purple"
+          onClick={() => navigate("/admin/users")}
+        />
+
+        {/* Products */}
+        <StatCard
+          title="Total Products"
+          value={stats.totalProducts.toLocaleString()}
+          icon={<Package className="w-6 h-6" />}
+          subtext={`${stats.lowStock} low stock`}
+          color="orange"
+          warning={stats.lowStock > 0}
+          onClick={() => navigate("/admin/products")}
+        />
+      </div>
+
+      {/* Secondary Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <MiniStatCard
+          title="Conversion Rate"
+          value={`${stats.conversionRate}%`}
+          icon={<TrendingUp className="w-4 h-4" />}
+          color="green"
+        />
+        
+        <MiniStatCard
+          title="Avg Order Value"
+          value={formatCurrency(stats.averageOrderValue)}
+          icon={<DollarSign className="w-4 h-4" />}
+          color="blue"
+        />
+        
+        <MiniStatCard
+          title="Completed Orders"
+          value={stats.completedOrders.toLocaleString()}
+          icon={<CheckCircle className="w-4 h-4" />}
+          color="green"
+        />
+        
+        <MiniStatCard
+          title="Cancelled Orders"
+          value={stats.cancelledOrders.toLocaleString()}
+          icon={<XCircle className="w-4 h-4" />}
+          color="red"
+        />
+      </div>
+
+      {/* Charts & Tables Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Recent Orders */}
+        <div className="bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 md:p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <ShoppingCart className="w-5 h-5 text-green-400 mr-2" />
+              <h3 className="text-lg font-semibold">Recent Orders</h3>
+            </div>
+            <button 
+              onClick={() => navigate("/admin/orders")}
+              className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center"
+            >
+              View All
+              <ArrowUpRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            {recentData.recentOrders.length > 0 ? (
+              recentData.recentOrders.map((order) => (
+                <div key={order.id} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-all">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center">
+                      <div className={`w-2 h-2 rounded-full mr-2 ${getStatusDotColor(order.status)}`}></div>
+                      <p className="font-medium truncate">
+                        Order #{order.orderNumber}
+                      </p>
+                    </div>
+                    <p className="text-gray-400 text-sm mt-1">
+                      {order.customerName} • {formatDate(order.createdAt)}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4 ml-4">
+                    <span className="font-bold whitespace-nowrap">
+                      {formatCurrency(order.amount)}
+                    </span>
+                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(order.status)}`}>
+                      {order.status}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <ShoppingCart className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No recent orders found</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Top Products */}
+        <div className="bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 md:p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Star className="w-5 h-5 text-yellow-400 mr-2" />
+              <h3 className="text-lg font-semibold">Top Products</h3>
+            </div>
+            <button 
+              onClick={() => navigate("/admin/products")}
+              className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center"
+            >
+              View All
+              <ArrowUpRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            {recentData.topProducts.length > 0 ? (
+              recentData.topProducts.map((product) => (
+                <div key={product.id} className="flex items-center p-3 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-all">
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-900/30 to-orange-900/20 rounded-lg flex items-center justify-center mr-3">
+                    <span className="text-yellow-400 font-bold">$</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{product.name}</p>
+                    <p className="text-gray-400 text-sm truncate">{product.category}</p>
+                  </div>
+                  <div className="text-right ml-4">
+                    <p className="font-bold">{formatCurrency(product.price)}</p>
+                    <p className="text-gray-400 text-sm">{product.sales} sales</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <Package className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No products found</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Overview Tab */}
-      {activeTab === 'overview' && (
-        <div className="space-y-6 sm:space-y-8">
+      {/* Bottom Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Users */}
+        <div className="lg:col-span-2 bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 md:p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Users className="w-5 h-5 text-purple-400 mr-2" />
+              <h3 className="text-lg font-semibold">Recent Users</h3>
+            </div>
+            <button 
+              onClick={() => navigate("/admin/users")}
+              className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center"
+            >
+              View All
+              <ArrowUpRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
           
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-            <StatCard
-              title="Total Revenue"
-              value={`${(mockData.totalRevenue || 487650).toLocaleString()}`}
-              change={23}
-              color="from-green-500 to-green-600"
-              icon={
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              }
-            />
-            <StatCard
-              title="Total Orders"
-              value={(mockData.totalOrders || 1247).toLocaleString()}
-              change={15}
-              color="from-blue-500 to-blue-600"
-              icon={
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              }
-            />
-            <StatCard
-              title="Active Users"
-              value={(mockData.activeUsers || 892).toLocaleString()}
-              change={12}
-              color="from-purple-500 to-purple-600"
-              icon={
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              }
-            />
-            <StatCard
-              title="Conversion Rate"
-              value={`${mockData.conversionRate || 4.2}%`}
-              change={8}
-              color="from-orange-500 to-orange-600"
-              icon={
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              }
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {recentData.recentUsers.length > 0 ? (
+              recentData.recentUsers.map((user) => (
+                <div key={user.id} className="flex items-center p-3 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-all">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-900/30 to-blue-900/20 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-purple-400 font-bold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{user.name}</p>
+                    <p className="text-gray-400 text-sm truncate">{user.email}</p>
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    {formatDate(user.createdAt)}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-2 text-center py-8 text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No recent users found</p>
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-            <ProfitLineChart data={mockData.monthlyRevenue || []} title="Monthly Profit Trend" />
-            <PieChart data={mockData.categoryPerformance || []} title="Category Performance" />
+        {/* Quick Stats */}
+        <div className="bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 md:p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <BarChart3 className="w-5 h-5 text-blue-400 mr-2" />
+              <h3 className="text-lg font-semibold">Quick Stats</h3>
+            </div>
+            <Clock className="w-5 h-5 text-gray-400" />
           </div>
-
-          {/* Performance Metrics */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-            <MetricCard 
-              title="Customer Satisfaction" 
-              value="92%" 
-              subtitle="Based on reviews"
-              progress={92}
-              color="green"
-            />
-            <MetricCard 
-              title="Order Fulfillment" 
-              value="88%" 
-              subtitle="On-time delivery"
-              progress={88}
-              color="blue"
-            />
-            <MetricCard 
-              title="Inventory Turnover" 
-              value="6.2x" 
-              subtitle="Annual rotation"
-              progress={75}
-              color="purple"
-            />
-            <MetricCard 
-              title="Return Rate" 
-              value="2.1%" 
-              subtitle="Quality indicator"
-              progress={21}
+          
+          <div className="space-y-4">
+            <QuickStatItem
+              label="Low Stock Items"
+              value={stats.lowStock}
               color="red"
+              onClick={() => navigate("/admin/products")}
+            />
+            
+            <QuickStatItem
+              label="Out of Stock"
+              value={stats.outOfStock}
+              color="red"
+              onClick={() => navigate("/admin/products")}
+            />
+            
+            <QuickStatItem
+              label="Blocked Users"
+              value={stats.blockedUsers}
+              color="orange"
+              onClick={() => navigate("/admin/users")}
+            />
+            
+            <QuickStatItem
+              label="Pending Orders"
+              value={stats.pendingOrders}
+              color="yellow"
+              onClick={() => navigate("/admin/orders")}
             />
           </div>
-
-          {/* Additional Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-            <BarChart data={mockData.topProducts?.slice(0, 6) || []} title="Top Products Performance" color="green" />
-            
-            {/* Quick Stats Grid */}
-            <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Quick Stats</h3>
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
-                  <div className="text-xl sm:text-2xl font-bold text-green-400">24</div>
-                  <div className="text-gray-300 text-xs sm:text-sm">Countries</div>
-                </div>
-                <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
-                  <div className="text-xl sm:text-2xl font-bold text-blue-400">1.2M</div>
-                  <div className="text-gray-300 text-xs sm:text-sm">Page Views</div>
-                </div>
-                <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
-                  <div className="text-xl sm:text-2xl font-bold text-purple-400">4.8</div>
-                  <div className="text-gray-300 text-xs sm:text-sm">Avg Rating</div>
-                </div>
-                <div className="bg-gray-700 p-3 sm:p-4 rounded-lg text-center">
-                  <div className="text-xl sm:text-2xl font-bold text-orange-400">156</div>
-                  <div className="text-gray-300 text-xs sm:text-sm">Products</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
-      )}
+      </div>
 
-      {/* Analytics Tab */}
-      {activeTab === 'analytics' && (
-        <div className="space-y-6 sm:space-y-8">
-          
-          {/* Advanced KPIs */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-              <h4 className="text-sm sm:text-lg font-semibold opacity-90">Customer LTV</h4>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">$892</p>
-              <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">18% increase from last quarter</p>
-            </div>
-            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-              <h4 className="text-sm sm:text-lg font-semibold opacity-90">Cart Abandonment</h4>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">24.3%</p>
-              <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">5% improvement this month</p>
-            </div>
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-              <h4 className="text-sm sm:text-lg font-semibold opacity-90">Average Order Value</h4>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">$147</p>
-              <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">$23 increase from last month</p>
-            </div>
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-4 sm:p-6 text-white shadow-xl backdrop-blur-sm">
-              <h4 className="text-sm sm:text-lg font-semibold opacity-90">Customer Retention</h4>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2">76.8%</p>
-              <p className="text-xs sm:text-sm opacity-80 mt-1 sm:mt-2">8.2% improvement</p>
-            </div>
+      {/* Recent Activity */}
+      <div className="mt-8 bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 md:p-6 backdrop-blur-sm">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <Bell className="w-5 h-5 text-green-400 mr-2" />
+            <h3 className="text-lg font-semibold">Recent Activity</h3>
           </div>
-
-          {/* Advanced Analytics Charts */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-            <BarChart data={mockData.categoryPerformance || []} title="Revenue Breakdown by Category" color="blue" />
-            
-            {/* Sales Funnel */}
-            <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Sales Funnel Analysis</h3>
-              <div className="space-y-2 sm:space-y-4">
-                <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg">
-                  <span className="text-gray-300 font-medium text-sm sm:text-base">Website Visitors</span>
-                  <span className="text-white font-bold text-base sm:text-lg">10,847</span>
-                </div>
-                <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-2 sm:ml-4">
-                  <span className="text-gray-300 font-medium text-sm sm:text-base">Product Views</span>
-                  <span className="text-blue-400 font-bold text-base sm:text-lg">4,923</span>
-                </div>
-                <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-4 sm:ml-8">
-                  <span className="text-gray-300 font-medium text-sm sm:text-base">Add to Cart</span>
-                  <span className="text-green-400 font-bold text-base sm:text-lg">1,687</span>
-                </div>
-                <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-6 sm:ml-12">
-                  <span className="text-gray-300 font-medium text-sm sm:text-base">Checkout Started</span>
-                  <span className="text-yellow-400 font-bold text-base sm:text-lg">892</span>
-                </div>
-                <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-700 rounded-lg ml-8 sm:ml-16">
-                  <span className="text-gray-300 font-medium text-sm sm:text-base">Completed Orders</span>
-                  <span className="text-purple-400 font-bold text-base sm:text-lg">456</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Comprehensive Metrics Grid */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 text-center backdrop-blur-sm">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-400 mb-1 sm:mb-2">94.2%</div>
-              <div className="text-gray-300 font-medium text-sm sm:text-base">Customer Satisfaction</div>
-              <div className="text-gray-500 text-xs sm:text-sm">Based on 1,247 reviews</div>
-            </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 text-center backdrop-blur-sm">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400 mb-1 sm:mb-2">3.8s</div>
-              <div className="text-gray-300 font-medium text-sm sm:text-base">Page Load Time</div>
-              <div className="text-gray-500 text-xs sm:text-sm">15% faster than industry avg</div>
-            </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-4 sm:p-6 text-center backdrop-blur-sm">
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-400 mb-1 sm:mb-2">67%</div>
-              <div className="text-gray-300 font-medium text-sm sm:text-base">Mobile Traffic</div>
-              <div className="text-gray-500 text-xs sm:text-sm">Growing 23% monthly</div>
-            </div>
-          </div>
-
-          {/* Real-time Activity */}
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Real-time Activity</h3>
-            <div className="space-y-2 sm:space-y-4">
-              <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs sm:text-sm truncate">New order from Manchester</p>
-                  <p className="text-gray-400 text-xs">2 minutes ago</p>
-                </div>
-              </div>
-              <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs sm:text-sm truncate">Football boots restocked</p>
-                  <p className="text-gray-400 text-xs">5 minutes ago</p>
-                </div>
-              </div>
-              <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs sm:text-sm truncate">High traffic detected</p>
-                  <p className="text-gray-400 text-xs">8 minutes ago</p>
-                </div>
-              </div>
-              <div className="flex items-center p-2 sm:p-3 bg-gray-700 rounded-lg">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-purple-500 rounded-full animate-pulse mr-2 sm:mr-3 flex-shrink-0"></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs sm:text-sm truncate">New user registered</p>
-                  <p className="text-gray-400 text-xs">12 minutes ago</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Performance Heat Map */}
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Performance Heat Map</h3>
-            <div className="grid grid-cols-7 gap-1 sm:gap-2">
-              {Array.from({ length: 35 }, (_, i) => (
-                <div 
-                  key={i}
-                  className={`aspect-square rounded sm:rounded-lg ${
-                    Math.random() > 0.7 ? 'bg-green-500' :
-                    Math.random() > 0.5 ? 'bg-green-400' :
-                    Math.random() > 0.3 ? 'bg-green-300' :
-                    Math.random() > 0.1 ? 'bg-green-200' : 'bg-gray-700'
-                  }`}
-                  title={`Day ${i + 1}: ${Math.floor(Math.random() * 100)} orders`}
-                ></div>
-              ))}
-            </div>
-            <div className="flex items-center justify-between mt-3 sm:mt-4 text-xs text-gray-400">
-              <span>Less</span>
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-700 rounded"></div>
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-200 rounded"></div>
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-300 rounded"></div>
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-400 rounded"></div>
-                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded"></div>
-              </div>
-              <span>More</span>
-            </div>
-          </div>
-
+          <span className="text-gray-400 text-sm">Last 24 hours</span>
         </div>
-      )}
-
+        
+        <div className="space-y-3">
+          {recentData.recentActivity.length > 0 ? (
+            recentData.recentActivity.map((activity) => (
+              <div key={activity.id} className="flex items-center p-3 bg-gray-800/50 rounded-lg">
+                <div className={`p-2 rounded-lg mr-3 ${
+                  activity.type === 'order' ? 'bg-blue-900/30' : 'bg-green-900/30'
+                }`}>
+                  {activity.type === 'order' ? (
+                    <ShoppingCart className="w-4 h-4 text-blue-400" />
+                  ) : (
+                    <UserPlus className="w-4 h-4 text-green-400" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium">{activity.title}</p>
+                  <p className="text-gray-400 text-sm">{activity.description}</p>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-gray-400 text-sm">{activity.time}</span>
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    activity.status === 'active' || activity.status === 'completed' 
+                      ? 'bg-green-400/10 text-green-400' 
+                      : 'bg-yellow-400/10 text-yellow-400'
+                  }`}>
+                    {activity.status}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <Bell className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No recent activity</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
-};
+}
 
-export default AdminDashboard;
+/* ---------------- COMPONENTS ---------------- */
+
+function StatCard({ title, value, icon, subtext, trend, trendUp, color, warning, onClick }) {
+  const colorClasses = {
+    blue: 'border-blue-500/50',
+    green: 'border-green-500/50',
+    purple: 'border-purple-500/50',
+    orange: 'border-orange-500/50'
+  };
+
+  const iconColorClasses = {
+    blue: 'text-blue-400',
+    green: 'text-green-400',
+    purple: 'text-purple-400',
+    orange: 'text-orange-400'
+  };
+
+  const bgColorClasses = {
+    blue: 'bg-blue-900/20',
+    green: 'bg-green-900/20',
+    purple: 'bg-purple-900/20',
+    orange: 'bg-orange-900/20'
+  };
+
+  return (
+    <div 
+      onClick={onClick}
+      className={`cursor-pointer bg-gray-800/30 border ${colorClasses[color]} rounded-xl p-4 md:p-6 backdrop-blur-sm hover:border-opacity-80 transition-all duration-300 shadow-xl`}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className={`p-3 ${bgColorClasses[color]} rounded-lg`}>
+          <div className={iconColorClasses[color]}>
+            {icon}
+          </div>
+        </div>
+        
+        {trend && (
+          <div className={`flex items-center text-sm font-medium ${trendUp ? 'text-green-400' : 'text-red-400'}`}>
+            {trendUp ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
+            {trend}
+          </div>
+        )}
+        
+        {warning && (
+          <div className="flex items-center text-yellow-400 text-sm">
+            <AlertTriangle className="w-4 h-4 mr-1" />
+            Alert
+          </div>
+        )}
+      </div>
+      
+      <h3 className="text-gray-400 text-sm font-medium mb-2">{title}</h3>
+      <p className="text-2xl md:text-3xl font-bold mb-2">{value}</p>
+      
+      {subtext && (
+        <p className="text-gray-400 text-sm">{subtext}</p>
+      )}
+    </div>
+  );
+}
+
+function MiniStatCard({ title, value, icon, color }) {
+  const colorClasses = {
+    blue: 'text-blue-400',
+    green: 'text-green-400',
+    purple: 'text-purple-400',
+    orange: 'text-orange-400',
+    red: 'text-red-400'
+  };
+
+  return (
+    <div className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-4 text-center backdrop-blur-sm">
+      <div className={`${colorClasses[color]} mb-2 flex justify-center`}>
+        {icon}
+      </div>
+      <p className="text-gray-400 text-sm mb-1">{title}</p>
+      <p className="text-xl font-bold">{value}</p>
+    </div>
+  );
+}
+
+function QuickStatItem({ label, value, color, onClick }) {
+  const colorClasses = {
+    red: 'bg-red-900/20 border-red-800/30 text-red-400',
+    orange: 'bg-orange-900/20 border-orange-800/30 text-orange-400',
+    yellow: 'bg-yellow-900/20 border-yellow-800/30 text-yellow-400',
+    green: 'bg-green-900/20 border-green-800/30 text-green-400',
+    blue: 'bg-blue-900/20 border-blue-800/30 text-blue-400'
+  };
+
+  return (
+    <div 
+      onClick={onClick}
+      className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-700/50 transition-all ${colorClasses[color]}`}
+    >
+      <span className="text-gray-300">{label}</span>
+      <span className={`font-bold`}>{value}</span>
+    </div>
+  );
+}

@@ -1,497 +1,479 @@
 
-
-
 // import React, { useState, useEffect } from "react";
-// import { useNavigate, useParams, useLocation } from "react-router-dom";
-// import { CheckCircle, MapPin } from "lucide-react";
-// import api from "../Api/Axios_Instance.jsx";
+// import { useParams, useNavigate } from "react-router-dom";
+// import api from "../Api/Axios_Instance";
+// import { 
+//   CheckCircle, 
+//   Package, 
+//   Truck, 
+//   Home, 
+//   ShoppingBag, 
+//   Calendar, 
+//   CreditCard, 
+//   Mail, 
+//   Phone, 
+//   MapPin,
+//   Download,
+//   Share2,
+//   Shield,
+//   Sparkles,
+//   Clock,
+//   ChevronRight
+// } from "lucide-react";
 
 // export default function PaymentSuccess() {
-//   const navigate = useNavigate();
 //   const { orderId } = useParams();
-//   const location = useLocation();
-//   const userIdFromState = location.state?.userId; // ✅ Get userId from Orders.jsx
+//   const validOrderId = Number(orderId);
 
 //   const [order, setOrder] = useState(null);
-//   const [shippingAddress, setShippingAddress] = useState(null);
 //   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     const fetchOrder = async () => {
-//       try {
-//         // Fetch the order by ID
-//         const orderRes = await api.get(`/orders/${orderId}`);
-//         const orderData = orderRes.data;
-
-//         if (!orderData) {
-//           setError("Order not found.");
-//           setLoading(false);
-//           return;
-//         }
-
-//         // Determine userId safely: prefer state passed from Orders.jsx
-//         const userId = userIdFromState || orderData.userId || orderData.user_id;
-//         if (!userId) {
-//           setError("Order does not contain user information.");
-//           setLoading(false);
-//           return;
-//         }
-
-//         // Fetch user details
-//         const userRes = await api.get(`/users/${userId}`);
-//         const orderUser = userRes.data;
-
-//         setOrder({
-//           ...orderData,
-//           userName: orderUser?.name || orderUser?.username || "N/A",
-//           userEmail: orderUser?.email || "N/A",
-//           items: Array.isArray(orderData.items) ? orderData.items : [],
-//         });
-
-//         // Get last saved shipping address if exists
-//         const lastAddress =
-//           orderUser?.shippingAddress?.[orderUser.shippingAddress.length - 1];
-//         if (lastAddress) {
-//           setShippingAddress(lastAddress);
-//         }
-//       } catch (e) {
-//         console.error("Error fetching order details:", e);
-//         setError("Failed to load order details.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     if (orderId) {
-//       fetchOrder();
-//     } else {
-//       setError("Order ID not found in URL.");
-//       setLoading(false);
-//     }
-//   }, [orderId, userIdFromState]);
-
-//   if (loading) {
-//     return (
-//       <div className="flex justify-center items-center min-h-screen">
-//         <p className="text-xl text-gray-700">Loading order details...</p>
-//       </div>
-//     );
-//   }
-
-//   if (error || !order) {
-//     return (
-//       <div className="flex justify-center items-center min-h-screen">
-//         <p className="text-xl text-red-500">{error || "Order not found."}</p>
-//       </div>
-//     );
-//   }
-
-//   // ✅ Fixed total calculation: ensures a valid number even if items are missing price/quantity
-//   const total = order.items.reduce((sum, item) => {
-//     const price = item && !isNaN(Number(item.price)) ? Number(item.price) : 0;
-//     const qty = item && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 1;
-//     return sum + price * qty;
-//   }, 0);
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex flex-col items-center py-16 px-6">
-//       <CheckCircle className="w-20 h-20 text-green-500 mb-6" />
-//       <h1 className="text-4xl font-extrabold text-gray-800 mb-2">
-//         Payment Successful 🎉
-//       </h1>
-//       <p className="text-gray-600 text-lg mb-6 text-center">
-//         Thank you for your purchase!
-//       </p>
-
-//       <div className="bg-white shadow-xl rounded-3xl p-8 w-full max-w-4xl">
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-//           {/* Order Summary Section */}
-//           <div>
-//             <div className="flex justify-between items-center mb-6 border-b pb-4">
-//               <h2 className="text-2xl font-bold text-gray-800">Order Summary</h2>
-//               <span className="text-gray-500 text-sm">
-//                 Order ID: <span className="font-semibold">{order.id}</span>
-//               </span>
-//             </div>
-
-//             <div className="space-y-5 max-h-80 overflow-y-auto pr-2">
-//               {order.items.map((item, idx) => {
-//                 const price = item && !isNaN(Number(item.price)) ? Number(item.price) : 0;
-//                 const qty = item && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 1;
-//                 return (
-//                   <div
-//                     key={item?.id || idx}
-//                     className="flex items-center justify-between border-b pb-3"
-//                   >
-//                     <div className="flex items-center gap-3">
-//                       <img
-//                         src={item?.image || "/placeholder.png"}
-//                         alt={item?.name || "Item"}
-//                         className="w-16 h-16 object-contain rounded-lg border"
-//                       />
-//                       <div>
-//                         <p className="font-semibold text-gray-800">{item?.name || "Item"}</p>
-//                         <p className="text-gray-500 text-sm">Qty: {qty}</p>
-//                       </div>
-//                     </div>
-//                     <p className="font-bold text-gray-900">
-//                       ${(price * qty).toFixed(2)}
-//                     </p>
-//                   </div>
-//                 );
-//               })}
-//             </div>
-
-//             <h3 className="text-xl font-bold mt-6 text-right">
-//               Total Paid:{" "}
-//               <span className="text-green-600">${total.toFixed(2)}</span>
-//             </h3>
-//           </div>
-
-//           {/* Shipping Details Section */}
-//           <div className="md:border-l md:pl-8">
-//             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-//               <MapPin className="w-6 h-6 text-blue-500" /> Shipping Details
-//             </h2>
-//             {shippingAddress ? (
-//               <div className="bg-gray-50 rounded-xl p-6 space-y-2 text-gray-700 shadow-sm">
-//                 <p>
-//                   <span className="font-semibold">Address:</span>{" "}
-//                   {shippingAddress.address}
-//                 </p>
-//                 <p>
-//                   <span className="font-semibold">City:</span>{" "}
-//                   {shippingAddress.city}
-//                 </p>
-//                 <p>
-//                   <span className="font-semibold">Postal Code:</span>{" "}
-//                   {shippingAddress.postalCode}
-//                 </p>
-//               </div>
-//             ) : (
-//               <p className="text-gray-500">Shipping details not available.</p>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-
-//       <button
-//         onClick={() => navigate("/orders")}
-//         className="mt-10 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-3 rounded-2xl font-semibold shadow-lg hover:scale-105 transform transition"
-//       >
-//         Go to My Orders
-//       </button>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useState, useEffect } from "react";
-// import { useNavigate, useParams, useLocation } from "react-router-dom";
-// import { CheckCircle, MapPin } from "lucide-react";
-// import api from "../Api/Axios_Instance.jsx";
-
-// export default function PaymentSuccess() {
 //   const navigate = useNavigate();
-//   const { orderId } = useParams();
-//   const location = useLocation();
-//   const userIdFromState = location.state?.userId; // ✅ Get userId from Orders.jsx
-
-//   const [order, setOrder] = useState(null);
-//   const [shippingAddress, setShippingAddress] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
 //   const [animate, setAnimate] = useState(false);
+//   const [showSuccess, setShowSuccess] = useState(false);
+//   const [checkmarkDraw, setCheckmarkDraw] = useState(false);
+//   const [showConfetti, setShowConfetti] = useState(false);
 
 //   useEffect(() => {
-//     setAnimate(true);
+//     // Sequence animations
+//     const timer1 = setTimeout(() => setShowSuccess(true), 300);
+//     const timer2 = setTimeout(() => setCheckmarkDraw(true), 800);
+//     const timer3 = setTimeout(() => setAnimate(true), 1200);
+//     const timer4 = setTimeout(() => setShowConfetti(true), 500);
     
+//     return () => {
+//       clearTimeout(timer1);
+//       clearTimeout(timer2);
+//       clearTimeout(timer3);
+//       clearTimeout(timer4);
+//     };
+//   }, []);
+
+//   // useEffect(() => {
+//   //   const fetchOrder = async () => {
+//   //     try {
+//   //       const res = await api.get(`/order/${orderId}`);
+//   //       setOrder(res.data.data);
+//   //       console.log("ORDER FROM API:", res.data.data);
+//   //     } catch (err) {
+//   //       console.error("Failed to fetch order", err);
+//   //     } finally {
+//   //       setLoading(false);
+//   //     }
+//   //   };
+
+//   //   fetchOrder();
+//   // }, [orderId]);
+
+
+
+
+//    useEffect(() => {
 //     const fetchOrder = async () => {
 //       try {
-//         // Fetch the order by ID
-//         const orderRes = await api.get(`/orders/${orderId}`);
-//         const orderData = orderRes.data;
+//         const validId = Number(orderId);
 
-//         if (!orderData) {
-//           setError("Order not found.");
+//         if (!validId || isNaN(validId)) {
+//           console.error("Invalid orderId:", orderId);
 //           setLoading(false);
 //           return;
 //         }
 
-//         // Determine userId safely: prefer state passed from Orders.jsx
-//         const userId = userIdFromState || orderData.userId || orderData.user_id;
-//         if (!userId) {
-//           setError("Order does not contain user information.");
-//           setLoading(false);
-//           return;
-//         }
-
-//         // Fetch user details
-//         const userRes = await api.get(`/users/${userId}`);
-//         const orderUser = userRes.data;
-
-//         setOrder({
-//           ...orderData,
-//           userName: orderUser?.name || orderUser?.username || "N/A",
-//           userEmail: orderUser?.email || "N/A",
-//           items: Array.isArray(orderData.items) ? orderData.items : [],
-//         });
-
-//         // Get last saved shipping address if exists
-//         const lastAddress =
-//           orderUser?.shippingAddress?.[orderUser.shippingAddress.length - 1];
-//         if (lastAddress) {
-//           setShippingAddress(lastAddress);
-//         }
-//       } catch (e) {
-//         console.error("Error fetching order details:", e);
-//         setError("Failed to load order details.");
+//         const res = await api.get(`/order/${validId}`);
+//         setOrder(res.data.data);
+//         console.log("ORDER FROM API:", res.data.data);
+//       } catch (err) {
+//         console.error("Failed to fetch order", err);
 //       } finally {
 //         setLoading(false);
 //       }
 //     };
 
-//     if (orderId) {
-//       fetchOrder();
-//     } else {
-//       setError("Order ID not found in URL.");
-//       setLoading(false);
-//     }
-//   }, [orderId, userIdFromState]);
+//     fetchOrder();
+//   }, [orderId]);
 
-//   if (loading) {
+//   if (loading || !order) {
 //     return (
-//       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
-//         <div className="text-center bg-white backdrop-blur-lg shadow-2xl border border-blue-100 rounded-3xl p-12">
-//           <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mx-auto mb-6"></div>
-//           <h3 className="text-2xl font-bold text-gray-800 mb-2">Loading Order Details</h3>
-//           <p className="text-gray-600">Please wait while we fetch your order information...</p>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   if (error || !order) {
-//     return (
-//       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
-//         <div className="text-center bg-white backdrop-blur-lg shadow-2xl border border-red-100 rounded-3xl p-12 max-w-md">
-//           <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
-//             <span className="text-white text-2xl">⚠</span>
+//       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
+//         <div className="text-center">
+//           <div className="inline-flex items-center justify-center mb-4">
+//             <div className="relative">
+//               <div className="w-16 h-16 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+//               <ShoppingBag className="w-8 h-8 absolute inset-0 m-auto text-slate-900" />
+//             </div>
 //           </div>
-//           <h3 className="text-2xl font-bold text-gray-800 mb-3">Order Error</h3>
-//           <p className="text-red-600 text-lg mb-6">{error || "Order not found."}</p>
-//           <button
-//             onClick={() => navigate("/orders")}
-//             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg"
-//           >
-//             Go to Orders
-//           </button>
+//           <h2 className="text-xl font-semibold text-slate-900">Loading your order details...</h2>
+//           <p className="text-slate-600 mt-2">Preparing your receipt</p>
 //         </div>
 //       </div>
 //     );
 //   }
-
-//   // ✅ Fixed total calculation: ensures a valid number even if items are missing price/quantity
-//   const total = order.items.reduce((sum, item) => {
-//     const price = item && !isNaN(Number(item.price)) ? Number(item.price) : 0;
-//     const qty = item && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 1;
-//     return sum + price * qty;
-//   }, 0);
 
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 relative overflow-hidden">
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50 overflow-hidden">
 //       {/* Animated Background Elements */}
-//       <div className="absolute inset-0">
-//         <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-green-200/30 to-green-300/30 rounded-full blur-3xl animate-pulse"></div>
-//         <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-blue-200/40 to-blue-300/40 rounded-full blur-3xl animate-pulse delay-1000"></div>
-//         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-blue-100/50 to-green-100/50 rounded-full blur-3xl animate-pulse delay-500"></div>
+//       <div className="absolute inset-0 overflow-hidden">
+//         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+//         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+//         <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-slate-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 //       </div>
 
-//       <div className="relative z-10 flex flex-col items-center py-16 px-6">
-//         {/* Success Header */}
-//         <div className={`text-center mb-12 transform transition-all duration-1000 ${animate ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'}`}>
-//           <div className="relative mb-8">
-//             <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-green-500/30 animate-pulse">
-//               <CheckCircle className="w-14 h-14 text-white" />
-//             </div>
-//             <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-green-500/20 rounded-full animate-ping"></div>
-//           </div>
-          
-//           <h1 className="text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-blue-600 to-green-700 drop-shadow-lg">
-//             Payment Successful
-//           </h1>
-//           <p className="text-gray-600 text-xl font-medium">
-//             Thank you for your purchase! Your order has been confirmed.
-//           </p>
-          
-//           {/* Order ID Badge */}
-//           <div className="inline-flex items-center gap-2 bg-white border border-blue-200 rounded-full px-6 py-3 mt-6 shadow-lg">
-//             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-//             <span className="text-gray-700 font-semibold">Order ID: #{order.id}</span>
-//           </div>
+//       {/* Confetti Effect */}
+//       {showConfetti && (
+//         <div className="absolute inset-0 pointer-events-none">
+//           {[...Array(50)].map((_, i) => (
+//             <div
+//               key={i}
+//               className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 rounded-full animate-confetti"
+//               style={{
+//                 left: `${Math.random() * 100}%`,
+//                 animationDelay: `${Math.random() * 2}s`,
+//                 animationDuration: `${Math.random() * 3 + 2}s`,
+//                 opacity: Math.random() * 0.5 + 0.5,
+//               }}
+//             />
+//           ))}
 //         </div>
+//       )}
 
-//         {/* Main Content Card */}
-//         <div className={`bg-white/80 backdrop-blur-xl border border-blue-100 rounded-3xl shadow-2xl w-full max-w-6xl p-8 transform transition-all duration-1000 delay-300 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-//             {/* Order Summary Section */}
-//             <div className="space-y-6">
-//               <div className="flex items-center gap-3 mb-6">
-//                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-//                   <CheckCircle className="w-5 h-5 text-white" />
-//                 </div>
-//                 <h2 className="text-2xl font-bold text-gray-800">Order Summary</h2>
-//               </div>
-
-//               <div className="space-y-4 max-h-80 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
-//                 {order.items.map((item, idx) => {
-//                   const price = item && !isNaN(Number(item.price)) ? Number(item.price) : 0;
-//                   const qty = item && !isNaN(Number(item.quantity)) ? Number(item.quantity) : 1;
-//                   return (
-//                     <div
-//                       key={item?.id || idx}
-//                       className="bg-white border border-blue-100 rounded-2xl p-5 shadow-md hover:shadow-lg hover:border-blue-200 transition-all duration-300"
-//                     >
-//                       <div className="flex items-center justify-between">
-//                         <div className="flex items-center gap-4">
-//                           <div className="relative group">
-//                             <img
-//                               src={item?.image || "/placeholder.png"}
-//                               alt={item?.name || "Item"}
-//                               className="w-16 h-16 object-cover rounded-xl border-2 border-blue-100 group-hover:border-blue-300 transition-all duration-300 shadow-sm"
-//                             />
-//                             <div className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-//                           </div>
-//                           <div>
-//                             <p className="font-bold text-gray-800 text-lg">{item?.name || "Item"}</p>
-//                             <span className="text-gray-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full text-sm font-medium">
-//                               Qty: {qty}
-//                             </span>
-//                           </div>
-//                         </div>
-//                         <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-700">
-//                           ${(price * qty).toFixed(2)}
-//                         </p>
-//                       </div>
-//                     </div>
-//                   );
-//                 })}
-//               </div>
-
-//               <div className="border-t border-blue-200 pt-6">
-//                 <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-2xl p-6 shadow-lg">
-//                   <div className="flex justify-between items-center">
-//                     <span className="text-gray-800 text-xl font-semibold">Total Paid:</span>
-//                     <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-green-700 to-green-800 drop-shadow-lg">
-//                       ${total.toFixed(2)}
-//                     </span>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-
-//             {/* Shipping Details Section */}
-//             <div className="space-y-6">
-//               <div className="flex items-center gap-3 mb-6">
-//                 <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
-//                   <MapPin className="w-5 h-5 text-white" />
-//                 </div>
-//                 <h2 className="text-2xl font-bold text-gray-800">Shipping Details</h2>
-//               </div>
+//       <div className="relative flex flex-col items-center justify-center py-16 px-4">
+//         {/* Success Card */}
+//         <div
+//           className={`bg-white/80 backdrop-blur-sm border border-white/20 rounded-3xl shadow-2xl w-full max-w-4xl p-8 md:p-12 transform transition-all duration-1000 ${
+//             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+//           }`}
+//         >
+//           {/* Header with Success Icon */}
+//           <div className="flex flex-col items-center mb-10">
+//             <div className="relative mb-6">
+//               {/* Glow Effect */}
+//               <div className="absolute inset-0 w-32 h-32 bg-emerald-400/20 blur-2xl rounded-full"></div>
               
-//               {shippingAddress ? (
-//                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-6 shadow-lg space-y-4">
-//                   <div className="space-y-3">
-//                     <div className="flex items-start gap-3">
-//                       <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-//                         <MapPin className="w-4 h-4 text-white" />
-//                       </div>
-//                       <div>
-//                         <p className="text-gray-700 font-medium text-lg">{shippingAddress.address}</p>
-//                         <p className="text-gray-600">{shippingAddress.city}</p>
-//                         <p className="text-gray-600">Postal Code: {shippingAddress.postalCode}</p>
-//                       </div>
-//                     </div>
-//                   </div>
-                  
-//                   <div className="border-t border-blue-200 pt-4">
-//                     <div className="flex items-center gap-2 text-blue-700 font-medium">
-//                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-//                       <span>Your order will be delivered to this address</span>
-//                     </div>
-//                   </div>
-//                 </div>
-//               ) : (
-//                 <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center">
-//                   <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-//                   <p className="text-gray-500 font-medium">Shipping details not available</p>
-//                 </div>
-//               )}
-
-//               {/* Order Status */}
-//               <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-2xl p-6 shadow-lg">
-//                 <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-//                   <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
-//                     <span className="text-white text-xs font-bold">⏳</span>
-//                   </div>
-//                   Order Status
-//                 </h3>
-//                 <div className="flex items-center gap-3">
-//                   <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
-//                   <span className="text-gray-700 font-semibold text-lg">Processing</span>
-//                 </div>
-//                 <p className="text-gray-600 text-sm mt-2">Your order is being prepared for shipment</p>
+//               {/* Animated Circle */}
+//               <div 
+//                 className={`relative w-32 h-32 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-full flex items-center justify-center transition-all duration-700 ${
+//                   showSuccess ? "scale-100 opacity-100" : "scale-0 opacity-0"
+//                 }`}
+//                 style={{
+//                   boxShadow: '0 20px 60px rgba(16, 185, 129, 0.3)'
+//                 }}
+//               >
+//                 {/* Checkmark Animation */}
+//                 <svg
+//                   className="w-20 h-20"
+//                   viewBox="0 0 52 52"
+//                   xmlns="http://www.w3.org/2000/svg"
+//                 >
+//                   <circle
+//                     className="transition-all duration-1000 ease-out"
+//                     cx="26"
+//                     cy="26"
+//                     r="25"
+//                     fill="none"
+//                     stroke="url(#gradient)"
+//                     strokeWidth="2"
+//                     style={{
+//                       strokeDasharray: checkmarkDraw ? "166" : "0",
+//                       strokeDashoffset: "0",
+//                     }}
+//                   />
+//                   <defs>
+//                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+//                       <stop offset="0%" stopColor="#10b981" />
+//                       <stop offset="100%" stopColor="#34d399" />
+//                     </linearGradient>
+//                   </defs>
+//                   <path
+//                     className="transition-all duration-700 ease-out"
+//                     fill="none"
+//                     stroke="url(#gradient)"
+//                     strokeWidth="3"
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     d="M14 27l7 7 16-16"
+//                     style={{
+//                       strokeDasharray: checkmarkDraw ? "48" : "0",
+//                       strokeDashoffset: "0",
+//                       transitionDelay: "0.3s",
+//                     }}
+//                   />
+//                 </svg>
+                
+//                 {/* Floating Sparkles */}
+//                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-pulse" />
+//                 <Sparkles className="absolute -bottom-2 -left-2 w-6 h-6 text-blue-400 animate-pulse animation-delay-1000" />
 //               </div>
+//             </div>
+
+//             {/* Success Message */}
+//             <div className="text-center mb-6">
+//               <h1 className={`text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-emerald-600 bg-clip-text text-transparent mb-4 transition-all duration-700 ${
+//                 animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+//               }`}>
+//                 Payment Successful!
+//               </h1>
+//               <div className={`h-1 w-32 bg-gradient-to-r from-emerald-400 to-blue-400 mx-auto mb-6 rounded-full transition-all duration-700 delay-100 ${
+//                 animate ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+//               }`}></div>
+//               <p className={`text-slate-600 text-lg transition-all duration-700 delay-200 ${
+//                 animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+//               }`}>
+//                 Thank you for your purchase! Your order is confirmed.
+//               </p>
+//             </div>
+//           </div>
+
+//           {/* Order Summary Card */}
+//           <div className={`bg-gradient-to-br from-slate-50 to-white border border-slate-200/50 rounded-2xl p-6 mb-8 transition-all duration-700 delay-300 ${
+//             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+//           }`}>
+//             <div className="flex items-center justify-between mb-6">
+//               <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
+//                 <Package className="w-5 h-5 text-emerald-600" />
+//                 Order Summary
+//               </h2>
+//               <div className="flex gap-2">
+//                 <button className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+//                   <Download className="w-5 h-5" />
+//                 </button>
+//                 <button className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+//                   <Share2 className="w-5 h-5" />
+//                 </button>
+//               </div>
+//             </div>
+
+//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+//               {/* Order Number */}
+//               <div className="space-y-2">
+//                 <div className="flex items-center gap-2">
+//                   <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm">
+//                     <Package className="w-4 h-4 text-slate-600" />
+//                   </div>
+//                   <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+//                     Order Number
+//                   </span>
+//                 </div>
+//                 <p className="text-lg font-semibold text-slate-900">
+//                   #{order?.Id ?? order?.id ?? orderId}
+//                 </p>
+//               </div>
+
+//               {/* Order Date */}
+//               <div className="space-y-2">
+//                 <div className="flex items-center gap-2">
+//                   <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm">
+//                     <Calendar className="w-4 h-4 text-slate-600" />
+//                   </div>
+//                   <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+//                     Order Date
+//                   </span>
+//                 </div>
+//                 <p className="text-lg font-semibold text-slate-900">
+//                   {order.OrderDate
+//                     ? new Date(order.OrderDate).toLocaleDateString("en-US", {
+//                         year: "numeric",
+//                         month: "short",
+//                         day: "numeric",
+//                       })
+//                     : "Date unavailable"}
+//                 </p>
+//               </div>
+
+//               {/* Payment Method */}
+//               <div className="space-y-2">
+//                 <div className="flex items-center gap-2">
+//                   <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm">
+//                     <CreditCard className="w-4 h-4 text-slate-600" />
+//                   </div>
+//                   <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+//                     Payment Method
+//                   </span>
+//                 </div>
+//                 <p className="text-lg font-semibold text-slate-900">{order.paymentMethod}</p>
+//               </div>
+
+//               {/* Estimated Delivery */}
+//               <div className="space-y-2">
+//                 <div className="flex items-center gap-2">
+//                   <div className="p-2 bg-white rounded-lg border border-slate-200 shadow-sm">
+//                     <Clock className="w-4 h-4 text-slate-600" />
+//                   </div>
+//                   <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+//                     Delivery Est.
+//                   </span>
+//                 </div>
+//                 <p className="text-lg font-semibold text-emerald-600">{order.estimatedDelivery}</p>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Amount Card */}
+//           <div className={`bg-gradient-to-r from-slate-900 to-gray-900 text-white rounded-2xl p-6 mb-8 transition-all duration-700 delay-400 ${
+//             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+//           }`}>
+//             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+//               <div>
+//                 <p className="text-slate-300 text-sm font-medium mb-1">Total Amount Paid</p>
+//                 <p className="text-4xl font-bold">
+//                   ${Number(order?.TotalAmount ?? order?.totalAmount ?? 0).toFixed(2)}
+//                 </p>
+//               </div>
+//               <div className="flex items-center gap-2 text-emerald-400">
+//                 <Shield className="w-5 h-5" />
+//                 <span className="text-sm">Payment Secured & Encrypted</span>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Shipping Info & Actions */}
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+//             {/* Shipping Status */}
+//             <div className={`bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-2xl p-6 transition-all duration-700 delay-500 ${
+//               animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+//             }`}>
+//               <div className="flex items-start gap-4">
+//                 <div className="p-3 bg-emerald-100 rounded-xl">
+//                   <Truck className="w-6 h-6 text-emerald-600" />
+//                 </div>
+//                 <div className="flex-1">
+//                   <h3 className="text-lg font-semibold text-emerald-900 mb-2">
+//                     Order Status: Processing
+//                   </h3>
+//                   <p className="text-emerald-700 mb-4">
+//                     Your order is being prepared for shipment. We'll notify you when it's on the way!
+//                   </p>
+//                   <div className="flex items-center gap-2 text-sm text-emerald-600">
+//                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+//                     <span>Real-time tracking available soon</span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Customer Support */}
+//             <div className={`bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl p-6 transition-all duration-700 delay-600 ${
+//               animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+//             }`}>
+//               <h3 className="text-lg font-semibold text-blue-900 mb-4">Need Help?</h3>
+//               <div className="space-y-3">
+//                 <div className="flex items-center gap-3">
+//                   <Mail className="w-4 h-4 text-blue-600" />
+//                   <span className="text-blue-800">support@sportex.com</span>
+//                 </div>
+//                 <div className="flex items-center gap-3">
+//                   <Phone className="w-4 h-4 text-blue-600" />
+//                   <span className="text-blue-800">1-800-123-4567</span>
+//                 </div>
+//                 <button className="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-1 transition-colors">
+//                   View FAQ <ChevronRight className="w-4 h-4" />
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Action Buttons */}
+//           <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-700 delay-700 ${
+//             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+//           }`}>
+//             <button
+//               onClick={() => navigate("/orders")}
+//               className="group py-4 px-6 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+//             >
+//               <Package className="w-5 h-5 group-hover:scale-110 transition-transform" />
+//               View All Orders
+//             </button>
+            
+//             <button
+//               onClick={() => navigate("/")}
+//               className="group py-4 px-6 bg-white text-slate-700 rounded-xl font-semibold hover:bg-slate-50 border-2 border-slate-200 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+//             >
+//               <Home className="w-5 h-5 group-hover:scale-110 transition-transform" />
+//               Back to Home
+//             </button>
+            
+//             <button
+//               onClick={() => navigate("/more-products")}
+//               className="group py-4 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+//             >
+//               <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
+//               Continue Shopping
+//             </button>
+//           </div>
+
+//           {/* Quick Links */}
+//           <div className={`mt-8 pt-8 border-t border-slate-200/50 transition-all duration-700 delay-800 ${
+//             animate ? "opacity-100" : "opacity-0"
+//           }`}>
+//             <p className="text-slate-600 text-center text-sm mb-4">
+//               What would you like to do next?
+//             </p>
+//             <div className="flex flex-wrap justify-center gap-4">
+//               <button className="text-slate-700 hover:text-slate-900 text-sm font-medium px-4 py-2 hover:bg-slate-100 rounded-lg transition-colors">
+//                 Track Order
+//               </button>
+//               <button className="text-slate-700 hover:text-slate-900 text-sm font-medium px-4 py-2 hover:bg-slate-100 rounded-lg transition-colors">
+//                 Download Invoice
+//               </button>
+//               <button className="text-slate-700 hover:text-slate-900 text-sm font-medium px-4 py-2 hover:bg-slate-100 rounded-lg transition-colors">
+//                 Write a Review
+//               </button>
+//               <button className="text-slate-700 hover:text-slate-900 text-sm font-medium px-4 py-2 hover:bg-slate-100 rounded-lg transition-colors">
+//                 Contact Support
+//               </button>
 //             </div>
 //           </div>
 //         </div>
 
-//         {/* Action Buttons */}
-//         <div className={`flex flex-col sm:flex-row gap-4 mt-12 transform transition-all duration-1000 delay-500 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-//           <button
-//             onClick={() => navigate("/orders")}
-//             className="px-8 py-4 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-//           >
-//             <CheckCircle className="w-5 h-5" />
-//             View My Orders
-//           </button>
-          
-//           <button
-//             onClick={() => navigate("/")}
-//             className="px-8 py-4 bg-white border-2 border-blue-500 text-blue-600 hover:bg-blue-50 font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-//           >
-//             Continue Shopping
-//           </button>
-//         </div>
-
-//         {/* Thank You Message */}
-//         <div className={`mt-12 text-center max-w-2xl transform transition-all duration-1000 delay-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-//           <div className="bg-white/60 backdrop-blur-sm border border-blue-100 rounded-2xl p-8 shadow-lg">
-//             <h3 className="text-2xl font-bold text-gray-800 mb-3">Thank You for Your Purchase!</h3>
-//             <p className="text-gray-600 leading-relaxed">
-//               We appreciate your business and trust in our service. You will receive an email confirmation shortly with your order details and tracking information once your order ships.
-//             </p>
-//           </div>
+//         {/* Bottom Note */}
+//         <div className={`mt-8 text-center max-w-2xl transition-all duration-700 delay-900 ${
+//           animate ? "opacity-100" : "opacity-0"
+//         }`}>
+//           <p className="text-slate-600 text-sm">
+//             A confirmation email has been sent to your registered email address.
+//             You'll receive another email with tracking information once your order ships.
+//           </p>
 //         </div>
 //       </div>
+
+//       {/* Add CSS for animations */}
+//       <style jsx>{`
+//         @keyframes confetti {
+//           0% {
+//             transform: translateY(-100px) rotate(0deg);
+//           }
+//           100% {
+//             transform: translateY(100vh) rotate(360deg);
+//           }
+//         }
+//         @keyframes blob {
+//           0% {
+//             transform: translate(0px, 0px) scale(1);
+//           }
+//           33% {
+//             transform: translate(30px, -50px) scale(1.1);
+//           }
+//           66% {
+//             transform: translate(-20px, 20px) scale(0.9);
+//           }
+//           100% {
+//             transform: translate(0px, 0px) scale(1);
+//           }
+//         }
+//         .animate-confetti {
+//           animation: confetti linear infinite;
+//         }
+//         .animate-blob {
+//           animation: blob 7s infinite;
+//         }
+//         .animation-delay-2000 {
+//           animation-delay: 2s;
+//         }
+//         .animation-delay-4000 {
+//           animation-delay: 4s;
+//         }
+//       `}</style>
 //     </div>
 //   );
 // }
-
-
-
-
-
 
 
 
@@ -502,85 +484,184 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CheckCircle, Package, Truck, Home, ShoppingBag, Calendar, CreditCard } from "lucide-react";
+import api from "../Api/Axios_Instance";
+import { 
+  CheckCircle, 
+  Package, 
+  Truck, 
+  Home, 
+  ShoppingBag, 
+  Calendar, 
+  CreditCard, 
+  Mail, 
+  Phone, 
+  MapPin,
+  Download,
+  Share2,
+  Shield,
+  Sparkles,
+  Clock,
+  ChevronRight,
+  Star,
+  Gift,
+  Trophy,
+  Zap
+} from "lucide-react";
 
 export default function PaymentSuccess() {
   const { orderId } = useParams();
+  const validOrderId = Number(orderId);
+
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [animate, setAnimate] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [checkmarkDraw, setCheckmarkDraw] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     // Sequence animations
     const timer1 = setTimeout(() => setShowSuccess(true), 300);
     const timer2 = setTimeout(() => setCheckmarkDraw(true), 800);
     const timer3 = setTimeout(() => setAnimate(true), 1200);
+    const timer4 = setTimeout(() => setShowConfetti(true), 500);
     
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(timer4);
     };
   }, []);
 
-  // Mock order data - replace with actual API call if needed
-  const order = {
-    id: orderId,
-    date: new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    }),
-    total: 299.99,
-    paymentMethod: "Card Payment",
-    estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    })
-  };
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const validId = Number(orderId);
+
+        if (!validId || isNaN(validId)) {
+          console.error("Invalid orderId:", orderId);
+          setLoading(false);
+          return;
+        }
+
+        const res = await api.get(`/order/${validId}`);
+        setOrder(res.data.data);
+        console.log("ORDER FROM API:", res.data.data);
+      } catch (err) {
+        console.error("Failed to fetch order", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [orderId]);
+
+  if (loading || !order) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-950 to-black">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center mb-4">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-gray-700 border-t-emerald-500 rounded-full animate-spin"></div>
+              <ShoppingBag className="w-8 h-8 absolute inset-0 m-auto text-emerald-400" />
+            </div>
+          </div>
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-gray-200 to-gray-300 bg-clip-text text-transparent">
+            Loading your order details...
+          </h2>
+          <p className="text-gray-500 mt-2">Preparing your receipt</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate estimated delivery (3-7 days from now)
+  const orderDate = order.OrderDate ? new Date(order.OrderDate) : new Date();
+  const estimatedDelivery = new Date(orderDate);
+  estimatedDelivery.setDate(estimatedDelivery.getDate() + Math.floor(Math.random() * 5) + 3);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
-      <div className="flex flex-col items-center justify-center py-16 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-black overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-purple-500/10 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Confetti Effect */}
+      {showConfetti && (
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 rounded-full animate-confetti"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${Math.random() * 3 + 2}s`,
+                opacity: Math.random() * 0.5 + 0.5,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      <div className="relative flex flex-col items-center justify-center py-16 px-4">
+        {/* Success Card */}
         <div
-          className={`bg-white border border-slate-200 rounded-2xl shadow-sm w-full max-w-2xl p-8 md:p-12 transform transition-all duration-1000 ${
+          className={`bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm border border-gray-700/50 rounded-3xl shadow-2xl shadow-emerald-500/10 w-full max-w-4xl p-8 md:p-12 transform transition-all duration-1000 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          {/* Success Icon with Animation */}
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              {/* Animated Circle Background */}
+          {/* Header with Success Icon */}
+          <div className="flex flex-col items-center mb-10">
+            <div className="relative mb-6">
+              {/* Glow Effect */}
+              <div className="absolute inset-0 w-32 h-32 bg-emerald-500/30 blur-2xl rounded-full"></div>
+              
+              {/* Animated Circle */}
               <div 
-                className={`w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center transition-all duration-500 ${
+                className={`relative w-32 h-32 bg-gradient-to-br from-gray-800 to-gray-900 rounded-full flex items-center justify-center transition-all duration-700 ${
                   showSuccess ? "scale-100 opacity-100" : "scale-0 opacity-0"
                 }`}
+                style={{
+                  boxShadow: '0 20px 60px rgba(16, 185, 129, 0.3)',
+                  border: '1px solid rgba(16, 185, 129, 0.2)'
+                }}
               >
-                {/* Animated Checkmark */}
+                {/* Checkmark Animation */}
                 <svg
-                  className="w-14 h-14"
+                  className="w-20 h-20"
                   viewBox="0 0 52 52"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <circle
-                    className="transition-all duration-700 ease-out"
+                    className="transition-all duration-1000 ease-out"
                     cx="26"
                     cy="26"
                     r="25"
                     fill="none"
-                    stroke="#10b981"
+                    stroke="url(#gradient)"
                     strokeWidth="2"
                     style={{
                       strokeDasharray: checkmarkDraw ? "166" : "0",
                       strokeDashoffset: "0",
                     }}
                   />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#10b981" />
+                      <stop offset="100%" stopColor="#34d399" />
+                    </linearGradient>
+                  </defs>
                   <path
-                    className="transition-all duration-500 ease-out"
+                    className="transition-all duration-700 ease-out"
                     fill="none"
-                    stroke="#10b981"
+                    stroke="url(#gradient)"
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -592,170 +673,323 @@ export default function PaymentSuccess() {
                     }}
                   />
                 </svg>
+                
+                {/* Floating Sparkles */}
+                <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-pulse" />
+                <Sparkles className="absolute -bottom-2 -left-2 w-6 h-6 text-blue-400 animate-pulse animation-delay-1000" />
               </div>
-              
-              {/* Ripple Effect */}
-              <div 
-                className={`absolute inset-0 w-24 h-24 bg-emerald-100 rounded-full transition-all duration-1000 ${
-                  checkmarkDraw ? "animate-ping opacity-20" : "opacity-0"
-                }`}
-              ></div>
-              
-              {/* Outer Ripple */}
-              <div 
-                className={`absolute inset-0 w-24 h-24 bg-emerald-200 rounded-full transition-all duration-1000 delay-200 ${
-                  checkmarkDraw ? "animate-ping opacity-10" : "opacity-0"
-                }`}
-              ></div>
+            </div>
+
+            {/* Success Message */}
+            <div className="text-center mb-6">
+              <h1 className={`text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent mb-4 transition-all duration-700 ${
+                animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
+                Payment Successful!
+              </h1>
+              <div className={`h-1 w-32 bg-gradient-to-r from-emerald-400 to-blue-400 mx-auto mb-6 rounded-full transition-all duration-700 delay-100 ${
+                animate ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+              }`}></div>
+              <p className={`text-gray-400 text-lg transition-all duration-700 delay-200 ${
+                animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}>
+                Thank you for your purchase! Your order is confirmed.
+              </p>
             </div>
           </div>
 
-          {/* Success Message */}
-          <div className="text-center mb-10">
-            <h1 className={`text-4xl md:text-5xl font-serif font-light text-slate-900 mb-4 tracking-tight transition-all duration-700 ${
-              animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}>
-              Payment Successful
-            </h1>
-            <div className={`h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent max-w-md mx-auto mb-6 transition-all duration-700 delay-100 ${
-              animate ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
-            }`}></div>
-            <p className={`text-slate-600 text-base transition-all duration-700 delay-200 ${
-              animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}>
-              Thank you for your order! Your payment has been processed successfully.
-            </p>
-          </div>
-
-          {/* Order Details */}
-          <div className={`space-y-4 mb-8 transition-all duration-700 delay-300 ${
+          {/* Order Summary Card */}
+          <div className={`bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 mb-8 transition-all duration-700 delay-300 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-white rounded-lg border border-slate-200">
-                    <Package className="w-5 h-5 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">
-                      Order Number
-                    </p>
-                    <p className="text-slate-900 font-medium">#{order.id}</p>
-                  </div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-200 flex items-center gap-2">
+                <div className="relative bg-gradient-to-br from-emerald-500/20 to-green-500/20 p-2 rounded-lg">
+                  <Package className="w-5 h-5 text-emerald-400" />
                 </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-white rounded-lg border border-slate-200">
-                    <Calendar className="w-5 h-5 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">
-                      Order Date
-                    </p>
-                    <p className="text-slate-900 font-medium">{order.date}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-white rounded-lg border border-slate-200">
-                    <CreditCard className="w-5 h-5 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">
-                      Payment Method
-                    </p>
-                    <p className="text-slate-900 font-medium">{order.paymentMethod}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-white rounded-lg border border-slate-200">
-                    <Truck className="w-5 h-5 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">
-                      Estimated Delivery
-                    </p>
-                    <p className="text-slate-900 font-medium">{order.estimatedDelivery}</p>
-                  </div>
-                </div>
+                Order Summary
+              </h2>
+              <div className="flex gap-2">
+                <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-700/50">
+                  <Download className="w-5 h-5" />
+                </button>
+                <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-700/50">
+                  <Share2 className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-700 text-base font-medium">Total Amount Paid:</span>
-                <span className="text-3xl font-semibold text-slate-900">
-                  ${order.total.toFixed(2)}
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Order Number */}
+              <div className="group space-y-3 p-4 bg-gray-800/30 rounded-xl hover:bg-gray-800/50 transition-all duration-300">
+                <div className="flex items-center gap-3">
+                  <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-2.5 rounded-lg border border-gray-700/50">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Package className="w-4 h-4 text-emerald-400 relative z-10" />
+                  </div>
+                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Order Number
+                  </span>
+                </div>
+                <p className="text-lg font-semibold text-gray-200">
+                  #{order?.Id ?? order?.id ?? orderId}
+                </p>
               </div>
-            </div>
-          </div>
 
-          {/* Delivery Status */}
-          <div className={`bg-emerald-50 border border-emerald-200 rounded-xl p-6 mb-8 transition-all duration-700 delay-400 ${
-            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}>
-            <div className="flex items-start gap-3">
-              <Truck className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="text-base font-medium text-emerald-900 mb-1">
-                  Your order is being processed
-                </h3>
-                <p className="text-sm text-emerald-700">
-                  We'll send you a confirmation email with tracking details once your order ships.
+              {/* Order Date */}
+              <div className="group space-y-3 p-4 bg-gray-800/30 rounded-xl hover:bg-gray-800/50 transition-all duration-300">
+                <div className="flex items-center gap-3">
+                  <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-2.5 rounded-lg border border-gray-700/50">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Calendar className="w-4 h-4 text-blue-400 relative z-10" />
+                  </div>
+                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Order Date
+                  </span>
+                </div>
+                <p className="text-lg font-semibold text-gray-200">
+                  {order.OrderDate
+                    ? new Date(order.OrderDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
+                    : new Date().toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                </p>
+              </div>
+
+              {/* Payment Method */}
+              <div className="group space-y-3 p-4 bg-gray-800/30 rounded-xl hover:bg-gray-800/50 transition-all duration-300">
+                <div className="flex items-center gap-3">
+                  <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-2.5 rounded-lg border border-gray-700/50">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <CreditCard className="w-4 h-4 text-purple-400 relative z-10" />
+                  </div>
+                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Payment Method
+                  </span>
+                </div>
+                <p className="text-lg font-semibold text-gray-200">
+{order.PaymentMode === "COD" ? "Cash on Delivery" : "Online Payment"}
+                </p>
+              </div>
+
+              {/* Estimated Delivery */}
+              <div className="group space-y-3 p-4 bg-gray-800/30 rounded-xl hover:bg-gray-800/50 transition-all duration-300">
+                <div className="flex items-center gap-3">
+                  <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-2.5 rounded-lg border border-gray-700/50">
+                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-amber-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Clock className="w-4 h-4 text-yellow-400 relative z-10" />
+                  </div>
+                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Delivery Est.
+                  </span>
+                </div>
+                <p className="text-lg font-semibold text-emerald-400">
+                  {estimatedDelivery.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Amount Card */}
+          <div className={`group relative overflow-hidden bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700/50 rounded-2xl p-6 mb-8 transition-all duration-700 delay-400 hover:shadow-xl hover:shadow-emerald-500/10 ${
+            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-green-500/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+            <div className="relative flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div>
+                <p className="text-gray-400 text-sm font-medium mb-1">Total Amount Paid</p>
+                <p className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+                  ${Number(order?.TotalAmount ?? order?.totalAmount ?? order?.amount ?? 0).toFixed(2)}
+                </p>
+              </div>
+              <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/30 px-4 py-2 rounded-xl">
+                <Shield className="w-5 h-5 text-emerald-400" />
+                <span className="text-emerald-400 text-sm font-medium">Payment Secured & Encrypted</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Shipping Info & Actions */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+            {/* Shipping Status */}
+            <div className={`group relative overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-6 transition-all duration-700 delay-500 hover:shadow-lg hover:shadow-emerald-500/10 ${
+              animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative flex items-start gap-4">
+                <div className="relative bg-gradient-to-br from-emerald-500/20 to-green-500/20 p-3 rounded-xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-green-500/30 blur-xl opacity-50"></div>
+                  <Truck className="w-6 h-6 text-emerald-400 relative z-10" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-emerald-300 mb-2">
+                    Order Status: Processing
+                  </h3>
+                  <p className="text-emerald-400/80 mb-4">
+                    Your order is being prepared for shipment. We'll notify you when it's on the way!
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-emerald-400">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span>Real-time tracking available soon</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Customer Support */}
+            <div className={`group relative overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6 transition-all duration-700 delay-600 hover:shadow-lg hover:shadow-blue-500/10 ${
+              animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <h3 className="text-lg font-semibold text-blue-300 mb-4 relative">Need Help?</h3>
+              <div className="space-y-3 relative">
+                <div className="flex items-center gap-3">
+                  <div className="relative bg-gradient-to-br from-blue-500/20 to-cyan-500/20 p-2 rounded-lg">
+                    <Mail className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <span className="text-blue-300">support@sportex.com</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="relative bg-gradient-to-br from-blue-500/20 to-cyan-500/20 p-2 rounded-lg">
+                    <Phone className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <span className="text-blue-300">1-800-123-4567</span>
+                </div>
+                <button className="mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium inline-flex items-center gap-1 transition-colors group">
+                  View FAQ 
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Action Buttons */}
-          <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 delay-500 ${
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-700 delay-700 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}>
             <button
               onClick={() => navigate("/orders")}
-              className="flex-1 py-3.5 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition-all duration-300 flex items-center justify-center gap-2"
+              className="group relative overflow-hidden py-4 px-6 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 flex items-center justify-center gap-3 border border-gray-700/50"
             >
-              <Package className="w-5 h-5" />
-              View Orders
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+              <Package className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" />
+              <span className="relative z-10">View All Orders</span>
             </button>
+            
             <button
               onClick={() => navigate("/")}
-              className="flex-1 py-3.5 bg-white text-slate-700 rounded-xl font-medium hover:bg-slate-50 border border-slate-200 transition-all duration-300 flex items-center justify-center gap-2"
+              className="group relative overflow-hidden py-4 px-6 bg-gradient-to-r from-gray-800 to-gray-900 text-gray-300 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 flex items-center justify-center gap-3 border border-gray-700/50"
             >
-              <Home className="w-5 h-5" />
-              Back to Home
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+              <Home className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" />
+              <span className="relative z-10">Back to Home</span>
+            </button>
+            
+            <button
+              onClick={() => navigate("/")}
+              className="group relative overflow-hidden py-4 px-6 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 flex items-center justify-center gap-3"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+              <ShoppingBag className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" />
+              <span className="relative z-10">Continue Shopping</span>
             </button>
           </div>
 
-          {/* Continue Shopping */}
-          <div className={`text-center mt-6 transition-all duration-700 delay-600 ${
+          {/* Quick Links */}
+          <div className={`mt-8 pt-8 border-t border-gray-700/50 transition-all duration-700 delay-800 ${
             animate ? "opacity-100" : "opacity-0"
           }`}>
-            <button
-              onClick={() => navigate("/products")}
-              className="text-slate-600 hover:text-slate-900 text-sm font-medium inline-flex items-center gap-2 transition-colors"
-            >
-              <ShoppingBag className="w-4 h-4" />
-              Continue Shopping
-            </button>
+            <p className="text-gray-400 text-center text-sm mb-4">
+              What would you like to do next?
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <button className="text-gray-400 hover:text-gray-200 text-sm font-medium px-4 py-2 hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-700/50">
+                Track Order
+              </button>
+              <button className="text-gray-400 hover:text-gray-200 text-sm font-medium px-4 py-2 hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-700/50">
+                Download Invoice
+              </button>
+              <button className="text-gray-400 hover:text-gray-200 text-sm font-medium px-4 py-2 hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-700/50">
+                Write a Review
+              </button>
+              <button className="text-gray-400 hover:text-gray-200 text-sm font-medium px-4 py-2 hover:bg-gray-800/50 rounded-lg transition-colors border border-gray-700/50">
+                Contact Support
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Additional Info */}
-        <div className={`mt-8 text-center max-w-2xl transition-all duration-700 delay-700 ${
+        {/* Bottom Note */}
+        <div className={`mt-8 text-center max-w-2xl transition-all duration-700 delay-900 ${
           animate ? "opacity-100" : "opacity-0"
         }`}>
-          <p className="text-slate-600 text-sm">
-            Questions about your order? Contact our support team at{" "}
-            <a href="mailto:support@example.com" className="text-slate-900 font-medium hover:underline">
-              support@example.com
-            </a>
+          <p className="text-gray-500 text-sm">
+            A confirmation email has been sent to your registered email address.
+            You'll receive another email with tracking information once your order ships.
           </p>
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
+              <Trophy className="w-4 h-4 text-yellow-500" />
+              Premium Service
+            </div>
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
+              <Zap className="w-4 h-4 text-blue-500" />
+              Fast Processing
+            </div>
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
+              <Gift className="w-4 h-4 text-emerald-500" />
+              Loyalty Rewards
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Add CSS for animations */}
+      <style jsx>{`
+        @keyframes confetti {
+          0% {
+            transform: translateY(-100px) rotate(0deg);
+          }
+          100% {
+            transform: translateY(100vh) rotate(360deg);
+          }
+        }
+        @keyframes blob {
+          0% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
+        }
+        .animate-confetti {
+          animation: confetti linear infinite;
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </div>
   );
 }

@@ -202,7 +202,6 @@ export default function Login() {
         <div className="mt-6 xs:mt-8 text-center">
           <div className="inline-flex items-center gap-1.5 xs:gap-2.5 bg-white/90 backdrop-blur-md border border-white/40 rounded-full px-4 xs:px-6 sm:px-8 py-2 xs:py-3 sm:py-4 shadow-lg xs:shadow-xl shadow-slate-900/10 hover:shadow-2xl hover:shadow-slate-900/20 transition-all duration-300">
             <Lock className="w-3 h-3 xs:w-4 xs:h-4 text-slate-600" />
-            <span className="text-slate-700 text-xs xs:text-sm font-medium tracking-wide">Secure Login • SSL Protected</span>
           </div>
         </div>
       </div>
