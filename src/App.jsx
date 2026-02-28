@@ -341,7 +341,7 @@ function RoutesWrapper({ searchTerm, onSearch }) {
   const isAdmin = location.pathname.startsWith("/admin");
 
   return (
-    <main className={isHome || isAdmin ? "pt-0 flex-grow" : "pt-16 flex-grow"}>
+    <main className={ isAdmin ? "pt-0 flex-grow" : "pt-16 flex-grow"}>
       {!isAdmin && <Navbar onSearch={onSearch} />}
 
       <Routes>
