@@ -830,9 +830,8 @@ export default function Navbar({ onSearch }) {
               {/* Image slot — replace src with your logo */}
               <div className="logo-image-ring">
                 <div className="logo-image-inner">
-                  {/* If you have a logo image, replace the span below with:
-                      <img src="/your-logo.png" alt="SportX" /> */}
-                  <span className="text-white font-black text-lg tracking-tight" style={{fontFamily:'Bebas Neue, sans-serif'}}>SX</span>
+                  
+                       <img src="/spot.png" alt="SportX" />
                 </div>
               </div>
 
