@@ -216,8 +216,6 @@
 
 
 
-
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -266,7 +264,7 @@ export default function Login() {
         {/* Login Card - Two Column Layout */}
         <div className="bg-black border border-[#222] overflow-hidden flex flex-col md:flex-row">
           {/* Left Section - Branding */}
-          <div className="w-full md:w-2/5 h-40 md:h-auto bg-black flex items-center justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-[#222]">
+          <div className="w-full md:w-2/5 h-auto min-h-[200px] md:min-h-0 bg-black flex items-center justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-[#222] py-8 md:py-0">
             <div className="text-center p-6 relative z-10">
               <div className="w-16 h-16 bg-black border border-[#333] flex items-center justify-center mx-auto mb-4">
                 <User className="w-8 h-8 text-white" strokeWidth={1.5} />
