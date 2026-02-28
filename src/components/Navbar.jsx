@@ -563,9 +563,6 @@
 
 
 
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Heart, ShoppingCart, User, LogOut, Menu, X, Search, Home, ShoppingBag, Info, Phone } from "lucide-react"; 
@@ -824,18 +821,9 @@ export default function Navbar({ onSearch }) {
 
             {/* ── Logo ── */}
             <div
-              className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
+              className="flex items-center cursor-pointer group flex-shrink-0"
               onClick={handleHomeClick}
             >
-              {/* Image slot — replace src with your logo */}
-              <div className="logo-image-ring">
-                <div className="logo-image-inner">
-                  
-                       <img src="/spot.jpg" alt="SportX" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:'10px'}} />
-                </div>
-              </div>
-
-              {/* Brand text */}
               <div className="flex flex-col leading-none">
                 <span
                   className="brand-font text-2xl sm:text-3xl tracking-wider bg-gradient-to-r from-purple-400 via-fuchsia-300 to-cyan-400 bg-clip-text text-transparent"
@@ -988,16 +976,9 @@ export default function Navbar({ onSearch }) {
           
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-            <div className="flex items-center gap-3">
-              <div className="logo-image-ring" style={{width:36,height:36}}>
-                <div className="logo-image-inner" style={{borderRadius:9}}>
-                  <span className="text-white font-black text-base" style={{fontFamily:'Bebas Neue, sans-serif'}}>SX</span>
-                </div>
-              </div>
-              <span className="brand-font text-2xl tracking-wider bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                SPORT-X
-              </span>
-            </div>
+            <span className="brand-font text-2xl tracking-wider bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              SPORT-X
+            </span>
             <button onClick={() => setIsMobileMenuOpen(false)} className="icon-btn" style={{width:34,height:34}}>
               <X size={16} className="text-gray-400" />
             </button>
