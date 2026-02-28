@@ -699,8 +699,6 @@
 
 
 
-
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../Api/Axios_Instance";
@@ -716,18 +714,14 @@ import {
   Zap, ChevronLeft, ChevronRight as ChevronRightIcon
 } from "lucide-react";
 
-// Custom hook for scroll animations with debouncing
 const useScrollFade = (id, threshold = 100) => {
   const [visible, setVisible] = useState(false);
   const timeoutRef = useRef(null);
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => {
-          setVisible(entry.isIntersecting);
-        }, 50);
+        timeoutRef.current = setTimeout(() => { setVisible(entry.isIntersecting); }, 50);
       },
       { threshold: 0.1, rootMargin: `-${threshold}px` }
     );
@@ -764,9 +758,7 @@ export default function Home() {
   const slideIntervalRef = useRef(null);
   const fetchTimeoutRef = useRef(null);
 
-  const debouncedSetSlide = useCallback(
-    debounce((slideIndex) => { setCurrentSlide(slideIndex); }, 100), []
-  );
+  const debouncedSetSlide = useCallback(debounce((slideIndex) => { setCurrentSlide(slideIndex); }, 100), []);
 
   const handleSlideChange = (index) => {
     if (slideIntervalRef.current) clearInterval(slideIntervalRef.current);
@@ -892,9 +884,7 @@ export default function Home() {
       try {
         await addToCart(item, 1);
         setRecentlyAddedToCart(prev => ({ ...prev, [item.id]: true }));
-        setTimeout(() => {
-          setRecentlyAddedToCart(prev => ({ ...prev, [item.id]: false }));
-        }, 2000);
+        setTimeout(() => { setRecentlyAddedToCart(prev => ({ ...prev, [item.id]: false })); }, 2000);
       } catch (error) { console.error("Failed to add to cart:", error); }
     }, [user, navigate, addToCart]
   );
@@ -947,352 +937,279 @@ export default function Home() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap');
 
-        :root {
-          --black: #000;
-          --white: #fff;
-          --off-white: #e8e8e8;
-          --grey-100: #f0f0f0;
-          --grey-400: #999;
-          --grey-600: #555;
-          --grey-700: #333;
-          --grey-800: #1a1a1a;
-          --grey-900: #111;
-          --border: #222;
-          --border-light: #2e2e2e;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
         .iLU-condensed { font-family: 'Barlow Condensed', sans-serif; }
-        .iLU-body { font-family: 'Barlow', sans-serif; }
+        .iLU-body      { font-family: 'Barlow', sans-serif; }
 
-        /* Ticker */
-        .ticker-wrap { background: #fff; overflow: hidden; white-space: nowrap; border-bottom: 1px solid #eee; }
-        .ticker-track { display: inline-flex; animation: ticker 30s linear infinite; }
-        .ticker-item {
-          display: inline-flex; align-items: center; gap: 24px;
-          padding: 9px 48px;
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
-          text-transform: uppercase; color: #000;
+        /* ── Ticker ── */
+        .ticker-wrap  { background:#fff; overflow:hidden; white-space:nowrap; border-bottom:1px solid #eee; }
+        .ticker-track { display:inline-flex; animation:ticker 30s linear infinite; }
+        .ticker-item  {
+          display:inline-flex; align-items:center; gap:20px;
+          padding:8px 36px;
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#000;
         }
-        .ticker-dot { width: 4px; height: 4px; background: #000; flex-shrink: 0; }
-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .ticker-dot { width:4px; height:4px; background:#000; border-radius:50%; flex-shrink:0; }
+        @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-        /* Section labels */
+        /* ── Section label ── */
         .section-label {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 10px; font-weight: 700; letter-spacing: 0.3em;
-          text-transform: uppercase; color: var(--grey-600);
-          display: flex; align-items: center; gap: 12px;
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:10px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:#555;
+          display:flex; align-items:center; gap:12px;
         }
-        .section-label::after {
-          content: ''; flex: 1; height: 1px; background: var(--border);
-        }
+        .section-label::after { content:''; flex:1; height:1px; background:#222; }
 
-        /* Big headings */
+        /* ── Display heading ── */
         .display-heading {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: clamp(52px, 10vw, 110px);
-          font-weight: 900; line-height: 0.9;
-          text-transform: uppercase; letter-spacing: -0.02em;
-          color: #fff;
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:clamp(44px,10vw,110px);
+          font-weight:900; line-height:.9; text-transform:uppercase; letter-spacing:-.02em; color:#fff;
         }
-        .display-heading .outline {
-          -webkit-text-stroke: 1px rgba(255,255,255,0.25);
-          color: transparent;
-        }
+        .display-heading .outline { -webkit-text-stroke:1px rgba(255,255,255,.25); color:transparent; }
 
-        /* Buttons */
+        /* ── Buttons ── */
         .btn-primary {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 12px; font-weight: 800; letter-spacing: 0.2em;
-          text-transform: uppercase;
-          background: #fff; color: #000;
-          border: none; cursor: pointer;
-          padding: 14px 32px;
-          transition: background 0.15s, color 0.15s;
-          display: inline-flex; align-items: center; gap: 10px;
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+          background:#fff; color:#000; border:none; cursor:pointer; padding:12px 26px;
+          transition:background .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
         }
-        .btn-primary:hover { background: #e8e8e8; }
+        .btn-primary:hover { background:#e8e8e8; }
 
         .btn-outline {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 12px; font-weight: 800; letter-spacing: 0.2em;
-          text-transform: uppercase;
-          background: transparent; color: #fff;
-          border: 1px solid #333; cursor: pointer;
-          padding: 14px 32px;
-          transition: border-color 0.15s, background 0.15s;
-          display: inline-flex; align-items: center; gap: 10px;
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+          background:transparent; color:#fff; border:1px solid #333; cursor:pointer; padding:12px 26px;
+          transition:border-color .15s,background .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
         }
-        .btn-outline:hover { border-color: #666; background: #111; }
+        .btn-outline:hover { border-color:#666; background:#111; }
 
         .btn-small {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 11px; font-weight: 800; letter-spacing: 0.18em;
-          text-transform: uppercase;
-          background: #fff; color: #000;
-          border: none; cursor: pointer;
-          padding: 10px 20px;
-          transition: background 0.15s;
-          white-space: nowrap;
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
+          background:#fff; color:#000; border:none; cursor:pointer; padding:9px 16px;
+          transition:background .15s; white-space:nowrap; flex-shrink:0;
         }
-        .btn-small:hover { background: #e8e8e8; }
+        .btn-small:hover { background:#e8e8e8; }
 
-        .btn-small-outline {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 11px; font-weight: 800; letter-spacing: 0.18em;
-          text-transform: uppercase;
-          background: transparent; color: #fff;
-          border: 1px solid #333; cursor: pointer;
-          padding: 10px 20px;
-          transition: border-color 0.15s, background 0.15s;
-        }
-        .btn-small-outline:hover { border-color: #555; background: #111; }
-
-        /* Product tag */
+        /* ── Product tag ── */
         .product-tag {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-size: 9px; font-weight: 800; letter-spacing: 0.2em;
-          text-transform: uppercase;
-          background: #fff; color: #000;
-          padding: 4px 10px;
-          display: inline-block;
+          font-family:'Barlow Condensed',sans-serif;
+          font-size:9px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+          background:#fff; color:#000; padding:3px 9px; display:inline-block;
         }
 
-        /* Hero slide */
-        .hero-slide { position: absolute; inset: 0; transition: opacity 0.8s ease, transform 0.8s ease; }
-        .hero-slide.active { opacity: 1; transform: scale(1); z-index: 2; }
-        .hero-slide.inactive { opacity: 0; transform: scale(1.03); z-index: 1; }
+        /* ── Hero slide ── */
+        .hero-slide { position:absolute; inset:0; transition:opacity .8s ease,transform .8s ease; }
+        .hero-slide.active  { opacity:1; transform:scale(1); z-index:2; }
+        .hero-slide.inactive{ opacity:0; transform:scale(1.03); z-index:1; }
 
-        /* Slide dot */
-        .slide-dot {
-          height: 2px; background: #333; border: none; cursor: pointer;
-          transition: all 0.3s ease; flex-shrink: 0;
-        }
-        .slide-dot.active { background: #fff; }
+        /* ── Slide dot ── */
+        .slide-dot { height:2px; background:#333; border:none; cursor:pointer; transition:all .3s ease; flex-shrink:0; padding:0; }
+        .slide-dot.active { background:#fff; }
 
-        /* Feature card */
-        .feature-card {
-          border: 1px solid var(--border);
-          padding: 32px 28px;
-          transition: border-color 0.2s, background 0.2s;
-          background: #000;
-        }
-        .feature-card:hover { border-color: #444; background: #0d0d0d; }
+        /* ── Feature card ── */
+        .feature-card { border:1px solid #222; padding:28px 24px; transition:border-color .2s,background .2s; background:#000; }
+        .feature-card:hover { border-color:#444; background:#0d0d0d; }
 
-        /* Category card */
-        .category-card {
-          position: relative; overflow: hidden; cursor: pointer;
-          border: 1px solid var(--border);
-          transition: border-color 0.2s;
-        }
-        .category-card:hover { border-color: #444; }
-        .category-card:hover .cat-img { transform: scale(1.05); }
-        .cat-img { transition: transform 0.6s ease; }
-        .category-overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
-        }
+        /* ── Category card ── */
+        .category-card { position:relative; overflow:hidden; cursor:pointer; border:1px solid #222; transition:border-color .2s; }
+        .category-card:hover { border-color:#444; }
+        .category-card:hover .cat-img { transform:scale(1.05); }
+        .cat-img { transition:transform .6s ease; width:100%; height:100%; object-fit:cover; filter:grayscale(30%); display:block; }
+        .category-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.3) 50%,transparent 100%); }
 
-        /* Product card */
-        .product-card {
-          background: #000;
-          border: 1px solid var(--border);
-          cursor: pointer;
-          transition: border-color 0.2s;
-          position: relative;
-          overflow: hidden;
-        }
-        .product-card:hover { border-color: #444; }
-        .product-card:hover .product-img { transform: scale(1.06); }
-        .product-img { transition: transform 0.5s ease; }
+        /* ── Product card ── */
+        .product-card { background:#000; border:1px solid #222; cursor:pointer; transition:border-color .2s; position:relative; overflow:hidden; }
+        .product-card:hover { border-color:#444; }
+        .product-card:hover .product-img { transform:scale(1.06); }
+        .product-img { transition:transform .5s ease; }
 
-        .product-actions {
-          position: absolute; top: 12px; right: 12px;
-          display: flex; flex-direction: column; gap: 6px;
-          opacity: 0; transition: opacity 0.2s ease;
-        }
-        .product-card:hover .product-actions { opacity: 1; }
+        .product-actions { position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:6px; opacity:0; transition:opacity .2s ease; }
+        .product-card:hover .product-actions { opacity:1; }
 
         .icon-action {
-          width: 36px; height: 36px;
-          background: #000; border: 1px solid #333;
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; transition: background 0.15s, border-color 0.15s;
-          color: #999;
+          width:34px; height:34px; background:#000; border:1px solid #333;
+          display:flex; align-items:center; justify-content:center;
+          cursor:pointer; transition:background .15s,border-color .15s; color:#999;
         }
-        .icon-action:hover { background: #fff; color: #000; border-color: #fff; }
-        .icon-action.active-wish { background: #fff; color: #000; border-color: #fff; }
+        .icon-action:hover,.icon-action.active-wish { background:#fff; color:#000; border-color:#fff; }
 
-        /* Cart icon */
         .cart-action {
-          width: 38px; height: 38px;
-          background: #1a1a1a; border: 1px solid #2e2e2e;
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; transition: background 0.15s, border-color 0.15s;
-          color: #666; flex-shrink: 0;
+          width:36px; height:36px; background:#1a1a1a; border:1px solid #2e2e2e;
+          display:flex; align-items:center; justify-content:center;
+          cursor:pointer; transition:background .15s,border-color .15s; color:#666; flex-shrink:0;
         }
-        .cart-action:hover { background: #fff; color: #000; border-color: #fff; }
-        .cart-action.in-cart { background: #fff; color: #000; border-color: #fff; }
+        .cart-action:hover,.cart-action.in-cart { background:#fff; color:#000; border-color:#fff; }
 
-        /* Stat card */
-        .stat-card {
-          text-align: center; padding: 40px 20px;
-          border-right: 1px solid var(--border);
+        /* ── Divider ── */
+        .full-divider { border:none; border-top:1px solid #222; margin:0; }
+
+        /* ── Scroll fade ── */
+        .scroll-section { transition:opacity .8s ease,transform .8s ease; }
+        .scroll-visible { opacity:1 !important; transform:translateY(0) !important; }
+        .scroll-hidden  { opacity:0; transform:translateY(24px); }
+
+        @keyframes spin { to{transform:rotate(360deg)} }
+
+        /* ══════════════════════════════
+           LAYOUT GRIDS
+        ══════════════════════════════ */
+
+        .hero-grid       { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+        .features-grid   { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#222; }
+        .categories-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#222; }
+        .products-grid   { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#222; }
+        .stats-grid      { display:grid; grid-template-columns:repeat(4,1fr); }
+
+        .section-header-row {
+          display:flex; align-items:flex-end; justify-content:space-between;
+          flex-wrap:wrap; gap:16px; margin-bottom:40px;
         }
-        .stat-card:last-child { border-right: none; }
+        .hero-inner  { position:relative; z-index:10; width:100%; max-width:1280px; margin:0 auto; padding:110px 32px 72px; }
+        .section-pad { padding:72px 0; }
+        .section-inner { max-width:1280px; margin:0 auto; padding:0 32px; }
 
-        /* Divider */
-        .full-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+        /* ── Tablet ≤ 1024px ── */
+        @media(max-width:1024px){
+          .features-grid   { grid-template-columns:repeat(2,1fr); }
+          .categories-grid { grid-template-columns:repeat(2,1fr); }
+          .products-grid   { grid-template-columns:repeat(2,1fr); }
+          .stats-grid      { grid-template-columns:repeat(2,1fr); }
+          .stat-cell       { border-right:none !important; border-bottom:1px solid #222; }
+          .stat-cell:nth-child(odd)   { border-right:1px solid #222 !important; }
+          .stat-cell:nth-last-child(-n+2){ border-bottom:none; }
+        }
 
-        /* Scroll fade */
-        .scroll-section { transition: opacity 0.8s ease, transform 0.8s ease; }
-        .scroll-visible { opacity: 1; transform: translateY(0); }
-        .scroll-hidden { opacity: 0; transform: translateY(24px); }
+        /* ── Mobile ≤ 768px ── */
+        @media(max-width:768px){
+          .hero-grid       { grid-template-columns:1fr; gap:36px; }
+          .hero-inner      { padding:84px 20px 56px; }
+          .features-grid   { grid-template-columns:1fr; }
+          .categories-grid { grid-template-columns:repeat(2,1fr); }
+          .products-grid   { grid-template-columns:repeat(2,1fr); }
+          .section-pad     { padding:52px 0; }
+          .section-inner   { padding:0 20px; }
+          .section-header-row { margin-bottom:28px; }
+          .hide-mobile     { display:none !important; }
+          .show-mobile     { display:flex !important; }
+        }
 
-        @keyframes blob {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
+        /* ── Small mobile ≤ 480px ── */
+        @media(max-width:480px){
+          .categories-grid { grid-template-columns:1fr; }
+          .products-grid   { grid-template-columns:1fr; }
+          .hero-inner      { padding:80px 16px 48px; }
+          .section-inner   { padding:0 16px; }
+          .section-header-row { flex-direction:column; align-items:flex-start; }
+          .hide-small      { display:none !important; }
         }
       `}</style>
 
       {/* ── Ticker ── */}
       <div className="ticker-wrap">
         <div className="ticker-track">
-          {[...Array(2)].map((_, r) => (
-            ["FREE SHIPPING ON ORDERS OVER $150", "NEW SEASON DROP NOW LIVE", "PREMIUM FOOTBALL GEAR", "OFFICIAL LICENSED PRODUCTS", "30-DAY RETURNS", "WORLDWIDE DELIVERY"].map((text, i) => (
+          {[...Array(2)].map((_, r) =>
+            ["FREE SHIPPING ON ORDERS OVER $150","NEW SEASON DROP NOW LIVE","PREMIUM FOOTBALL GEAR","OFFICIAL LICENSED PRODUCTS","30-DAY RETURNS","WORLDWIDE DELIVERY"].map((text, i) => (
               <span key={`${r}-${i}`} className="ticker-item">
-                <span className="ticker-dot" /> {text}
+                <span className="ticker-dot"/> {text}
               </span>
             ))
-          ))}
+          )}
         </div>
       </div>
 
       {/* ── HERO ── */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', borderBottom: '1px solid #222' }}>
+      <section style={{ position:'relative', minHeight:'100vh', display:'flex', alignItems:'center', borderBottom:'1px solid #222' }}>
         
-        {/* Background product image */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+        {/* BG slides */}
+        <div style={{ position:'absolute', inset:0, zIndex:0 }}>
           {slides.map((slide, i) => (
-            <div
-              key={slide.id}
-              className={`hero-slide ${i === currentSlide ? 'active' : 'inactive'}`}
-            >
-              <div style={{
-                position: 'absolute', inset: 0,
-                background: 'linear-gradient(105deg, rgba(0,0,0,0.97) 45%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,0.15) 100%)'
-              }} />
-              <img
-                src={slide.image}
-                alt={slide.name}
-                style={{
-                  width: '100%', height: '100%', objectFit: 'cover',
-                  objectPosition: 'center right', opacity: 0.35, filter: 'grayscale(20%)'
-                }}
-              />
+            <div key={slide.id} className={`hero-slide ${i===currentSlide?'active':'inactive'}`}>
+              <div style={{ position:'absolute', inset:0, background:'linear-gradient(105deg,rgba(0,0,0,.97) 45%,rgba(0,0,0,.5) 75%,rgba(0,0,0,.15) 100%)' }}/>
+              <img src={slide.image} alt={slide.name} style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center right', opacity:.35, filter:'grayscale(20%)' }}/>
             </div>
           ))}
         </div>
 
-        <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 1280, margin: '0 auto', padding: '120px 32px 80px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
-            
-            {/* Left: Text */}
+        <div className="hero-inner">
+          <div className="hero-grid">
+
+            {/* Left */}
             <div>
-              <div className="section-label" style={{ marginBottom: 24 }}>
-                Sport-X Collection
+              <div className="section-label" style={{ marginBottom:18 }}>Sport-X Collection</div>
+              <div className="display-heading" style={{ marginBottom:18 }}>
+                <span style={{ display:'block' }}>Play</span>
+                <span style={{ display:'block' }} className="outline">Like A</span>
+                <span style={{ display:'block' }}>Champion</span>
               </div>
-
-              <div className="display-heading" style={{ marginBottom: 24 }}>
-                <span style={{ display: 'block' }}>Play</span>
-                <span style={{ display: 'block' }} className="outline">Like A</span>
-                <span style={{ display: 'block' }}>Champion</span>
-              </div>
-
-              <p className="iLU-body" style={{ color: '#666', fontSize: 15, lineHeight: 1.7, maxWidth: 420, marginBottom: 40 }}>
+              <p className="iLU-body" style={{ color:'#666', fontSize:15, lineHeight:1.7, maxWidth:420, marginBottom:28 }}>
                 Premium football equipment for players who demand more. From amateur leagues to professional arenas.
               </p>
-
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
                 <button className="btn-primary" onClick={() => navigate("/more-products")}>
-                  <ShoppingBag size={14} strokeWidth={2} />
-                  Shop Now
+                  <ShoppingBag size={14} strokeWidth={2}/> Shop Now
                 </button>
-                <button className="btn-outline" onClick={() => document.getElementById("products-grid")?.scrollIntoView({ behavior: "smooth" })}>
-                  <Gift size={14} strokeWidth={2} />
-                  Featured Drops
+                <button className="btn-outline" onClick={() => document.getElementById("products-grid")?.scrollIntoView({ behavior:"smooth" })}>
+                  <Gift size={14} strokeWidth={2}/> Featured Drops
                 </button>
               </div>
             </div>
 
-            {/* Right: Product card */}
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'relative', background: '#0d0d0d', border: '1px solid #222', padding: '40px 32px 28px' }}>
-                
-                {/* Tag */}
+            {/* Right: product card */}
+            <div>
+              <div style={{ position:'relative', background:'#0d0d0d', border:'1px solid #222', padding:'32px 24px 22px' }}>
                 {slides[currentSlide] && (
-                  <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ marginBottom:18, display:'flex', alignItems:'center', gap:12 }}>
                     <span className="product-tag">{slides[currentSlide].tag}</span>
-                    <span style={{
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      fontSize: 10, fontWeight: 700, letterSpacing: '0.2em',
-                      textTransform: 'uppercase', color: '#555'
-                    }}>{currentSlide + 1} / {slides.length}</span>
+                    <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.2em', textTransform:'uppercase', color:'#555' }}>
+                      {currentSlide+1} / {slides.length}
+                    </span>
                   </div>
                 )}
 
-                {/* Product image */}
                 <div
                   onClick={() => slides[currentSlide] && navigate(`/product/${slides[currentSlide].id}`)}
-                  style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginBottom: 24, position: 'relative', overflow: 'hidden' }}
+                  style={{ height:260, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', marginBottom:18, position:'relative', overflow:'hidden' }}
                 >
                   {slides.map((slide, i) => (
-                    <img
-                      key={slide.id}
-                      src={slide.image}
-                      alt={slide.name}
+                    <img key={slide.id} src={slide.image} alt={slide.name}
                       style={{
-                        position: 'absolute',
-                        maxHeight: 260, maxWidth: '100%', objectFit: 'contain',
-                        transition: 'opacity 0.6s ease, transform 0.6s ease',
-                        opacity: i === currentSlide ? 1 : 0,
-                        transform: i === currentSlide ? 'scale(1)' : 'scale(0.94)',
-                        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))'
+                        position:'absolute', maxHeight:'90%', maxWidth:'90%', objectFit:'contain',
+                        transition:'opacity .6s ease,transform .6s ease',
+                        opacity: i===currentSlide?1:0,
+                        transform: i===currentSlide?'scale(1)':'scale(.94)',
+                        filter:'drop-shadow(0 20px 40px rgba(0,0,0,.6))'
                       }}
                     />
                   ))}
                 </div>
 
-                {/* Product info */}
                 {slides[currentSlide] && (
-                  <div>
-                    <hr className="full-divider" style={{ marginBottom: 20 }} />
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div>
-                        <p className="iLU-condensed" style={{ fontSize: 18, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#fff', lineHeight: 1.1 }}>
+                  <>
+                    <hr className="full-divider" style={{ marginBottom:14 }}/>
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
+                      <div style={{ minWidth:0, flex:1 }}>
+                        <p className="iLU-condensed" style={{ fontSize:15, fontWeight:800, letterSpacing:'.05em', textTransform:'uppercase', color:'#fff', lineHeight:1.1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                           {slides[currentSlide].name}
                         </p>
-                        <p className="iLU-condensed" style={{ fontSize: 24, fontWeight: 900, color: '#fff', marginTop: 4 }}>
+                        <p className="iLU-condensed" style={{ fontSize:22, fontWeight:900, color:'#fff', marginTop:3 }}>
                           ${slides[currentSlide].price}
                         </p>
                       </div>
-                      <button className="btn-small" onClick={() => handleSlideBuyNow(slides[currentSlide])}>
-                        Buy Now
-                      </button>
+                      <button className="btn-small" onClick={() => handleSlideBuyNow(slides[currentSlide])}>Buy Now</button>
                     </div>
-                  </div>
+                  </>
                 )}
 
-                {/* Slide controls */}
-                <div style={{ display: 'flex', gap: 6, marginTop: 20 }}>
-                  {slides.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleSlideChange(i)}
-                      className={`slide-dot ${i === currentSlide ? 'active' : ''}`}
-                      style={{ width: i === currentSlide ? 32 : 16 }}
+                <div style={{ display:'flex', gap:6, marginTop:14 }}>
+                  {slides.map((_,i) => (
+                    <button key={i} onClick={() => handleSlideChange(i)}
+                      className={`slide-dot ${i===currentSlide?'active':''}`}
+                      style={{ width: i===currentSlide?28:14 }}
                     />
                   ))}
                 </div>
@@ -1300,42 +1217,25 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {/* Responsive override for mobile */}
-        <style>{`
-          @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr !important; }
-          }
-        `}</style>
       </section>
 
       {/* ── FEATURES ── */}
-      <section
-        id="features"
-        className={`scroll-section ${featuresVisible ? 'scroll-visible' : 'scroll-hidden'}`}
-        style={{ padding: '80px 0', borderBottom: '1px solid #222' }}
-      >
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
-          
-          <div style={{ marginBottom: 48 }}>
-            <div className="section-label" style={{ marginBottom: 16 }}>Why Sport-X</div>
-            <h2 className="iLU-condensed" style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#fff', lineHeight: 1 }}>
+      <section id="features" className={`scroll-section section-pad ${featuresVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
+        <div className="section-inner">
+          <div style={{ marginBottom:36 }}>
+            <div className="section-label" style={{ marginBottom:12 }}>Why Sport-X</div>
+            <h2 className="iLU-condensed" style={{ fontSize:'clamp(26px,5vw,52px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#fff', lineHeight:1 }}>
               Built For Performance
             </h2>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 1, background: '#222' }}>
+          <div className="features-grid">
             {features.map((feat, i) => (
               <div key={i} className="feature-card">
-                <div style={{ marginBottom: 20, color: '#555' }}>
-                  {feat.icon}
-                </div>
-                <h3 className="iLU-condensed" style={{ fontSize: 18, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#fff', marginBottom: 8 }}>
+                <div style={{ marginBottom:14, color:'#555' }}>{feat.icon}</div>
+                <h3 className="iLU-condensed" style={{ fontSize:16, fontWeight:800, textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', marginBottom:6 }}>
                   {feat.title}
                 </h3>
-                <p className="iLU-body" style={{ color: '#555', fontSize: 13, lineHeight: 1.6 }}>
-                  {feat.desc}
-                </p>
+                <p className="iLU-body" style={{ color:'#555', fontSize:13, lineHeight:1.6 }}>{feat.desc}</p>
               </div>
             ))}
           </div>
@@ -1343,183 +1243,139 @@ export default function Home() {
       </section>
 
       {/* ── CATEGORIES ── */}
-      <section
-        id="categories"
-        className={`scroll-section ${categoriesVisible ? 'scroll-visible' : 'scroll-hidden'}`}
-        style={{ padding: '80px 0', borderBottom: '1px solid #222' }}
-      >
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
-          
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 48, flexWrap: 'wrap', gap: 16 }}>
+      <section id="categories" className={`scroll-section section-pad ${categoriesVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
+        <div className="section-inner">
+          <div className="section-header-row">
             <div>
-              <div className="section-label" style={{ marginBottom: 16 }}>Browse</div>
-              <h2 className="iLU-condensed" style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#fff', lineHeight: 1 }}>
+              <div className="section-label" style={{ marginBottom:12 }}>Browse</div>
+              <h2 className="iLU-condensed" style={{ fontSize:'clamp(26px,5vw,52px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#fff', lineHeight:1 }}>
                 Shop By Category
               </h2>
             </div>
-            <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ padding: '10px 24px' }}>
-              View All <ArrowRight size={14} strokeWidth={2} />
+            <button className="btn-outline hide-mobile" onClick={() => navigate("/more-products")} style={{ padding:'10px 22px' }}>
+              View All <ArrowRight size={13} strokeWidth={2}/>
             </button>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 1, background: '#222' }}>
+          <div className="categories-grid">
             {categories.map(cat => (
               <div key={cat.id} className="category-card" onClick={() => handleCategoryClick(cat.name)}>
-                <div style={{ height: 220, overflow: 'hidden', position: 'relative' }}>
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="cat-img"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(30%)' }}
-                  />
-                  <div className="category-overlay" />
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 20px 16px' }}>
-                    <p className="iLU-condensed" style={{ fontSize: 20, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#fff', lineHeight: 1.1, marginBottom: 4 }}>
+                <div style={{ height:200, overflow:'hidden', position:'relative' }}>
+                  <img src={cat.image} alt={cat.name} className="cat-img"/>
+                  <div className="category-overlay"/>
+                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'14px 16px' }}>
+                    <p className="iLU-condensed" style={{ fontSize:17, fontWeight:800, textTransform:'uppercase', letterSpacing:'.05em', color:'#fff', lineHeight:1.1, marginBottom:4 }}>
                       {cat.name}
                     </p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span className="iLU-condensed" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#888' }}>
-                        {cat.count}
-                      </span>
-                      <ArrowRight size={14} color="#666" strokeWidth={2} />
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                      <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.15em', textTransform:'uppercase', color:'#888' }}>{cat.count}</span>
+                      <ArrowRight size={13} color="#666" strokeWidth={2}/>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+          {/* Mobile view all */}
+          <div style={{ marginTop:20, display:'none', justifyContent:'center' }} className="show-mobile" id="cat-view-all-mobile">
+            <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ padding:'10px 22px' }}>
+              View All <ArrowRight size={13} strokeWidth={2}/>
+            </button>
+          </div>
         </div>
       </section>
 
       {/* ── FEATURED PRODUCTS ── */}
-      <section
-        id="products-grid"
-        className={`scroll-section ${productsVisible ? 'scroll-visible' : 'scroll-hidden'}`}
-        style={{ padding: '80px 0', borderBottom: '1px solid #222' }}
-      >
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
-
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 48, flexWrap: 'wrap', gap: 16 }}>
+      <section id="products-grid" className={`scroll-section section-pad ${productsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
+        <div className="section-inner">
+          <div className="section-header-row">
             <div>
-              <div className="section-label" style={{ marginBottom: 16 }}>Top Picks</div>
-              <h2 className="iLU-condensed" style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#fff', lineHeight: 1 }}>
+              <div className="section-label" style={{ marginBottom:12 }}>Top Picks</div>
+              <h2 className="iLU-condensed" style={{ fontSize:'clamp(26px,5vw,52px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#fff', lineHeight:1 }}>
                 Featured Products
               </h2>
             </div>
-            <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ padding: '10px 24px' }}>
-              View All <ArrowRight size={14} strokeWidth={2} />
+            <button className="btn-outline hide-mobile" onClick={() => navigate("/more-products")} style={{ padding:'10px 22px' }}>
+              View All <ArrowRight size={13} strokeWidth={2}/>
             </button>
           </div>
 
           {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '80px 0' }}>
-              <div style={{ position: 'relative' }}>
-                <div style={{ width: 48, height: 48, border: '2px solid #222', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              </div>
+            <div style={{ display:'flex', justifyContent:'center', alignItems:'center', padding:'72px 0' }}>
+              <div style={{ width:44, height:44, border:'2px solid #222', borderTop:'2px solid #fff', borderRadius:'50%', animation:'spin .8s linear infinite' }}/>
             </div>
           ) : (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 1, background: '#222' }}>
+              <div className="products-grid">
                 {products.map(item => {
                   const isInWishlist = isItemInWishlist(item.id);
-                  const isInCart = isItemInCart(item.id);
+                  const isInCart     = isItemInCart(item.id);
                   const wasRecentlyAdded = recentlyAddedToCart[item.id];
-
                   return (
                     <div key={item.id} className="product-card" onClick={() => handleProductClick(item)}>
-                      
-                      {/* Image area */}
-                      <div style={{ position: 'relative', height: 280, background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '24px' }}>
+                      {/* Image */}
+                      <div style={{ position:'relative', height:250, background:'#0a0a0a', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', padding:'20px' }}>
                         <img
-                          src={item.imageUrl || item.image || "/placeholder.png"}
-                          alt={item.name}
+                          src={item.imageUrl||item.image||"/placeholder.png"} alt={item.name}
                           className="product-img"
-                          style={{ maxHeight: 220, maxWidth: '100%', objectFit: 'contain', filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.5))' }}
+                          style={{ maxHeight:200, maxWidth:'100%', objectFit:'contain', filter:'drop-shadow(0 10px 30px rgba(0,0,0,.5))' }}
                         />
-
-                        {/* Hover actions */}
                         <div className="product-actions">
-                          <button
-                            onClick={(e) => handleAddToWishlist(item, e)}
-                            className={`icon-action ${isInWishlist ? 'active-wish' : ''}`}
-                          >
-                            <Heart size={15} strokeWidth={1.5} fill={isInWishlist ? 'currentColor' : 'none'} />
+                          <button onClick={(e)=>handleAddToWishlist(item,e)} className={`icon-action ${isInWishlist?'active-wish':''}`}>
+                            <Heart size={14} strokeWidth={1.5} fill={isInWishlist?'currentColor':'none'}/>
                           </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleProductClick(item); }}
-                            className="icon-action"
-                          >
-                            <Eye size={15} strokeWidth={1.5} />
+                          <button onClick={(e)=>{e.stopPropagation();handleProductClick(item);}} className="icon-action">
+                            <Eye size={14} strokeWidth={1.5}/>
                           </button>
                         </div>
-
-                        {/* Stock tag */}
-                        <div style={{ position: 'absolute', top: 12, left: 12 }}>
+                        <div style={{ position:'absolute', top:10, left:10 }}>
                           <span className="product-tag">In Stock</span>
                         </div>
                       </div>
 
-                      {/* Info area */}
-                      <div style={{ padding: '20px 20px 20px', borderTop: '1px solid #1a1a1a' }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
-                          <h3 className="iLU-condensed" style={{ fontSize: 17, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#fff', lineHeight: 1.1 }}>
+                      {/* Info */}
+                      <div style={{ padding:'15px 15px 18px', borderTop:'1px solid #1a1a1a' }}>
+                        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:5, gap:8 }}>
+                          <h3 className="iLU-condensed" style={{ fontSize:15, fontWeight:800, textTransform:'uppercase', letterSpacing:'.04em', color:'#fff', lineHeight:1.1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', flex:1 }}>
                             {item.name}
                           </h3>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0, marginLeft: 8 }}>
-                            <Star size={11} fill="#fff" color="#fff" />
-                            <span className="iLU-condensed" style={{ fontSize: 11, fontWeight: 700, color: '#666', letterSpacing: '0.05em' }}>4.5</span>
+                          <div style={{ display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
+                            <Star size={10} fill="#fff" color="#fff"/>
+                            <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, color:'#666' }}>4.5</span>
                           </div>
                         </div>
-
-                        <p className="iLU-body" style={{ color: '#444', fontSize: 12, lineHeight: 1.5, marginBottom: 16, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                          {item.description || "Premium quality product"}
+                        <p className="iLU-body" style={{ color:'#444', fontSize:12, lineHeight:1.5, marginBottom:13, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                          {item.description||"Premium quality product"}
                         </p>
-
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
                           <div>
-                            <p className="iLU-condensed" style={{ fontSize: 22, fontWeight: 900, color: '#fff', lineHeight: 1 }}>
+                            <p className="iLU-condensed" style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>
                               ${Number(item.price).toFixed(2)}
                             </p>
                             {item.originalPrice && (
-                              <p className="iLU-body" style={{ fontSize: 11, color: '#444', textDecoration: 'line-through', marginTop: 2 }}>
+                              <p className="iLU-body" style={{ fontSize:11, color:'#444', textDecoration:'line-through', marginTop:2 }}>
                                 ${Number(item.originalPrice).toFixed(2)}
                               </p>
                             )}
                           </div>
-
-                          <div style={{ display: 'flex', gap: 6 }}>
+                          <div style={{ display:'flex', gap:6, flexShrink:0 }}>
                             <button
-                              onClick={(e) => {
-                                if (isInCart) { e.stopPropagation(); navigate("/cart"); }
-                                else { handleAddToCart(item, e); }
-                              }}
-                              className={`cart-action ${isInCart || wasRecentlyAdded ? 'in-cart' : ''}`}
+                              onClick={(e)=>{ if(isInCart){e.stopPropagation();navigate("/cart");}else{handleAddToCart(item,e);} }}
+                              className={`cart-action ${isInCart||wasRecentlyAdded?'in-cart':''}`}
                             >
-                              <ShoppingCart size={15} strokeWidth={1.5} />
+                              <ShoppingCart size={14} strokeWidth={1.5}/>
                             </button>
-                            <button
-                              onClick={(e) => handleBuyNow(item, e)}
-                              className="btn-small"
-                            >
-                              Buy Now
-                            </button>
+                            <button onClick={(e)=>handleBuyNow(item,e)} className="btn-small">Buy Now</button>
                           </div>
                         </div>
-
-                        {(isInCart || wasRecentlyAdded) && (
-                          <div style={{ marginTop: 10 }}>
+                        {(isInCart||wasRecentlyAdded) && (
+                          <div style={{ marginTop:8 }}>
                             {wasRecentlyAdded ? (
-                              <span className="iLU-condensed" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#888' }}>
-                                ✓ Added to cart
-                              </span>
+                              <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', color:'#888' }}>✓ Added to cart</span>
                             ) : isInCart ? (
-                              <span className="iLU-condensed" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#888', display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', color:'#888', display:'flex', alignItems:'center', gap:5, flexWrap:'wrap' }}>
                                 ✓ In cart ·{' '}
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); navigate("/cart"); }}
-                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fff', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'underline', padding: 0 }}
-                                >
+                                <button onClick={(e)=>{e.stopPropagation();navigate("/cart");}}
+                                  style={{ background:'none', border:'none', cursor:'pointer', color:'#fff', fontFamily:"'Barlow Condensed',sans-serif", fontSize:10, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', textDecoration:'underline', padding:0 }}>
                                   View Cart
                                 </button>
                               </span>
@@ -1531,10 +1387,9 @@ export default function Home() {
                   );
                 })}
               </div>
-
-              <div style={{ textAlign: 'center', marginTop: 48 }}>
+              <div style={{ textAlign:'center', marginTop:40 }}>
                 <button className="btn-outline" onClick={() => navigate("/more-products")}>
-                  View All Products <ArrowRight size={14} strokeWidth={2} />
+                  View All Products <ArrowRight size={13} strokeWidth={2}/>
                 </button>
               </div>
             </>
@@ -1543,22 +1398,16 @@ export default function Home() {
       </section>
 
       {/* ── STATS ── */}
-      <section
-        id="stats"
-        className={`scroll-section ${statsVisible ? 'scroll-visible' : 'scroll-hidden'}`}
-        style={{ borderBottom: '1px solid #222' }}
-      >
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', background: '#000' }}>
+      <section id="stats" className={`scroll-section ${statsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
+        <div style={{ maxWidth:1280, margin:'0 auto', padding:'0 32px' }}>
+          <div className="stats-grid">
             {stats.map((stat, i) => (
-              <div key={i} className="stat-card" style={{ borderRight: i < stats.length - 1 ? '1px solid #222' : 'none' }}>
-                <div style={{ color: '#333', marginBottom: 16, display: 'flex', justifyContent: 'center' }}>
-                  {stat.icon}
-                </div>
-                <div className="iLU-condensed" style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 900, color: '#fff', lineHeight: 1, marginBottom: 8 }}>
+              <div key={i} className="stat-cell" style={{ textAlign:'center', padding:'40px 16px', borderRight: i<stats.length-1?'1px solid #222':'none' }}>
+                <div style={{ color:'#333', marginBottom:12, display:'flex', justifyContent:'center' }}>{stat.icon}</div>
+                <div className="iLU-condensed" style={{ fontSize:'clamp(28px,4vw,48px)', fontWeight:900, color:'#fff', lineHeight:1, marginBottom:6 }}>
                   {stat.number}
                 </div>
-                <div className="iLU-condensed" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#555' }}>
+                <div className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.2em', textTransform:'uppercase', color:'#555' }}>
                   {stat.label}
                 </div>
               </div>
@@ -1567,9 +1416,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Footer tagline ── */}
-      <section style={{ padding: '60px 32px', textAlign: 'center', background: '#000' }}>
-        <p className="iLU-condensed" style={{ fontSize: 'clamp(28px, 6vw, 72px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.02em', color: '#1a1a1a', lineHeight: 1 }}>
+      {/* ── Watermark tagline ── */}
+      <section style={{ padding:'48px 24px', textAlign:'center', background:'#000', overflow:'hidden' }}>
+        <p className="iLU-condensed" style={{ fontSize:'clamp(22px,6vw,72px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#1a1a1a', lineHeight:1, whiteSpace:'nowrap' }}>
           Premium Football Gear · Est. 2024 · Sport-X
         </p>
       </section>
