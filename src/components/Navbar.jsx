@@ -831,7 +831,7 @@ export default function Navbar({ onSearch }) {
               <div className="logo-image-ring">
                 <div className="logo-image-inner">
                   
-                       <img src="/spot.png" alt="SportX" />
+                       <img src="/spot.png" alt="SportX" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:'10px'}} />
                 </div>
               </div>
 
