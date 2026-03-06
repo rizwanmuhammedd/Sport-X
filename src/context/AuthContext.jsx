@@ -1,3 +1,112 @@
+// import { createContext, useContext, useState, useEffect } from "react";
+// import api from "../Api/Axios_Instance";
+// import { toast } from "sonner";
+// import { useNavigate } from "react-router-dom";
+
+// const AuthContext = createContext();
+// export const useAuth = () => useContext(AuthContext);
+
+// export const AuthProvider = ({ children }) => {
+//   const [user, setUser] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const navigate = useNavigate();
+//   const isAdmin = user?.role === "Admin";
+
+//   useEffect(() => {
+//     const storedUser = localStorage.getItem("currentUser");
+//     const storedToken = localStorage.getItem("token");
+
+//     if (storedUser && storedToken) {
+//       setUser(JSON.parse(storedUser));
+//     } else {
+//       localStorage.clear();
+//       setUser(null);
+//     }
+
+//     setLoading(false);
+//   }, []);
+
+//   const signup = async ({ name, email, password }) => {
+//     try {
+//       const res = await api.post("/auth/register", { name, email, password });
+
+//       if (res.status === 200) {
+//         toast.success("Registration successful! Please login.");
+//         return true;
+//       }
+
+//       toast.error(res.data?.message || "Signup failed");
+//       return false;
+//     } catch (err) {
+//       toast.error(err.response?.data?.message || "Signup failed");
+//       return false;
+//     }
+//   };
+
+//   const login = async (email, password) => {
+//     try {
+//       const res = await api.post("/auth/login", { email, password });
+//       const accessToken = res.data.data.accessToken;
+//       const refreshToken = res.data.data.refreshToken;
+
+//       // Save both tokens
+//       localStorage.setItem("token", accessToken);
+//       if (refreshToken) {
+//         localStorage.setItem("refreshToken", refreshToken);
+//       }
+
+//       const payload = JSON.parse(atob(accessToken.split(".")[1]));
+
+//       const userData = {
+//         id: payload.uid,
+//         role: payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+//         email: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+//         name:
+//           payload.name ||
+//           payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ||
+//           payload["http://schemas.xmlsoap.org/ws/2008/06/identity/claims/name"] ||
+//           payload.username ||
+//           email.split("@")[0],
+//         username: payload.username || email.split("@")[0],
+//       };
+
+//       localStorage.setItem("currentUser", JSON.stringify(userData));
+//       setUser(userData);
+
+//       toast.success("Logged in successfully");
+
+//       if (userData.role === "Admin") navigate("/admin/dashboard");
+//       else navigate("/");
+//     } catch (err) {
+//       toast.error(err.response?.data?.message || "Login failed");
+//       throw err;
+//     }
+//   };
+
+//   const logout = () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("refreshToken");
+//     localStorage.removeItem("currentUser");
+//     setUser(null);
+//     navigate("/login");
+//   };
+
+//   if (loading) return null;
+
+//   return (
+//     <AuthContext.Provider value={{ user, login, signup, logout, loading, isAdmin }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+  
+
+
+
+
+
+
+
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../Api/Axios_Instance";
 import { toast } from "sonner";
@@ -29,12 +138,10 @@ export const AuthProvider = ({ children }) => {
   const signup = async ({ name, email, password }) => {
     try {
       const res = await api.post("/auth/register", { name, email, password });
-
       if (res.status === 200) {
         toast.success("Registration successful! Please login.");
         return true;
       }
-
       toast.error(res.data?.message || "Signup failed");
       return false;
     } catch (err) {
@@ -49,7 +156,6 @@ export const AuthProvider = ({ children }) => {
       const accessToken = res.data.data.accessToken;
       const refreshToken = res.data.data.refreshToken;
 
-      // Save both tokens
       localStorage.setItem("token", accessToken);
       if (refreshToken) {
         localStorage.setItem("refreshToken", refreshToken);
@@ -91,7 +197,9 @@ export const AuthProvider = ({ children }) => {
     navigate("/login");
   };
 
-  if (loading) return null;
+  // ✅ FIXED: Removed `if (loading) return null`
+  // That line was blocking the entire app from rendering for guest users
+  // Now we pass `loading` as context value so consumers can handle it themselves
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, loading, isAdmin }}>
@@ -99,7 +207,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-  
-
-
-

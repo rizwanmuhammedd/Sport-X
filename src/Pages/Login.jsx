@@ -214,8 +214,6 @@
 
 
 
-
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -242,15 +240,10 @@ export default function Login() {
         err?.response?.data?.message ||
         err?.message ||
         "Login failed. Please try again.";
-
       setError(message);
     } finally {
       setLoading(false);
     }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
   };
 
   return (
@@ -261,8 +254,8 @@ export default function Login() {
       `}</style>
 
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-2xl relative z-10">
-        {/* Login Card - Two Column Layout */}
         <div className="bg-black border border-[#222] overflow-hidden flex flex-col md:flex-row">
+
           {/* Left Section - Branding */}
           <div className="w-full md:w-2/5 h-auto min-h-[200px] md:min-h-0 bg-black flex items-center justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-[#222] py-8 md:py-0">
             <div className="text-center p-6 relative z-10">
@@ -278,10 +271,9 @@ export default function Login() {
               </div>
             </div>
           </div>
-          
+
           {/* Right Section - Login Form */}
           <div className="w-full md:w-3/5 p-6 md:p-8">
-            {/* Header Section */}
             <div className="mb-6">
               <h2 className="text-3xl font-ilu font-semibold text-white uppercase tracking-wide mb-2">
                 Welcome Back
@@ -292,7 +284,6 @@ export default function Login() {
               </p>
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="mb-4 p-3 bg-black border border-[#333] text-white text-xs uppercase tracking-wider">
                 <div className="flex items-center gap-2">
@@ -302,9 +293,9 @@ export default function Login() {
               </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Field */}
+
+              {/* Email */}
               <div>
                 <label className="block text-xs font-ilu uppercase tracking-widest text-[#666] mb-2">
                   Email Address
@@ -318,14 +309,14 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    placeholder="ENTER YOUR EMAIL"
+                    placeholder="Enter your email"
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wider focus:outline-none focus:border-[#555] transition-colors"
+                    className="w-full pl-11 pr-4 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm focus:outline-none focus:border-[#555] transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Password Field */}
+              {/* Password */}
               <div>
                 <label className="block text-xs font-ilu uppercase tracking-widest text-[#666] mb-2">
                   Password (8 digits)
@@ -339,27 +330,22 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    placeholder="ENTER YOUR PASSWORD"
+                    placeholder="Enter your password"
                     disabled={loading}
-                    className="w-full pl-11 pr-11 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wider focus:outline-none focus:border-[#555] transition-colors"
+                    className="w-full pl-11 pr-11 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm focus:outline-none focus:border-[#555] transition-colors"
                   />
-
                   <button
                     type="button"
-                    onClick={togglePasswordVisibility}
+                    onClick={() => setShowPassword(p => !p)}
                     disabled={loading}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#444] hover:text-white transition-colors duration-200 disabled:opacity-50"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" strokeWidth={1.5} />
-                    ) : (
-                      <Eye className="h-4 w-4" strokeWidth={1.5} />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
                   </button>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -379,7 +365,6 @@ export default function Login() {
               </button>
             </form>
 
-            {/* Footer Links */}
             <div className="mt-8">
               <div className="relative mb-6">
                 <div className="absolute inset-0 flex items-center">
@@ -389,13 +374,9 @@ export default function Login() {
                   <span className="px-4 bg-black text-[#555] uppercase tracking-widest">New to Sport-X?</span>
                 </div>
               </div>
-              
               <p className="text-center text-xs uppercase tracking-widest text-[#666]">
                 Don't have an account?{" "}
-                <Link 
-                  to="/register" 
-                  className="font-semibold text-white hover:underline transition-all duration-300"
-                >
+                <Link to="/register" className="font-semibold text-white hover:underline transition-all duration-300">
                   Create Account
                 </Link>
               </p>
@@ -403,7 +384,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Security Badge */}
         <div className="mt-6 text-center">
           <div className="inline-flex items-center gap-2 border border-[#222] px-6 py-3">
             <Lock className="w-4 h-4 text-[#444]" strokeWidth={1.5} />

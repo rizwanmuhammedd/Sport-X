@@ -297,8 +297,6 @@
 
 
 
-
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -322,12 +320,7 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
+    setForm((prev) => ({ ...prev, [name]: value }));
     if (error) setError("");
   };
 
@@ -356,13 +349,7 @@ export default function Register() {
       });
 
       if (success) {
-        setForm({
-          name: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
-
+        setForm({ name: "", email: "", password: "", confirmPassword: "" });
         navigate("/login");
       }
     } catch (error) {
@@ -370,14 +357,6 @@ export default function Register() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword((prev) => !prev);
   };
 
   return (
@@ -388,8 +367,8 @@ export default function Register() {
       `}</style>
 
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-2xl">
-        {/* Register Card - Two Column Layout */}
         <div className="bg-black border border-[#222] overflow-hidden flex flex-col md:flex-row">
+
           {/* Left Section - Brand */}
           <div className="w-full md:w-2/5 h-32 md:h-auto bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-[#222]">
             <div className="text-center p-6">
@@ -400,10 +379,9 @@ export default function Register() {
               <p className="text-[#666] text-xs uppercase tracking-widest mt-1">Premium Football Gear</p>
             </div>
           </div>
-          
+
           {/* Right Section - Register Form */}
           <div className="w-full md:w-3/5 p-6 md:p-8">
-            {/* Header Section */}
             <div className="mb-6">
               <h2 className="text-3xl font-ilu font-semibold text-white uppercase tracking-wide mb-2">
                 Join The Team
@@ -414,7 +392,6 @@ export default function Register() {
               </p>
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="mb-6 p-4 bg-black border border-[#333] text-white text-xs uppercase tracking-wider">
                 <div className="flex items-center gap-2">
@@ -424,9 +401,9 @@ export default function Register() {
               </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name Field */}
+
+              {/* Name */}
               <div>
                 <label className="block text-xs font-ilu uppercase tracking-widest text-[#666] mb-2">
                   Full Name
@@ -441,14 +418,14 @@ export default function Register() {
                     value={form.name}
                     onChange={handleChange}
                     required
-                    placeholder="ENTER YOUR FULL NAME"
+                    placeholder="Enter your full name"
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wider focus:outline-none focus:border-[#555] transition-colors"
+                    className="w-full pl-11 pr-4 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm focus:outline-none focus:border-[#555] transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Email Field */}
+              {/* Email */}
               <div>
                 <label className="block text-xs font-ilu uppercase tracking-widest text-[#666] mb-2">
                   Email Address
@@ -463,14 +440,14 @@ export default function Register() {
                     value={form.email}
                     onChange={handleChange}
                     required
-                    placeholder="ENTER YOUR EMAIL"
+                    placeholder="Enter your email"
                     disabled={loading}
-                    className="w-full pl-11 pr-4 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wider focus:outline-none focus:border-[#555] transition-colors"
+                    className="w-full pl-11 pr-4 py-3 bg-black border border-[#222] text-white placeholder-[#333] disabled:opacity-50 disabled:cursor-not-allowed text-sm focus:outline-none focus:border-[#555] transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Password Field */}
+              {/* Password */}
               <div>
                 <label className="block text-xs font-ilu uppercase tracking-widest text-[#666] mb-2">
                   Password (8 digits)
@@ -485,27 +462,22 @@ export default function Register() {
                     value={form.password}
                     onChange={handleChange}
                     required
-                    placeholder="ENTER YOUR PASSWORD"
+                    placeholder="Enter your password"
                     disabled={loading}
-                    className="w-full pl-11 pr-11 py-3 bg-black border border-[#222] text-white placeholder-[#333] text-sm uppercase tracking-wider focus:outline-none focus:border-[#555] transition-colors"
+                    className="w-full pl-11 pr-11 py-3 bg-black border border-[#222] text-white placeholder-[#333] text-sm focus:outline-none focus:border-[#555] transition-colors"
                   />
-
                   <button
                     type="button"
-                    onClick={togglePasswordVisibility}
+                    onClick={() => setShowPassword(p => !p)}
                     disabled={loading}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#444] hover:text-white transition-colors duration-200 disabled:opacity-50"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" strokeWidth={1.5} />
-                    ) : (
-                      <Eye className="h-4 w-4" strokeWidth={1.5} />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
                   </button>
                 </div>
               </div>
 
-              {/* Confirm Password Field */}
+              {/* Confirm Password */}
               <div>
                 <label className="block text-xs font-ilu uppercase tracking-widest text-[#666] mb-2">
                   Confirm Password
@@ -520,27 +492,22 @@ export default function Register() {
                     value={form.confirmPassword}
                     onChange={handleChange}
                     required
-                    placeholder="CONFIRM YOUR PASSWORD"
+                    placeholder="Confirm your password"
                     disabled={loading}
-                    className="w-full pl-11 pr-11 py-3 bg-black border border-[#222] text-white placeholder-[#333] text-sm uppercase tracking-wider focus:outline-none focus:border-[#555] transition-colors"
+                    className="w-full pl-11 pr-11 py-3 bg-black border border-[#222] text-white placeholder-[#333] text-sm focus:outline-none focus:border-[#555] transition-colors"
                   />
-
                   <button
                     type="button"
-                    onClick={toggleConfirmPasswordVisibility}
+                    onClick={() => setShowConfirmPassword(p => !p)}
                     disabled={loading}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-[#444] hover:text-white transition-colors duration-200 disabled:opacity-50"
                   >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" strokeWidth={1.5} />
-                    ) : (
-                      <Eye className="h-4 w-4" strokeWidth={1.5} />
-                    )}
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
                   </button>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -560,7 +527,6 @@ export default function Register() {
               </button>
             </form>
 
-            {/* Footer Links */}
             <div className="mt-8">
               <div className="relative mb-6">
                 <div className="absolute inset-0 flex items-center">
@@ -570,13 +536,9 @@ export default function Register() {
                   <span className="px-4 bg-black text-[#555] uppercase tracking-widest">Already have an account?</span>
                 </div>
               </div>
-              
               <p className="text-center text-xs uppercase tracking-widest text-[#666]">
                 Sign in{" "}
-                <Link 
-                  to="/login" 
-                  className="font-semibold text-white hover:underline transition-all duration-300"
-                >
+                <Link to="/login" className="font-semibold text-white hover:underline transition-all duration-300">
                   Here
                 </Link>
               </p>
@@ -584,7 +546,6 @@ export default function Register() {
           </div>
         </div>
 
-        {/* Security Badge */}
         <div className="mt-6 text-center">
           <div className="inline-flex items-center gap-2 border border-[#222] px-6 py-3">
             <Lock className="w-4 h-4 text-[#444]" strokeWidth={1.5} />
