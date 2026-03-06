@@ -313,8 +313,11 @@ export default function Wishlist() {
             try {
               const res = await api.get(`/Products/GetBy_${item.productId}`);
               const p = res.data.data || res.data;
-              return { ...item, stock: p.stockQuantity ?? p.stock ?? 0, image: item.image || p.imageUrl || "/images/default.jpg" };
-            } catch { return item; }
+return { 
+  ...item, 
+  stock: p.stockQuantity ?? p.stock ?? 0, 
+  image: item.image || item.imageUrl || item.productImage || p.imageUrl || p.image || "/images/default.jpg" 
+};            } catch { return item; }
           })
         );
         setProductsWithStock(updatedProducts);
@@ -403,8 +406,7 @@ export default function Wishlist() {
                   {/* Image */}
                   <div className="w-img-wrap">
                     <img
-                      src={item.image || "/images/default.jpg"}
-                      alt={item.name}
+src={item.image || item.imageUrl || item.productImage || "/images/default.jpg"}                      alt={item.name}
                       className="w-img"
                       style={{ filter: isOutOfStock ? "grayscale(1) opacity(0.3)" : "none" }}
                       onError={e => { e.target.onerror = null; e.target.src = "/images/default.jpg"; }}
