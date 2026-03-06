@@ -1,11 +1,7 @@
 
 
 
-
-
-
-
-// import { Navigate, Outlet } from "react-router-dom";
+// import { Navigate, Outlet } from "react-router-dom"; // Make sure Navigate is imported
 // import { useAuth } from "../context/AuthContext";
 
 // export default function ProtectedRoute({ redirectPath = "/login", adminOnly = false }) {
@@ -26,12 +22,12 @@
 //   }
 
 //   // If route is admin-only and user is not admin → redirect home
-// if (adminOnly && user.role !== "Admin") {
+//   if (adminOnly && user.role !== "Admin") {
 //     return <Navigate to="/" replace />;
 //   }
 
 //   // If user is admin trying to access user routes → redirect to admin dashboard
-// if (!adminOnly && user.role === "Admin") {
+//   if (!adminOnly && user.role === "Admin") {
 //     return <Navigate to="/admin/dashboard" replace />;
 //   }
 
@@ -45,7 +41,8 @@
 
 
 
-import { Navigate, Outlet } from "react-router-dom"; // Make sure Navigate is imported
+
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute({ redirectPath = "/login", adminOnly = false }) {
@@ -70,11 +67,8 @@ export default function ProtectedRoute({ redirectPath = "/login", adminOnly = fa
     return <Navigate to="/" replace />;
   }
 
-  // If user is admin trying to access user routes → redirect to admin dashboard
-  if (!adminOnly && user.role === "Admin") {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
+  // ✅ FIXED: Removed the block that redirected admins away from user routes
+  // Admins should also be able to browse products freely
 
-  // Otherwise render child route
   return <Outlet />;
 }
