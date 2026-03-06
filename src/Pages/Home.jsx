@@ -861,12 +861,11 @@ export default function Home() {
     fetchCategories();
     return () => { if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current); };
   }, [fetchProducts, fetchCategories]);
-
-  const handleProductClick = useCallback(
+const handleProductClick = useCallback(
     debounce((item) => {
-      if (!user) { navigate("/login"); return; }
+      // ✅ Guests can view products — no login required
       navigate(`/product/${item.id}`, { state: item });
-    }, 200), [user, navigate]
+    }, 200), [navigate]
   );
 
   const handleBuyNow = useCallback(
