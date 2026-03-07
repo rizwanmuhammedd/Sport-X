@@ -1513,6 +1513,7 @@ export default function Home() {
       { src:'/images/maradona.jpg', label:'The Legend' },
       { src:'/videos/beckam.mp4',   label:'The Icon', isVideo:true },
       { src:'/images/pele.jpg',     label:'The King' },
+
     ].map((item, i) => (
       <div key={i} style={{ position:'relative', overflow:'hidden', background:'#000', aspectRatio:'3/4' }}>
         {item.isVideo ? (
@@ -1531,6 +1532,53 @@ export default function Home() {
         </div>
       </div>
     ))}
+  </div>
+</section>
+
+{/* ── NEYMAR FULLWIDTH VIDEO ── */}
+<section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
+  <video autoPlay muted loop playsInline
+    style={{ width:'100%', height:'auto', display:'block', filter:'grayscale(15%)' }}>
+    <source src="/videos/neymer.mp4" type="video/mp4"/>
+  </video>
+  <div style={{ position:'absolute', inset:0, background:'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%)' }}/>
+
+  {/* Left side text */}
+  <div style={{
+    position:'absolute', top:0, left:0, bottom:0,
+    display:'flex', flexDirection:'column', justifyContent:'flex-end',
+    padding:'clamp(24px,5vw,64px)',
+    maxWidth:'clamp(280px,45vw,560px)',
+  }}>
+    <div style={{ width:32, height:1, background:'rgba(255,255,255,0.3)', marginBottom:20 }}/>
+    <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,11px)', fontWeight:700, letterSpacing:'.35em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:14 }}>
+      New Season Drop
+    </p>
+    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
+      Play
+    </h2>
+    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'1px rgba(255,255,255,0.3)', color:'transparent', marginBottom:28 }}>
+      Beautiful
+    </h2>
+    <p className="iLU-body" style={{ color:'rgba(255,255,255,0.4)', fontSize:'clamp(12px,1.5vw,14px)', lineHeight:1.7, marginBottom:32, maxWidth:320 }}>
+      The finest football gear for those who play with passion. Premium quality, authentic performance.
+    </p>
+    <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+      <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
+        <ShoppingBag size={13} strokeWidth={2}/> Shop Now
+      </button>
+      <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
+        View All <ArrowRight size={13} strokeWidth={2}/>
+      </button>
+    </div>
+    <div style={{ width:32, height:1, background:'rgba(255,255,255,0.1)', marginTop:32 }}/>
+  </div>
+
+  {/* Bottom right tag */}
+  <div style={{ position:'absolute', bottom:'clamp(16px,3vw,40px)', right:'clamp(16px,3vw,40px)' }}>
+    <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,10px)', fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>
+      Sport-X · Est. 2024
+    </span>
   </div>
 </section>
 
