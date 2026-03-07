@@ -793,17 +793,21 @@ export default function Home() {
   const [recentlyAddedToCart, setRecentlyAddedToCart] = useState({});
   const [slides, setSlides] = useState([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [modalVideoSrc, setModalVideoSrc] = useState("");
   const slideIntervalRef = useRef(null);
   const fetchTimeoutRef = useRef(null);
   const videoRef = useRef(null);
 
   // ── Listen for logo click event from Navbar ──────────────────────────
-  useEffect(() => {
-    const handler = () => setShowVideoModal(true);
-    window.addEventListener("sportx-logo-click", handler);
-    return () => window.removeEventListener("sportx-logo-click", handler);
-  }, []);
-
+ useEffect(() => {
+  const handler = () => {
+    const random = Math.floor(Math.random() * 3) + 1;
+    setModalVideoSrc(`/videos/hero${random}.mp4`);
+    setShowVideoModal(true);
+  };
+  window.addEventListener("sportx-logo-click", handler);
+  return () => window.removeEventListener("sportx-logo-click", handler);
+}, []);
   // ── Pause/play video with modal ───────────────────────────────────────
   useEffect(() => {
     if (showVideoModal) {
@@ -1147,13 +1151,23 @@ export default function Home() {
 
           <p className="vm-label">Sport-X · Official</p>
 
-          <video
-            ref={videoRef}
-            className="vm-video"
-src={`/videos/hero${Math.floor(Math.random() * 3) + 1}.mp4`}            controls
-            playsInline
-            onEnded={() => {}}
-          />
+ <video
+  ref={videoRef}
+  className="vm-video"
+  src={modalVideoSrc}
+  autoPlay
+  playsInline
+  muted
+  loop
+  style={{
+    width:'60vw', maxWidth:'640px',
+    aspectRatio:'16/9',
+    objectFit:'cover',
+    display:'block',
+    border:'1px solid #1e1e1e',
+    outline:'none',
+  }}
+/>
 
           {/* CTA buttons — only shown to guests */}
           {!user && (
@@ -1292,6 +1306,71 @@ src={`/videos/hero${Math.floor(Math.random() * 3) + 1}.mp4`}            controls
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+
+      {/* ── BIG PROMO VIDEO (external) ── */}
+      <section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{ width:'100%', height:'100vh', objectFit:'cover', display:'block' }}
+        >
+          <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
+        </video>
+        <div style={{
+          position:'absolute', inset:0,
+          background:'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)',
+          pointerEvents:'none'
+        }}/>
+        <div style={{
+          position:'absolute', inset:0,
+          display:'flex', flexDirection:'column',
+          alignItems:'center', justifyContent:'flex-end',
+          textAlign:'center', padding:'0 24px 64px',
+        }}>
+          <p style={{
+            fontFamily:"'Barlow Condensed',sans-serif",
+            fontSize:11, fontWeight:700, letterSpacing:'.3em',
+            textTransform:'uppercase', color:'rgba(255,255,255,0.45)',
+            marginBottom:14,
+          }}>New Season · 2024</p>
+         
+          <button className="btn-primary" onClick={() => navigate("/more-products")}>
+            <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
+          </button>
+        </div>
+      </section>
+
+      {/* ── SMALL PROMO VIDEO (local) ── */}
+      <section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{ width:'100%', height:'60vh', objectFit:'cover', display:'block' }}
+        >
+          <source src="/videos/promo.mp4" type="video/mp4" />
+        </video>
+        <div style={{
+          position:'absolute', inset:0,
+          background:'rgba(0,0,0,0.4)',
+          pointerEvents:'none'
+        }}/>
+        <div style={{
+          position:'absolute', inset:0,
+          display:'flex', flexDirection:'column',
+          alignItems:'center', justifyContent:'center',
+          textAlign:'center', padding:'0 24px',
+        }}>
+        
+          <button className="btn-outline" onClick={() => navigate("/more-products")}>
+            View All Products <ArrowRight size={13} strokeWidth={2}/>
+          </button>
         </div>
       </section>
 
