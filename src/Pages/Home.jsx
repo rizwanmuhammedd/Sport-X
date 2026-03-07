@@ -1311,18 +1311,14 @@ export default function Home() {
 
 
     {/* ── BIG PROMO VIDEO ── */}
-      <section style={{ width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
-        <div style={{ position:'relative', width:'100%' }}>
-          <video
-            autoPlay muted loop playsInline
-            style={{ width:'100%', height:'100svh', objectFit:'cover', display:'block' }}
-          >
-            <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
-          </video>
-          <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.5) 100%)', pointerEvents:'none' }}/>
-        </div>
-        {/* Button below video */}
-        <div style={{ background:'#000', padding:'28px 24px', display:'flex', alignItems:'center', justifyContent:'center', borderTop:'1px solid #1a1a1a' }}>
+      <section style={{ width:'100%', background:'#000', borderBottom:'1px solid #222' }}>
+        <video
+          autoPlay muted loop playsInline
+          style={{ width:'100%', height:'auto', display:'block' }}
+        >
+          <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
+        </video>
+        <div style={{ background:'#000', padding:'24px', display:'flex', alignItems:'center', justifyContent:'center', borderTop:'1px solid #1a1a1a' }}>
           <button className="btn-primary" onClick={() => navigate("/more-products")}>
             <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
           </button>
