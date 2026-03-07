@@ -1150,8 +1150,7 @@ export default function Home() {
           <video
             ref={videoRef}
             className="vm-video"
-            src="/videos/hero.mp4"
-            controls
+src={`/videos/hero${Math.floor(Math.random() * 3) + 1}.mp4`}            controls
             playsInline
             onEnded={() => {}}
           />
