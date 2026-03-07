@@ -1512,7 +1512,7 @@ export default function Home() {
     {[
       { src:'/images/maradona.jpg', label:'The Legend' },
       { src:'/videos/beckam.mp4',   label:'The Icon', isVideo:true },
-      { src:'/images/pele.jpg',     label:'The King' },
+      { src:'/images/pelee.jpg',     label:'The King' },
 
     ].map((item, i) => (
       <div key={i} style={{ position:'relative', overflow:'hidden', background:'#000', aspectRatio:'3/4' }}>
