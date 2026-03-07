@@ -1310,19 +1310,21 @@ export default function Home() {
       </section>
 
 
-     {/* ── BIG PROMO VIDEO ── */}
-      <section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
-        <video
-          autoPlay muted loop playsInline
-          style={{ width:'100%', height:'100svh', objectFit:'cover', display:'block' }}
-        >
-          <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
-        </video>
-        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.65) 100%)', pointerEvents:'none' }}/>
-        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-end', textAlign:'center', padding:'0 20px 48px' }}>
-          <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:10, fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.45)', marginBottom:12 }}>New Season · 2024</p>
-          <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ fontSize:'clamp(10px,3vw,12px)' }}>
-            <ShoppingBag size={13} strokeWidth={2}/> Shop The Collection
+    {/* ── BIG PROMO VIDEO ── */}
+      <section style={{ width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
+        <div style={{ position:'relative', width:'100%' }}>
+          <video
+            autoPlay muted loop playsInline
+            style={{ width:'100%', height:'100svh', objectFit:'cover', display:'block' }}
+          >
+            <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
+          </video>
+          <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.5) 100%)', pointerEvents:'none' }}/>
+        </div>
+        {/* Button below video */}
+        <div style={{ background:'#000', padding:'28px 24px', display:'flex', alignItems:'center', justifyContent:'center', borderTop:'1px solid #1a1a1a' }}>
+          <button className="btn-primary" onClick={() => navigate("/more-products")}>
+            <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
           </button>
         </div>
       </section>
