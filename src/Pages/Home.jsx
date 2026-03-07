@@ -1385,8 +1385,7 @@ export default function Home() {
       </section>
 
       {/* ── SPLIT SECTION ── */}
-<section style={{ borderBottom:'1px solid #222', display:'grid', gridTemplateColumns:'1fr 1fr' }} className="split-section">
-  <div style={{ position:'relative', overflow:'hidden', minHeight:500 }}>
+<section id="split-section" style={{ borderBottom:'1px solid #222', display:'grid', gridTemplateColumns:'1fr 1fr' }} className="split-section">  <div style={{ position:'relative', overflow:'hidden', minHeight:500 }}>
     <img
       src="/images/pele.jpg"
       alt="The Game"
