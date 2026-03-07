@@ -311,5 +311,19 @@ function RoutesWrapper({ searchTerm, onSearch }) {
 function FooterWrapper() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
-  return !isAdmin ? <Footer /> : null;
+  if (isAdmin) return null;
+  return (
+    <>
+      {/* ── SMALL PROMO VIDEO (above footer) ── */}
+      <section style={{ width:'100%', background:'#000', borderTop:'1px solid #222' }}>
+        <video
+          autoPlay muted loop playsInline
+          style={{ width:'100%', height:'auto', display:'block' }}
+        >
+          <source src="/videos/promo.mp4" type="video/mp4" />
+        </video>
+      </section>
+      <Footer />
+    </>
+  );
 }

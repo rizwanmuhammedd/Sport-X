@@ -1325,22 +1325,7 @@ export default function Home() {
         </div>
       </section>
 
-     {/* ── SMALL PROMO VIDEO ── */}
-      <section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
-        <video
-          autoPlay muted loop playsInline
-          style={{ width:'100%', height:'clamp(300px,50vw,60vh)', objectFit:'cover', display:'block' }}
-        >
-          <source src="/videos/promo.mp4" type="video/mp4" />
-        </video>
-        <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.45)', pointerEvents:'none' }}/>
-        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'0 20px' }}>
-          <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ fontSize:'clamp(10px,3vw,12px)', padding:'10px 20px' }}>
-            View All <ArrowRight size={13} strokeWidth={2}/>
-          </button>
-        </div>
-      </section>
-
+    
       {/* ── CATEGORIES ── */}
       <section id="categories" className={`scroll-section section-pad ${categoriesVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
         <div className="section-inner">
