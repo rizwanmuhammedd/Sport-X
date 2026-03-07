@@ -1140,6 +1140,12 @@ export default function Home() {
           .section-header-row { flex-direction:column; align-items:flex-start; }
           .hide-small { display:none !important; }
         }
+          .split-section { grid-template-columns:1fr 1fr; }
+.img-grid-3 { grid-template-columns:repeat(3,1fr); }
+@media(max-width:768px){
+  .split-section { grid-template-columns:1fr !important; }
+  .img-grid-3 { grid-template-columns:1fr !important; }
+}
       `}</style>
 
       {/* ── VIDEO MODAL ── */}
@@ -1309,6 +1315,21 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── BRAND LOGOS STRIP ── */}
+<section style={{ background:'#000', borderBottom:'1px solid #222', overflow:'hidden', padding:'28px 0' }}>
+  <div style={{ display:'flex', alignItems:'center', overflow:'hidden', whiteSpace:'nowrap' }}>
+    <div style={{ display:'inline-flex', animation:'ticker 20s linear infinite', gap:0 }}>
+      {[...Array(2)].map((_, r) =>
+        ['NIKE','ADIDAS','PUMA','NEW BALANCE','UNDER ARMOUR','UMBRO','MIZUNO','HUMMEL','KAPPA','JOMA'].map((brand, i) => (
+          <span key={`${r}-${i}`} style={{ display:'inline-flex', alignItems:'center', gap:32, padding:'0 40px', fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,22px)', fontWeight:900, letterSpacing:'.25em', textTransform:'uppercase', color:'#1a1a1a' }}>
+            {brand} <span style={{ width:4, height:4, background:'#2a2a2a', borderRadius:'50%', display:'inline-block', flexShrink:0 }}/>
+          </span>
+        ))
+      )}
+    </div>
+  </div>
+</section>
+
 
     {/* ── BIG PROMO VIDEO ── */}
       <section style={{ width:'100%', background:'#000', borderBottom:'1px solid #222' }}>
@@ -1362,6 +1383,38 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── SPLIT SECTION ── */}
+<section style={{ borderBottom:'1px solid #222', display:'grid', gridTemplateColumns:'1fr 1fr' }} className="split-section">
+  <div style={{ position:'relative', overflow:'hidden', minHeight:500 }}>
+    <img
+      src="/images/pele.jpg"
+      alt="The Game"
+      style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
+      onMouseOver={e => e.currentTarget.style.transform='scale(1.04)'}
+      onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
+    />
+    <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, transparent 60%, #000 100%)' }}/>
+  </div>
+  <div style={{ background:'#000', display:'flex', flexDirection:'column', justifyContent:'center', padding:'clamp(32px,6vw,80px)' }}>
+    <div className="section-label" style={{ marginBottom:16 }}>The Game</div>
+    <h2 className="iLU-condensed" style={{ fontSize:'clamp(32px,5vw,64px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'-.01em', color:'#fff', lineHeight:.9, marginBottom:24 }}>
+      Gear Built<br/>
+      <span style={{ WebkitTextStroke:'1px rgba(255,255,255,.2)', color:'transparent' }}>For Legends</span>
+    </h2>
+    <p className="iLU-body" style={{ color:'#555', fontSize:14, lineHeight:1.8, marginBottom:32, maxWidth:340 }}>
+      From the training ground to the biggest stages in the world. Equipment that performs when it matters most.
+    </p>
+    <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+      <button className="btn-primary" onClick={() => navigate("/more-products")}>
+        <ShoppingBag size={14} strokeWidth={2}/> Shop Now
+      </button>
+      <button className="btn-outline" onClick={() => navigate("/about")}>
+        Our Story <ArrowRight size={13} strokeWidth={2}/>
+      </button>
+    </div>
+  </div>
+</section>
 
       {/* ── FEATURED PRODUCTS ── */}
       <section id="products-grid" className={`scroll-section section-pad ${productsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
@@ -1453,6 +1506,33 @@ export default function Home() {
           )}
         </div>
       </section>
+      {/* ── 3-COLUMN IMAGE GRID ── */}
+<section style={{ borderBottom:'1px solid #222' }}>
+  <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:'#222' }} className="img-grid-3">
+    {[
+      { src:'/images/maradona.jpg', label:'The Legend' },
+      { src:'/videos/beckam.mp4',   label:'The Icon', isVideo:true },
+      { src:'/images/pele.jpg',     label:'The King' },
+    ].map((item, i) => (
+      <div key={i} style={{ position:'relative', overflow:'hidden', background:'#000', aspectRatio:'3/4' }}>
+        {item.isVideo ? (
+          <video autoPlay muted loop playsInline style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)' }}>
+            <source src={item.src} type="video/mp4"/>
+          </video>
+        ) : (
+          <img src={item.src} alt={item.label} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
+            onMouseOver={e => e.currentTarget.style.transform='scale(1.05)'}
+            onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
+          />
+        )}
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 50%)' }}/>
+        <div style={{ position:'absolute', bottom:20, left:20 }}>
+          <span className="iLU-condensed" style={{ fontSize:11, fontWeight:700, letterSpacing:'.25em', textTransform:'uppercase', color:'rgba(255,255,255,0.4)' }}>{item.label}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
       {/* ── STATS ── */}
       <section id="stats" className={`scroll-section ${statsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
@@ -1468,7 +1548,33 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+{/* ── CR7-STYLE FULLSCREEN VIDEO ── */}
+<section style={{ position:'relative', width:'100%', height:'100vh', overflow:'hidden', background:'#000', borderBottom:'1px solid #222' }}>
+  <video autoPlay muted loop playsInline
+    style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.55 }}>
+    <source src="/videos/messironaldo.mp4" type="video/mp4"/>
+  </video>
+  <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, rgba(0,0,0,.4) 0%, rgba(0,0,0,.2) 40%, rgba(0,0,0,.8) 100%)' }}/>
+  <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'0 24px' }}>
+    <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.5vw,11px)', fontWeight:700, letterSpacing:'.4em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:20 }}>
+      Sport-X · Official Store
+    </p>
+    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
+      SPORT
+    </h2>
+    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'2px rgba(255,255,255,0.25)', color:'transparent', marginBottom:36 }}>
+      -X-
+    </h2>
+    <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ padding:'14px 40px' }}>
+      <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
+    </button>
+  </div>
+  {/* Scroll line */}
+  <div style={{ position:'absolute', bottom:32, left:'50%', transform:'translateX(-50%)', display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
+    <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:9, fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>Sport-X</p>
+    <div style={{ width:1, height:40, background:'linear-gradient(to bottom, rgba(255,255,255,0.2), transparent)' }}/>
+  </div>
+</section>
       {/* ── Watermark ── */}
       <section style={{ padding:'48px 24px', textAlign:'center', background:'#000', overflow:'hidden' }}>
         <p className="iLU-condensed" style={{ fontSize:'clamp(22px,6vw,72px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#1a1a1a', lineHeight:1, whiteSpace:'nowrap' }}>
