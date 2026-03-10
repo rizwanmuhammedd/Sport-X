@@ -10,9 +10,8 @@
 //   ShoppingBag, Award, Users, Package, 
 //   Star, ArrowRight, ShieldCheck, Truck,
 //   CreditCard, RefreshCw, Heart, Eye, 
-//   ShoppingCart, Tag, Sparkles, Gift,
+//   ShoppingCart, Gift, X,
 //   ChevronRight, Target, Trophy, Headphones,
-//   Zap, ChevronLeft, ChevronRight as ChevronRightIcon
 // } from "lucide-react";
 
 // const useScrollFade = (id, threshold = 100) => {
@@ -56,8 +55,43 @@
 //   const [categories, setCategories] = useState([]);
 //   const [recentlyAddedToCart, setRecentlyAddedToCart] = useState({});
 //   const [slides, setSlides] = useState([]);
+//   const [showVideoModal, setShowVideoModal] = useState(false);
+//   const [modalVideoSrc, setModalVideoSrc] = useState("");
 //   const slideIntervalRef = useRef(null);
 //   const fetchTimeoutRef = useRef(null);
+//   const videoRef = useRef(null);
+
+//   // ── Listen for logo click event from Navbar ──────────────────────────
+//  useEffect(() => {
+//   const handler = () => {
+//     const random = Math.floor(Math.random() * 3) + 1;
+//     setModalVideoSrc(`/videos/hero${random}.mp4`);
+//     setShowVideoModal(true);
+//   };
+//   window.addEventListener("sportx-logo-click", handler);
+//   return () => window.removeEventListener("sportx-logo-click", handler);
+// }, []);
+//   // ── Pause/play video with modal ───────────────────────────────────────
+//   useEffect(() => {
+//     if (showVideoModal) {
+//       document.body.style.overflow = "hidden";
+//       setTimeout(() => { videoRef.current?.play(); }, 100);
+//     } else {
+//       document.body.style.overflow = "";
+//       if (videoRef.current) {
+//         videoRef.current.pause();
+//         videoRef.current.currentTime = 0;
+//       }
+//     }
+//     return () => { document.body.style.overflow = ""; };
+//   }, [showVideoModal]);
+
+//   // ── Close on Escape ───────────────────────────────────────────────────
+//   useEffect(() => {
+//     const handler = (e) => { if (e.key === "Escape") setShowVideoModal(false); };
+//     window.addEventListener("keydown", handler);
+//     return () => window.removeEventListener("keydown", handler);
+//   }, []);
 
 //   const debouncedSetSlide = useCallback(debounce((slideIndex) => { setCurrentSlide(slideIndex); }, 100), []);
 
@@ -162,9 +196,9 @@
 //     fetchCategories();
 //     return () => { if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current); };
 //   }, [fetchProducts, fetchCategories]);
-// const handleProductClick = useCallback(
+
+//   const handleProductClick = useCallback(
 //     debounce((item) => {
-//       // ✅ Guests can view products — no login required
 //       navigate(`/product/${item.id}`, { state: item });
 //     }, 200), [navigate]
 //   );
@@ -236,178 +270,196 @@
 //     <div style={{ background: '#000', minHeight: '100vh', overflowX: 'hidden', fontFamily: "'Barlow', sans-serif" }}>
 //       <style>{`
 //         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap');
-
 //         *, *::before, *::after { box-sizing: border-box; }
-
 //         .iLU-condensed { font-family: 'Barlow Condensed', sans-serif; }
 //         .iLU-body      { font-family: 'Barlow', sans-serif; }
-
-//         /* ── Ticker ── */
 //         .ticker-wrap  { background:#fff; overflow:hidden; white-space:nowrap; border-bottom:1px solid #eee; }
 //         .ticker-track { display:inline-flex; animation:ticker 30s linear infinite; }
-//         .ticker-item  {
-//           display:inline-flex; align-items:center; gap:20px;
-//           padding:8px 36px;
-//           font-family:'Barlow Condensed',sans-serif;
-//           font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#000;
-//         }
+//         .ticker-item  { display:inline-flex; align-items:center; gap:20px; padding:8px 36px; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#000; }
 //         .ticker-dot { width:4px; height:4px; background:#000; border-radius:50%; flex-shrink:0; }
 //         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-//         /* ── Section label ── */
-//         .section-label {
-//           font-family:'Barlow Condensed',sans-serif;
-//           font-size:10px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:#555;
-//           display:flex; align-items:center; gap:12px;
-//         }
+//         .section-label { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:#555; display:flex; align-items:center; gap:12px; }
 //         .section-label::after { content:''; flex:1; height:1px; background:#222; }
-
-//         /* ── Display heading ── */
-//         .display-heading {
-//           font-family:'Barlow Condensed',sans-serif;
-//           font-size:clamp(44px,10vw,110px);
-//           font-weight:900; line-height:.9; text-transform:uppercase; letter-spacing:-.02em; color:#fff;
-//         }
+//         .display-heading { font-family:'Barlow Condensed',sans-serif; font-size:clamp(44px,10vw,110px); font-weight:900; line-height:.9; text-transform:uppercase; letter-spacing:-.02em; color:#fff; }
 //         .display-heading .outline { -webkit-text-stroke:1px rgba(255,255,255,.25); color:transparent; }
-
-//         /* ── Buttons ── */
-//         .btn-primary {
-//           font-family:'Barlow Condensed',sans-serif;
-//           font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
-//           background:#fff; color:#000; border:none; cursor:pointer; padding:12px 26px;
-//           transition:background .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
-//         }
+//         .btn-primary { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; background:#fff; color:#000; border:none; cursor:pointer; padding:12px 26px; transition:background .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
 //         .btn-primary:hover { background:#e8e8e8; }
-
-//         .btn-outline {
-//           font-family:'Barlow Condensed',sans-serif;
-//           font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
-//           background:transparent; color:#fff; border:1px solid #333; cursor:pointer; padding:12px 26px;
-//           transition:border-color .15s,background .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
-//         }
+//         .btn-outline { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; background:transparent; color:#fff; border:1px solid #333; cursor:pointer; padding:12px 26px; transition:border-color .15s,background .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
 //         .btn-outline:hover { border-color:#666; background:#111; }
-
-//         .btn-small {
-//           font-family:'Barlow Condensed',sans-serif;
-//           font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
-//           background:#fff; color:#000; border:none; cursor:pointer; padding:9px 16px;
-//           transition:background .15s; white-space:nowrap; flex-shrink:0;
-//         }
+//         .btn-small { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; background:#fff; color:#000; border:none; cursor:pointer; padding:9px 16px; transition:background .15s; white-space:nowrap; flex-shrink:0; }
 //         .btn-small:hover { background:#e8e8e8; }
-
-//         /* ── Product tag ── */
-//         .product-tag {
-//           font-family:'Barlow Condensed',sans-serif;
-//           font-size:9px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
-//           background:#fff; color:#000; padding:3px 9px; display:inline-block;
-//         }
-
-//         /* ── Hero slide ── */
+//         .product-tag { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; background:#fff; color:#000; padding:3px 9px; display:inline-block; }
 //         .hero-slide { position:absolute; inset:0; transition:opacity .8s ease,transform .8s ease; }
 //         .hero-slide.active  { opacity:1; transform:scale(1); z-index:2; }
 //         .hero-slide.inactive{ opacity:0; transform:scale(1.03); z-index:1; }
-
-//         /* ── Slide dot ── */
 //         .slide-dot { height:2px; background:#333; border:none; cursor:pointer; transition:all .3s ease; flex-shrink:0; padding:0; }
 //         .slide-dot.active { background:#fff; }
-
-//         /* ── Feature card ── */
 //         .feature-card { border:1px solid #222; padding:28px 24px; transition:border-color .2s,background .2s; background:#000; }
 //         .feature-card:hover { border-color:#444; background:#0d0d0d; }
-
-//         /* ── Category card ── */
 //         .category-card { position:relative; overflow:hidden; cursor:pointer; border:1px solid #222; transition:border-color .2s; }
 //         .category-card:hover { border-color:#444; }
 //         .category-card:hover .cat-img { transform:scale(1.05); }
 //         .cat-img { transition:transform .6s ease; width:100%; height:100%; object-fit:cover; filter:grayscale(30%); display:block; }
 //         .category-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.3) 50%,transparent 100%); }
-
-//         /* ── Product card ── */
 //         .product-card { background:#000; border:1px solid #222; cursor:pointer; transition:border-color .2s; position:relative; overflow:hidden; }
 //         .product-card:hover { border-color:#444; }
 //         .product-card:hover .product-img { transform:scale(1.06); }
 //         .product-img { transition:transform .5s ease; }
-
 //         .product-actions { position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:6px; opacity:0; transition:opacity .2s ease; }
 //         .product-card:hover .product-actions { opacity:1; }
-
-//         .icon-action {
-//           width:34px; height:34px; background:#000; border:1px solid #333;
-//           display:flex; align-items:center; justify-content:center;
-//           cursor:pointer; transition:background .15s,border-color .15s; color:#999;
-//         }
+//         .icon-action { width:34px; height:34px; background:#000; border:1px solid #333; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s,border-color .15s; color:#999; }
 //         .icon-action:hover,.icon-action.active-wish { background:#fff; color:#000; border-color:#fff; }
-
-//         .cart-action {
-//           width:36px; height:36px; background:#1a1a1a; border:1px solid #2e2e2e;
-//           display:flex; align-items:center; justify-content:center;
-//           cursor:pointer; transition:background .15s,border-color .15s; color:#666; flex-shrink:0;
-//         }
+//         .cart-action { width:36px; height:36px; background:#1a1a1a; border:1px solid #2e2e2e; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s,border-color .15s; color:#666; flex-shrink:0; }
 //         .cart-action:hover,.cart-action.in-cart { background:#fff; color:#000; border-color:#fff; }
-
-//         /* ── Divider ── */
 //         .full-divider { border:none; border-top:1px solid #222; margin:0; }
-
-//         /* ── Scroll fade ── */
 //         .scroll-section { transition:opacity .8s ease,transform .8s ease; }
 //         .scroll-visible { opacity:1 !important; transform:translateY(0) !important; }
 //         .scroll-hidden  { opacity:0; transform:translateY(24px); }
-
 //         @keyframes spin { to{transform:rotate(360deg)} }
 
-//         /* ══════════════════════════════
-//            LAYOUT GRIDS
-//         ══════════════════════════════ */
+//         /* ── Video Modal ── */
+//         .vm-backdrop {
+//           position:fixed; inset:0; z-index:1000;
+//           background:rgba(0,0,0,0.97);
+//           display:flex; flex-direction:column; align-items:center; justify-content:center;
+//           animation: vm-in .25s ease;
+//         }
+//         @keyframes vm-in { from{opacity:0} to{opacity:1} }
+//         .vm-close {
+//           position:absolute; top:20px; right:20px;
+//           width:44px; height:44px;
+//           background:transparent; border:1px solid #2a2a2a; cursor:pointer;
+//           display:flex; align-items:center; justify-content:center;
+//           color:#666; transition:color .15s, border-color .15s;
+//           font-family:'Barlow Condensed',sans-serif;
+//         }
+//         .vm-close:hover { color:#fff; border-color:#555; }
+//         .vm-video {
+//           width:90vw; max-width:960px;
+//           aspect-ratio:16/9;
+//           background:#0a0a0a;
+//           border:1px solid #1e1e1e;
+//           outline:none;
+//         }
+//         .vm-label {
+//           font-family:'Barlow Condensed',sans-serif;
+//           font-size:10px; font-weight:700; letter-spacing:.28em; text-transform:uppercase;
+//           color:#333; margin-bottom:16px;
+//         }
+//         .vm-actions {
+//           display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; justify-content:center;
+//         }
+//         .vm-btn-primary {
+//           font-family:'Barlow Condensed',sans-serif;
+//           font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+//           background:#fff; color:#000; border:none; cursor:pointer; padding:13px 32px;
+//           transition:background .15s; display:inline-flex; align-items:center; gap:8px;
+//         }
+//         .vm-btn-primary:hover { background:#e8e8e8; }
+//         .vm-btn-outline {
+//           font-family:'Barlow Condensed',sans-serif;
+//           font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+//           background:transparent; color:#fff; border:1px solid #333; cursor:pointer; padding:13px 32px;
+//           transition:border-color .15s,background .15s; display:inline-flex; align-items:center; gap:8px;
+//         }
+//         .vm-btn-outline:hover { border-color:#666; background:#111; }
 
 //         .hero-grid       { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
 //         .features-grid   { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#222; }
 //         .categories-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#222; }
 //         .products-grid   { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#222; }
 //         .stats-grid      { display:grid; grid-template-columns:repeat(4,1fr); }
-
-//         .section-header-row {
-//           display:flex; align-items:flex-end; justify-content:space-between;
-//           flex-wrap:wrap; gap:16px; margin-bottom:40px;
-//         }
+//         .section-header-row { display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:40px; }
 //         .hero-inner  { position:relative; z-index:10; width:100%; max-width:1280px; margin:0 auto; padding:110px 32px 72px; }
 //         .section-pad { padding:72px 0; }
 //         .section-inner { max-width:1280px; margin:0 auto; padding:0 32px; }
-
-//         /* ── Tablet ≤ 1024px ── */
 //         @media(max-width:1024px){
-//           .features-grid   { grid-template-columns:repeat(2,1fr); }
+//           .features-grid { grid-template-columns:repeat(2,1fr); }
 //           .categories-grid { grid-template-columns:repeat(2,1fr); }
-//           .products-grid   { grid-template-columns:repeat(2,1fr); }
-//           .stats-grid      { grid-template-columns:repeat(2,1fr); }
-//           .stat-cell       { border-right:none !important; border-bottom:1px solid #222; }
-//           .stat-cell:nth-child(odd)   { border-right:1px solid #222 !important; }
+//           .products-grid { grid-template-columns:repeat(2,1fr); }
+//           .stats-grid { grid-template-columns:repeat(2,1fr); }
+//           .stat-cell { border-right:none !important; border-bottom:1px solid #222; }
+//           .stat-cell:nth-child(odd) { border-right:1px solid #222 !important; }
 //           .stat-cell:nth-last-child(-n+2){ border-bottom:none; }
 //         }
-
-//         /* ── Mobile ≤ 768px ── */
 //         @media(max-width:768px){
-//           .hero-grid       { grid-template-columns:1fr; gap:36px; }
-//           .hero-inner      { padding:84px 20px 56px; }
-//           .features-grid   { grid-template-columns:1fr; }
+//           .hero-grid { grid-template-columns:1fr; gap:36px; }
+//           .hero-inner { padding:84px 20px 56px; }
+//           .features-grid { grid-template-columns:1fr; }
 //           .categories-grid { grid-template-columns:repeat(2,1fr); }
-//           .products-grid   { grid-template-columns:repeat(2,1fr); }
-//           .section-pad     { padding:52px 0; }
-//           .section-inner   { padding:0 20px; }
+//           .products-grid { grid-template-columns:repeat(2,1fr); }
+//           .section-pad { padding:52px 0; }
+//           .section-inner { padding:0 20px; }
 //           .section-header-row { margin-bottom:28px; }
-//           .hide-mobile     { display:none !important; }
-//           .show-mobile     { display:flex !important; }
+//           .hide-mobile { display:none !important; }
+//           .show-mobile { display:flex !important; }
+//           .vm-video { width:95vw; }
 //         }
-
-//         /* ── Small mobile ≤ 480px ── */
 //         @media(max-width:480px){
 //           .categories-grid { grid-template-columns:1fr; }
-//           .products-grid   { grid-template-columns:1fr; }
-//           .hero-inner      { padding:80px 16px 48px; }
-//           .section-inner   { padding:0 16px; }
+//           .products-grid { grid-template-columns:1fr; }
+//           .hero-inner { padding:80px 16px 48px; }
+//           .section-inner { padding:0 16px; }
 //           .section-header-row { flex-direction:column; align-items:flex-start; }
-//           .hide-small      { display:none !important; }
+//           .hide-small { display:none !important; }
 //         }
+//           .split-section { grid-template-columns:1fr 1fr; }
+// .img-grid-3 { grid-template-columns:repeat(3,1fr); }
+// @media(max-width:768px){
+//   .split-section { grid-template-columns:1fr !important; }
+//   .img-grid-3 { grid-template-columns:1fr !important; }
+// }
 //       `}</style>
+
+//       {/* ── VIDEO MODAL ── */}
+//       {showVideoModal && (
+//         <div className="vm-backdrop" onClick={(e) => { if (e.target === e.currentTarget) setShowVideoModal(false); }}>
+//           <button className="vm-close" onClick={() => setShowVideoModal(false)}>
+//             <X size={16} strokeWidth={1.5} />
+//           </button>
+
+//           <p className="vm-label">Sport-X · Official</p>
+
+//  <video
+//   ref={videoRef}
+//   className="vm-video"
+//   src={modalVideoSrc}
+//   autoPlay
+//   playsInline
+//   muted
+//   loop
+//   style={{
+//     width:'60vw', maxWidth:'640px',
+//     aspectRatio:'16/9',
+//     objectFit:'cover',
+//     display:'block',
+//     border:'1px solid #1e1e1e',
+//     outline:'none',
+//   }}
+// />
+
+//           {/* CTA buttons — only shown to guests */}
+//           {!user && (
+//             <div className="vm-actions">
+//               <button className="vm-btn-primary" onClick={() => { setShowVideoModal(false); navigate("/register"); }}>
+//                 <ChevronRight size={14} strokeWidth={2} /> Create Account
+//               </button>
+//               <button className="vm-btn-outline" onClick={() => { setShowVideoModal(false); navigate("/login"); }}>
+//                 Sign In
+//               </button>
+//             </div>
+//           )}
+
+//           {/* Logged in — just a shop button */}
+//           {user && (
+//             <div className="vm-actions">
+//               <button className="vm-btn-primary" onClick={() => { setShowVideoModal(false); navigate("/more-products"); }}>
+//                 <ShoppingBag size={14} strokeWidth={2} /> Shop Now
+//               </button>
+//             </div>
+//           )}
+//         </div>
+//       )}
 
 //       {/* ── Ticker ── */}
 //       <div className="ticker-wrap">
@@ -424,8 +476,6 @@
 
 //       {/* ── HERO ── */}
 //       <section style={{ position:'relative', minHeight:'100vh', display:'flex', alignItems:'center', borderBottom:'1px solid #222' }}>
-        
-//         {/* BG slides */}
 //         <div style={{ position:'absolute', inset:0, zIndex:0 }}>
 //           {slides.map((slide, i) => (
 //             <div key={slide.id} className={`hero-slide ${i===currentSlide?'active':'inactive'}`}>
@@ -437,8 +487,6 @@
 
 //         <div className="hero-inner">
 //           <div className="hero-grid">
-
-//             {/* Left */}
 //             <div>
 //               <div className="section-label" style={{ marginBottom:18 }}>Sport-X Collection</div>
 //               <div className="display-heading" style={{ marginBottom:18 }}>
@@ -459,7 +507,6 @@
 //               </div>
 //             </div>
 
-//             {/* Right: product card */}
 //             <div>
 //               <div style={{ position:'relative', background:'#0d0d0d', border:'1px solid #222', padding:'32px 24px 22px' }}>
 //                 {slides[currentSlide] && (
@@ -470,24 +517,16 @@
 //                     </span>
 //                   </div>
 //                 )}
-
 //                 <div
 //                   onClick={() => slides[currentSlide] && navigate(`/product/${slides[currentSlide].id}`)}
 //                   style={{ height:260, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', marginBottom:18, position:'relative', overflow:'hidden' }}
 //                 >
 //                   {slides.map((slide, i) => (
 //                     <img key={slide.id} src={slide.image} alt={slide.name}
-//                       style={{
-//                         position:'absolute', maxHeight:'90%', maxWidth:'90%', objectFit:'contain',
-//                         transition:'opacity .6s ease,transform .6s ease',
-//                         opacity: i===currentSlide?1:0,
-//                         transform: i===currentSlide?'scale(1)':'scale(.94)',
-//                         filter:'drop-shadow(0 20px 40px rgba(0,0,0,.6))'
-//                       }}
+//                       style={{ position:'absolute', maxHeight:'90%', maxWidth:'90%', objectFit:'contain', transition:'opacity .6s ease,transform .6s ease', opacity: i===currentSlide?1:0, transform: i===currentSlide?'scale(1)':'scale(.94)', filter:'drop-shadow(0 20px 40px rgba(0,0,0,.6))' }}
 //                     />
 //                   ))}
 //                 </div>
-
 //                 {slides[currentSlide] && (
 //                   <>
 //                     <hr className="full-divider" style={{ marginBottom:14 }}/>
@@ -504,7 +543,6 @@
 //                     </div>
 //                   </>
 //                 )}
-
 //                 <div style={{ display:'flex', gap:6, marginTop:14 }}>
 //                   {slides.map((_,i) => (
 //                     <button key={i} onClick={() => handleSlideChange(i)}
@@ -532,9 +570,7 @@
 //             {features.map((feat, i) => (
 //               <div key={i} className="feature-card">
 //                 <div style={{ marginBottom:14, color:'#555' }}>{feat.icon}</div>
-//                 <h3 className="iLU-condensed" style={{ fontSize:16, fontWeight:800, textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', marginBottom:6 }}>
-//                   {feat.title}
-//                 </h3>
+//                 <h3 className="iLU-condensed" style={{ fontSize:16, fontWeight:800, textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', marginBottom:6 }}>{feat.title}</h3>
 //                 <p className="iLU-body" style={{ color:'#555', fontSize:13, lineHeight:1.6 }}>{feat.desc}</p>
 //               </div>
 //             ))}
@@ -542,15 +578,45 @@
 //         </div>
 //       </section>
 
+//       {/* ── BRAND LOGOS STRIP ── */}
+// <section style={{ background:'#000', borderBottom:'1px solid #222', overflow:'hidden', padding:'28px 0' }}>
+//   <div style={{ display:'flex', alignItems:'center', overflow:'hidden', whiteSpace:'nowrap' }}>
+//     <div style={{ display:'inline-flex', animation:'ticker 20s linear infinite', gap:0 }}>
+//       {[...Array(2)].map((_, r) =>
+//         ['NIKE','ADIDAS','PUMA','NEW BALANCE','UNDER ARMOUR','UMBRO','MIZUNO','HUMMEL','KAPPA','JOMA'].map((brand, i) => (
+//           <span key={`${r}-${i}`} style={{ display:'inline-flex', alignItems:'center', gap:32, padding:'0 40px', fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,22px)', fontWeight:900, letterSpacing:'.25em', textTransform:'uppercase', color:'#1a1a1a' }}>
+//             {brand} <span style={{ width:4, height:4, background:'#2a2a2a', borderRadius:'50%', display:'inline-block', flexShrink:0 }}/>
+//           </span>
+//         ))
+//       )}
+//     </div>
+//   </div>
+// </section>
+
+
+//     {/* ── BIG PROMO VIDEO ── */}
+//       <section style={{ width:'100%', background:'#000', borderBottom:'1px solid #222' }}>
+//         <video
+//           autoPlay muted loop playsInline
+//           style={{ width:'100%', height:'auto', display:'block' }}
+//         >
+//           <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
+//         </video>
+//         <div style={{ background:'#000', padding:'24px', display:'flex', alignItems:'center', justifyContent:'center', borderTop:'1px solid #1a1a1a' }}>
+//           <button className="btn-primary" onClick={() => navigate("/more-products")}>
+//             <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
+//           </button>
+//         </div>
+//       </section>
+
+    
 //       {/* ── CATEGORIES ── */}
 //       <section id="categories" className={`scroll-section section-pad ${categoriesVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
 //         <div className="section-inner">
 //           <div className="section-header-row">
 //             <div>
 //               <div className="section-label" style={{ marginBottom:12 }}>Browse</div>
-//               <h2 className="iLU-condensed" style={{ fontSize:'clamp(26px,5vw,52px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#fff', lineHeight:1 }}>
-//                 Shop By Category
-//               </h2>
+//               <h2 className="iLU-condensed" style={{ fontSize:'clamp(26px,5vw,52px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#fff', lineHeight:1 }}>Shop By Category</h2>
 //             </div>
 //             <button className="btn-outline hide-mobile" onClick={() => navigate("/more-products")} style={{ padding:'10px 22px' }}>
 //               View All <ArrowRight size={13} strokeWidth={2}/>
@@ -563,9 +629,7 @@
 //                   <img src={cat.image} alt={cat.name} className="cat-img"/>
 //                   <div className="category-overlay"/>
 //                   <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'14px 16px' }}>
-//                     <p className="iLU-condensed" style={{ fontSize:17, fontWeight:800, textTransform:'uppercase', letterSpacing:'.05em', color:'#fff', lineHeight:1.1, marginBottom:4 }}>
-//                       {cat.name}
-//                     </p>
+//                     <p className="iLU-condensed" style={{ fontSize:17, fontWeight:800, textTransform:'uppercase', letterSpacing:'.05em', color:'#fff', lineHeight:1.1, marginBottom:4 }}>{cat.name}</p>
 //                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
 //                       <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.15em', textTransform:'uppercase', color:'#888' }}>{cat.count}</span>
 //                       <ArrowRight size={13} color="#666" strokeWidth={2}/>
@@ -575,7 +639,6 @@
 //               </div>
 //             ))}
 //           </div>
-//           {/* Mobile view all */}
 //           <div style={{ marginTop:20, display:'none', justifyContent:'center' }} className="show-mobile" id="cat-view-all-mobile">
 //             <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ padding:'10px 22px' }}>
 //               View All <ArrowRight size={13} strokeWidth={2}/>
@@ -584,21 +647,49 @@
 //         </div>
 //       </section>
 
+//       {/* ── SPLIT SECTION ── */}
+// <section id="split-section" style={{ borderBottom:'1px solid #222', display:'grid', gridTemplateColumns:'1fr 1fr' }} className="split-section">  <div style={{ position:'relative', overflow:'hidden', minHeight:500 }}>
+//     <img
+//       src="/images/pele.jpg"
+//       alt="The Game"
+//       style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
+//       onMouseOver={e => e.currentTarget.style.transform='scale(1.04)'}
+//       onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
+//     />
+//     <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, transparent 60%, #000 100%)' }}/>
+//   </div>
+//   <div style={{ background:'#000', display:'flex', flexDirection:'column', justifyContent:'center', padding:'clamp(32px,6vw,80px)' }}>
+//     <div className="section-label" style={{ marginBottom:16 }}>The Game</div>
+//     <h2 className="iLU-condensed" style={{ fontSize:'clamp(32px,5vw,64px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'-.01em', color:'#fff', lineHeight:.9, marginBottom:24 }}>
+//       Gear Built<br/>
+//       <span style={{ WebkitTextStroke:'1px rgba(255,255,255,.2)', color:'transparent' }}>For Legends</span>
+//     </h2>
+//     <p className="iLU-body" style={{ color:'#555', fontSize:14, lineHeight:1.8, marginBottom:32, maxWidth:340 }}>
+//       From the training ground to the biggest stages in the world. Equipment that performs when it matters most.
+//     </p>
+//     <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+//       <button className="btn-primary" onClick={() => navigate("/more-products")}>
+//         <ShoppingBag size={14} strokeWidth={2}/> Shop Now
+//       </button>
+//       <button className="btn-outline" onClick={() => navigate("/about")}>
+//         Our Story <ArrowRight size={13} strokeWidth={2}/>
+//       </button>
+//     </div>
+//   </div>
+// </section>
+
 //       {/* ── FEATURED PRODUCTS ── */}
 //       <section id="products-grid" className={`scroll-section section-pad ${productsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
 //         <div className="section-inner">
 //           <div className="section-header-row">
 //             <div>
 //               <div className="section-label" style={{ marginBottom:12 }}>Top Picks</div>
-//               <h2 className="iLU-condensed" style={{ fontSize:'clamp(26px,5vw,52px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#fff', lineHeight:1 }}>
-//                 Featured Products
-//               </h2>
+//               <h2 className="iLU-condensed" style={{ fontSize:'clamp(26px,5vw,52px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#fff', lineHeight:1 }}>Featured Products</h2>
 //             </div>
 //             <button className="btn-outline hide-mobile" onClick={() => navigate("/more-products")} style={{ padding:'10px 22px' }}>
 //               View All <ArrowRight size={13} strokeWidth={2}/>
 //             </button>
 //           </div>
-
 //           {loading ? (
 //             <div style={{ display:'flex', justifyContent:'center', alignItems:'center', padding:'72px 0' }}>
 //               <div style={{ width:44, height:44, border:'2px solid #222', borderTop:'2px solid #fff', borderRadius:'50%', animation:'spin .8s linear infinite' }}/>
@@ -608,17 +699,12 @@
 //               <div className="products-grid">
 //                 {products.map(item => {
 //                   const isInWishlist = isItemInWishlist(item.id);
-//                   const isInCart     = isItemInCart(item.id);
+//                   const isInCart = isItemInCart(item.id);
 //                   const wasRecentlyAdded = recentlyAddedToCart[item.id];
 //                   return (
 //                     <div key={item.id} className="product-card" onClick={() => handleProductClick(item)}>
-//                       {/* Image */}
 //                       <div style={{ position:'relative', height:250, background:'#0a0a0a', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', padding:'20px' }}>
-//                         <img
-//                           src={item.imageUrl||item.image||"/placeholder.png"} alt={item.name}
-//                           className="product-img"
-//                           style={{ maxHeight:200, maxWidth:'100%', objectFit:'contain', filter:'drop-shadow(0 10px 30px rgba(0,0,0,.5))' }}
-//                         />
+//                         <img src={item.imageUrl||item.image||"/placeholder.png"} alt={item.name} className="product-img" style={{ maxHeight:200, maxWidth:'100%', objectFit:'contain', filter:'drop-shadow(0 10px 30px rgba(0,0,0,.5))' }}/>
 //                         <div className="product-actions">
 //                           <button onClick={(e)=>handleAddToWishlist(item,e)} className={`icon-action ${isInWishlist?'active-wish':''}`}>
 //                             <Heart size={14} strokeWidth={1.5} fill={isInWishlist?'currentColor':'none'}/>
@@ -631,13 +717,9 @@
 //                           <span className="product-tag">In Stock</span>
 //                         </div>
 //                       </div>
-
-//                       {/* Info */}
 //                       <div style={{ padding:'15px 15px 18px', borderTop:'1px solid #1a1a1a' }}>
 //                         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:5, gap:8 }}>
-//                           <h3 className="iLU-condensed" style={{ fontSize:15, fontWeight:800, textTransform:'uppercase', letterSpacing:'.04em', color:'#fff', lineHeight:1.1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', flex:1 }}>
-//                             {item.name}
-//                           </h3>
+//                           <h3 className="iLU-condensed" style={{ fontSize:15, fontWeight:800, textTransform:'uppercase', letterSpacing:'.04em', color:'#fff', lineHeight:1.1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', flex:1 }}>{item.name}</h3>
 //                           <div style={{ display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
 //                             <Star size={10} fill="#fff" color="#fff"/>
 //                             <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, color:'#666' }}>4.5</span>
@@ -648,20 +730,11 @@
 //                         </p>
 //                         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
 //                           <div>
-//                             <p className="iLU-condensed" style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>
-//                               ${Number(item.price).toFixed(2)}
-//                             </p>
-//                             {item.originalPrice && (
-//                               <p className="iLU-body" style={{ fontSize:11, color:'#444', textDecoration:'line-through', marginTop:2 }}>
-//                                 ${Number(item.originalPrice).toFixed(2)}
-//                               </p>
-//                             )}
+//                             <p className="iLU-condensed" style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>${Number(item.price).toFixed(2)}</p>
+//                             {item.originalPrice && <p className="iLU-body" style={{ fontSize:11, color:'#444', textDecoration:'line-through', marginTop:2 }}>${Number(item.originalPrice).toFixed(2)}</p>}
 //                           </div>
 //                           <div style={{ display:'flex', gap:6, flexShrink:0 }}>
-//                             <button
-//                               onClick={(e)=>{ if(isInCart){e.stopPropagation();navigate("/cart");}else{handleAddToCart(item,e);} }}
-//                               className={`cart-action ${isInCart||wasRecentlyAdded?'in-cart':''}`}
-//                             >
+//                             <button onClick={(e)=>{ if(isInCart){e.stopPropagation();navigate("/cart");}else{handleAddToCart(item,e);} }} className={`cart-action ${isInCart||wasRecentlyAdded?'in-cart':''}`}>
 //                               <ShoppingCart size={14} strokeWidth={1.5}/>
 //                             </button>
 //                             <button onClick={(e)=>handleBuyNow(item,e)} className="btn-small">Buy Now</button>
@@ -674,8 +747,7 @@
 //                             ) : isInCart ? (
 //                               <span className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', color:'#888', display:'flex', alignItems:'center', gap:5, flexWrap:'wrap' }}>
 //                                 ✓ In cart ·{' '}
-//                                 <button onClick={(e)=>{e.stopPropagation();navigate("/cart");}}
-//                                   style={{ background:'none', border:'none', cursor:'pointer', color:'#fff', fontFamily:"'Barlow Condensed',sans-serif", fontSize:10, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', textDecoration:'underline', padding:0 }}>
+//                                 <button onClick={(e)=>{e.stopPropagation();navigate("/cart");}} style={{ background:'none', border:'none', cursor:'pointer', color:'#fff', fontFamily:"'Barlow Condensed',sans-serif", fontSize:10, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', textDecoration:'underline', padding:0 }}>
 //                                   View Cart
 //                                 </button>
 //                               </span>
@@ -696,6 +768,81 @@
 //           )}
 //         </div>
 //       </section>
+//       {/* ── 3-COLUMN IMAGE GRID ── */}
+// <section style={{ borderBottom:'1px solid #222' }}>
+//   <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:'#222' }} className="img-grid-3">
+//     {[
+//       { src:'/images/maradona.jpg', label:'The Legend' },
+//       { src:'/images/beckam.jpg',   label:'The Icon' },
+//       { src:'/images/pelee.webp',     label:'The King' },
+
+//     ].map((item, i) => (
+//       <div key={i} style={{ position:'relative', overflow:'hidden', background:'#000', aspectRatio:'3/4' }}>
+//         {item.isVideo ? (
+//           <video autoPlay muted loop playsInline style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)' }}>
+//             <source src={item.src} type="video/mp4"/>
+//           </video>
+//         ) : (
+//           <img src={item.src} alt={item.label} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
+//             onMouseOver={e => e.currentTarget.style.transform='scale(1.05)'}
+//             onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
+//           />
+//         )}
+//         <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 50%)' }}/>
+//         <div style={{ position:'absolute', bottom:20, left:20 }}>
+//           <span className="iLU-condensed" style={{ fontSize:11, fontWeight:700, letterSpacing:'.25em', textTransform:'uppercase', color:'rgba(255,255,255,0.4)' }}>{item.label}</span>
+//         </div>
+//       </div>
+//     ))}
+//   </div>
+// </section>
+
+// {/* ── NEYMAR FULLWIDTH VIDEO ── */}
+// <section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
+//   <video autoPlay muted loop playsInline
+//     style={{ width:'100%', height:'auto', display:'block', filter:'grayscale(15%)' }}>
+//     <source src="/videos/neymer.mp4" type="video/mp4"/>
+//   </video>
+//   <div style={{ position:'absolute', inset:0, background:'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%)' }}/>
+
+//   {/* Left side text */}
+//   <div style={{
+//     position:'absolute', top:0, left:0, bottom:0,
+//     display:'flex', flexDirection:'column', justifyContent:'flex-end',
+//     padding:'clamp(24px,5vw,64px)',
+//     maxWidth:'clamp(280px,45vw,560px)',
+//   }}>
+//     <div style={{ width:32, height:1, background:'rgba(255,255,255,0.3)', marginBottom:20 }}/>
+//     <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,11px)', fontWeight:700, letterSpacing:'.35em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:14 }}>
+//       New Season Drop
+//     </p>
+//     <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
+//       Play
+//     </h2>
+//     <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'1px rgba(255,255,255,0.3)', color:'transparent', marginBottom:28 }}>
+//       Beautiful
+//     </h2>
+//     <p className="iLU-body" style={{ color:'rgba(255,255,255,0.4)', fontSize:'clamp(12px,1.5vw,14px)', lineHeight:1.7, marginBottom:32, maxWidth:320 }}>
+//       The finest football gear for those who play with passion. Premium quality, authentic performance.
+//     </p>
+//     <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+//       <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
+//         <ShoppingBag size={13} strokeWidth={2}/> Shop Now
+//       </button>
+//       <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
+//         View All <ArrowRight size={13} strokeWidth={2}/>
+//       </button>
+//     </div>
+//     <div style={{ width:32, height:1, background:'rgba(255,255,255,0.1)', marginTop:32 }}/>
+//   </div>
+
+//   {/* Bottom right tag */}
+//   <div style={{ position:'absolute', bottom:'clamp(16px,3vw,40px)', right:'clamp(16px,3vw,40px)' }}>
+//     <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,10px)', fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>
+//       Sport-X · Est. 2024
+//     </span>
+//   </div>
+// </section>
 
 //       {/* ── STATS ── */}
 //       <section id="stats" className={`scroll-section ${statsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
@@ -704,19 +851,41 @@
 //             {stats.map((stat, i) => (
 //               <div key={i} className="stat-cell" style={{ textAlign:'center', padding:'40px 16px', borderRight: i<stats.length-1?'1px solid #222':'none' }}>
 //                 <div style={{ color:'#333', marginBottom:12, display:'flex', justifyContent:'center' }}>{stat.icon}</div>
-//                 <div className="iLU-condensed" style={{ fontSize:'clamp(28px,4vw,48px)', fontWeight:900, color:'#fff', lineHeight:1, marginBottom:6 }}>
-//                   {stat.number}
-//                 </div>
-//                 <div className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.2em', textTransform:'uppercase', color:'#555' }}>
-//                   {stat.label}
-//                 </div>
+//                 <div className="iLU-condensed" style={{ fontSize:'clamp(28px,4vw,48px)', fontWeight:900, color:'#fff', lineHeight:1, marginBottom:6 }}>{stat.number}</div>
+//                 <div className="iLU-condensed" style={{ fontSize:10, fontWeight:700, letterSpacing:'.2em', textTransform:'uppercase', color:'#555' }}>{stat.label}</div>
 //               </div>
 //             ))}
 //           </div>
 //         </div>
 //       </section>
-
-//       {/* ── Watermark tagline ── */}
+// {/* ── CR7-STYLE FULLSCREEN VIDEO ── */}
+// <section style={{ position:'relative', width:'100%', height:'100vh', overflow:'hidden', background:'#000', borderBottom:'1px solid #222' }}>
+//   <video autoPlay muted loop playsInline
+//     style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.55 }}>
+//     <source src="/videos/messironaldo.mp4" type="video/mp4"/>
+//   </video>
+//   <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, rgba(0,0,0,.4) 0%, rgba(0,0,0,.2) 40%, rgba(0,0,0,.8) 100%)' }}/>
+//   <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'0 24px' }}>
+//     <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.5vw,11px)', fontWeight:700, letterSpacing:'.4em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:20 }}>
+//       Sport-X · Official Store
+//     </p>
+//     <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
+//       SPORT
+//     </h2>
+//     <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'2px rgba(255,255,255,0.25)', color:'transparent', marginBottom:36 }}>
+//       -X-
+//     </h2>
+//     <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ padding:'14px 40px' }}>
+//       <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
+//     </button>
+//   </div>
+//   {/* Scroll line */}
+//   <div style={{ position:'absolute', bottom:32, left:'50%', transform:'translateX(-50%)', display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
+//     <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:9, fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>Sport-X</p>
+//     <div style={{ width:1, height:40, background:'linear-gradient(to bottom, rgba(255,255,255,0.2), transparent)' }}/>
+//   </div>
+// </section>
+//       {/* ── Watermark ── */}
 //       <section style={{ padding:'48px 24px', textAlign:'center', background:'#000', overflow:'hidden' }}>
 //         <p className="iLU-condensed" style={{ fontSize:'clamp(22px,6vw,72px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#1a1a1a', lineHeight:1, whiteSpace:'nowrap' }}>
 //           Premium Football Gear · Est. 2024 · Sport-X
@@ -725,15 +894,6 @@
 //     </div>
 //   );
 // }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -794,41 +954,69 @@ export default function Home() {
   const [slides, setSlides] = useState([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [modalVideoSrc, setModalVideoSrc] = useState("");
+  // ── NEW: countdown state ──────────────────────────────────────────────
+  const [modalCountdown, setModalCountdown] = useState(5);
+  const [canClose, setCanClose] = useState(false);
+  // ─────────────────────────────────────────────────────────────────────
   const slideIntervalRef = useRef(null);
   const fetchTimeoutRef = useRef(null);
   const videoRef = useRef(null);
+  const countdownRef = useRef(null); // ── NEW
 
-  // ── Listen for logo click event from Navbar ──────────────────────────
- useEffect(() => {
-  const handler = () => {
-    const random = Math.floor(Math.random() * 3) + 1;
-    setModalVideoSrc(`/videos/hero${random}.mp4`);
-    setShowVideoModal(true);
-  };
-  window.addEventListener("sportx-logo-click", handler);
-  return () => window.removeEventListener("sportx-logo-click", handler);
-}, []);
-  // ── Pause/play video with modal ───────────────────────────────────────
+  useEffect(() => {
+    const handler = () => {
+      const random = Math.floor(Math.random() * 3) + 1;
+      setModalVideoSrc(`/videos/hero${random}.mp4`);
+      setShowVideoModal(true);
+    };
+    window.addEventListener("sportx-logo-click", handler);
+    return () => window.removeEventListener("sportx-logo-click", handler);
+  }, []);
+
+  // ── UPDATED: modal open/close + countdown ────────────────────────────
+  const closeModal = useCallback(() => {
+    setShowVideoModal(false);
+    setModalCountdown(5);
+    setCanClose(false);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+  }, []);
+
   useEffect(() => {
     if (showVideoModal) {
       document.body.style.overflow = "hidden";
       setTimeout(() => { videoRef.current?.play(); }, 100);
+      // reset & start countdown
+      setModalCountdown(5);
+      setCanClose(false);
+      let count = 5;
+      countdownRef.current = setInterval(() => {
+        count -= 1;
+        setModalCountdown(count);
+        if (count <= 0) {
+          clearInterval(countdownRef.current);
+          setCanClose(true);
+        }
+      }, 1000);
     } else {
       document.body.style.overflow = "";
       if (videoRef.current) {
         videoRef.current.pause();
         videoRef.current.currentTime = 0;
       }
+      if (countdownRef.current) clearInterval(countdownRef.current);
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
   }, [showVideoModal]);
+  // ─────────────────────────────────────────────────────────────────────
 
-  // ── Close on Escape ───────────────────────────────────────────────────
   useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") setShowVideoModal(false); };
+    const handler = (e) => { if (e.key === "Escape" && canClose) closeModal(); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [canClose, closeModal]);
 
   const debouncedSetSlide = useCallback(debounce((slideIndex) => { setCurrentSlide(slideIndex); }, 100), []);
 
@@ -1003,6 +1191,12 @@ export default function Home() {
   const productsVisible = useScrollFade("products-grid");
   const statsVisible = useScrollFade("stats");
 
+  // ── countdown ring math ───────────────────────────────────────────────
+  const RING_R = 23;
+  const ringCircumference = 2 * Math.PI * RING_R;
+  const ringOffset = canClose ? 0 : ringCircumference * (modalCountdown / 5);
+  // ─────────────────────────────────────────────────────────────────────
+
   return (
     <div style={{ background: '#000', minHeight: '100vh', overflowX: 'hidden', fontFamily: "'Barlow', sans-serif" }}>
       <style>{`
@@ -1057,27 +1251,37 @@ export default function Home() {
         /* ── Video Modal ── */
         .vm-backdrop {
           position:fixed; inset:0; z-index:1000;
-          background:rgba(0,0,0,0.97);
+          background:rgba(0,0,0,0.92);
           display:flex; flex-direction:column; align-items:center; justify-content:center;
           animation: vm-in .25s ease;
         }
         @keyframes vm-in { from{opacity:0} to{opacity:1} }
-        .vm-close {
+
+        /* countdown close button */
+        .vm-close-wrap {
           position:absolute; top:20px; right:20px;
-          width:44px; height:44px;
-          background:transparent; border:1px solid #2a2a2a; cursor:pointer;
+          width:52px; height:52px;
           display:flex; align-items:center; justify-content:center;
-          color:#666; transition:color .15s, border-color .15s;
-          font-family:'Barlow Condensed',sans-serif;
+          z-index:10;
         }
-        .vm-close:hover { color:#fff; border-color:#555; }
-        .vm-video {
-          width:90vw; max-width:960px;
-          aspect-ratio:16/9;
-          background:#0a0a0a;
-          border:1px solid #1e1e1e;
-          outline:none;
+        .vm-close-svg {
+          position:absolute; inset:0;
+          transform:rotate(-90deg);
         }
+        .vm-ring-track  { fill:none; stroke:#2a2a2a; stroke-width:2; }
+        .vm-ring-fill   { fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; transition:stroke-dashoffset 1s linear; }
+        .vm-close-btn {
+          position:relative; z-index:2;
+          width:36px; height:36px;
+          background:transparent; border:none;
+          display:flex; align-items:center; justify-content:center;
+          font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:800;
+          letter-spacing:.04em; color:#444;
+          cursor:default; transition:color .2s;
+        }
+        .vm-close-btn.ready { cursor:pointer; color:#aaa; }
+        .vm-close-btn.ready:hover { color:#fff; }
+
         .vm-label {
           font-family:'Barlow Condensed',sans-serif;
           font-size:10px; font-weight:700; letter-spacing:.28em; text-transform:uppercase;
@@ -1085,6 +1289,7 @@ export default function Home() {
         }
         .vm-actions {
           display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; justify-content:center;
+          position:relative; z-index:2;
         }
         .vm-btn-primary {
           font-family:'Barlow Condensed',sans-serif;
@@ -1130,7 +1335,6 @@ export default function Home() {
           .section-header-row { margin-bottom:28px; }
           .hide-mobile { display:none !important; }
           .show-mobile { display:flex !important; }
-          .vm-video { width:95vw; }
         }
         @media(max-width:480px){
           .categories-grid { grid-template-columns:1fr; }
@@ -1140,65 +1344,89 @@ export default function Home() {
           .section-header-row { flex-direction:column; align-items:flex-start; }
           .hide-small { display:none !important; }
         }
-          .split-section { grid-template-columns:1fr 1fr; }
-.img-grid-3 { grid-template-columns:repeat(3,1fr); }
-@media(max-width:768px){
-  .split-section { grid-template-columns:1fr !important; }
-  .img-grid-3 { grid-template-columns:1fr !important; }
-}
+        .split-section { grid-template-columns:1fr 1fr; }
+        .img-grid-3 { grid-template-columns:repeat(3,1fr); }
+        @media(max-width:768px){
+          .split-section { grid-template-columns:1fr !important; }
+          .img-grid-3 { grid-template-columns:1fr !important; }
+        }
       `}</style>
 
       {/* ── VIDEO MODAL ── */}
       {showVideoModal && (
-        <div className="vm-backdrop" onClick={(e) => { if (e.target === e.currentTarget) setShowVideoModal(false); }}>
-          <button className="vm-close" onClick={() => setShowVideoModal(false)}>
-            <X size={16} strokeWidth={1.5} />
-          </button>
+        <div className="vm-backdrop" onClick={(e) => { if (e.target === e.currentTarget && canClose) closeModal(); }}>
 
-          <p className="vm-label">Sport-X · Official</p>
+          {/* ── Countdown close button (top-right) ── */}
+          <div className="vm-close-wrap">
+            <svg className="vm-close-svg" width="52" height="52" viewBox="0 0 52 52">
+              {/* track ring */}
+              <circle className="vm-ring-track" cx="26" cy="26" r={RING_R} />
+              {/* animated fill ring — drains as countdown ticks */}
+              <circle
+                className="vm-ring-fill"
+                cx="26" cy="26" r={RING_R}
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringOffset}
+              />
+            </svg>
+            <button
+              className={`vm-close-btn${canClose ? ' ready' : ''}`}
+              onClick={() => { if (canClose) closeModal(); }}
+              title={canClose ? 'Close' : `Available in ${modalCountdown}s`}
+            >
+              {canClose ? <X size={15} strokeWidth={2} /> : <span>{modalCountdown}</span>}
+            </button>
+          </div>
 
- <video
-  ref={videoRef}
-  className="vm-video"
-  src={modalVideoSrc}
-  autoPlay
-  playsInline
-  muted
-  loop
-  style={{
-    width:'60vw', maxWidth:'640px',
-    aspectRatio:'16/9',
-    objectFit:'cover',
-    display:'block',
-    border:'1px solid #1e1e1e',
-    outline:'none',
-  }}
-/>
+          {/* ── Full-screen video ── */}
+          <video
+            ref={videoRef}
+            src={modalVideoSrc}
+            autoPlay
+            playsInline
+            muted
+            loop
+            style={{
+              position:'absolute',
+              inset:0,
+              width:'100vw',
+              height:'100vh',
+              objectFit:'cover',
+              display:'block',
+              outline:'none',
+              zIndex:0,
+            }}
+          />
 
-          {/* CTA buttons — only shown to guests */}
+          {/* ── Overlay gradient so buttons are readable ── */}
+          <div style={{
+            position:'absolute', inset:0, zIndex:1,
+            background:'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%)',
+            pointerEvents:'none',
+          }}/>
+
+          {/* ── CTA buttons ── */}
           {!user && (
-            <div className="vm-actions">
-              <button className="vm-btn-primary" onClick={() => { setShowVideoModal(false); navigate("/register"); }}>
-                <ChevronRight size={14} strokeWidth={2} /> Create Account
+            <div className="vm-actions" style={{ zIndex:2 }}>
+              <button className="vm-btn-primary" onClick={() => { closeModal(); navigate("/login"); }}>
+                <ChevronRight size={14} strokeWidth={2} /> Login
               </button>
-              <button className="vm-btn-outline" onClick={() => { setShowVideoModal(false); navigate("/login"); }}>
-                Sign In
+              <button className="vm-btn-outline" onClick={() => { closeModal(); navigate("/register"); }}>
+                Create Account
               </button>
             </div>
           )}
-
-          {/* Logged in — just a shop button */}
           {user && (
-            <div className="vm-actions">
-              <button className="vm-btn-primary" onClick={() => { setShowVideoModal(false); navigate("/more-products"); }}>
-                <ShoppingBag size={14} strokeWidth={2} /> Shop Now
+            <div className="vm-actions" style={{ zIndex:2 }}>
+              <button className="vm-btn-primary" onClick={() => { closeModal(); navigate("/more-products"); }}>
+                <ShoppingBag size={14} strokeWidth={2} /> Continue Shopping
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* ── Ticker ── */}
+      {/* ── 1. TICKER ── */}
       <div className="ticker-wrap">
         <div className="ticker-track">
           {[...Array(2)].map((_, r) =>
@@ -1211,7 +1439,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── HERO ── */}
+      {/* ── 2. HERO ── */}
       <section style={{ position:'relative', minHeight:'100vh', display:'flex', alignItems:'center', borderBottom:'1px solid #222' }}>
         <div style={{ position:'absolute', inset:0, zIndex:0 }}>
           {slides.map((slide, i) => (
@@ -1221,7 +1449,6 @@ export default function Home() {
             </div>
           ))}
         </div>
-
         <div className="hero-inner">
           <div className="hero-grid">
             <div>
@@ -1243,7 +1470,6 @@ export default function Home() {
                 </button>
               </div>
             </div>
-
             <div>
               <div style={{ position:'relative', background:'#0d0d0d', border:'1px solid #222', padding:'32px 24px 22px' }}>
                 {slides[currentSlide] && (
@@ -1294,7 +1520,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FEATURES ── */}
+      {/* ── 3. BRAND LOGOS STRIP ── */}
+      <section style={{ background:'#000', borderBottom:'1px solid #222', overflow:'hidden', padding:'28px 0' }}>
+        <div style={{ display:'flex', alignItems:'center', overflow:'hidden', whiteSpace:'nowrap' }}>
+          <div style={{ display:'inline-flex', animation:'ticker 20s linear infinite', gap:0 }}>
+            {[...Array(2)].map((_, r) =>
+              ['NIKE','ADIDAS','PUMA','NEW BALANCE','UNDER ARMOUR','UMBRO','MIZUNO','HUMMEL','KAPPA','JOMA'].map((brand, i) => (
+                <span key={`${r}-${i}`} style={{ display:'inline-flex', alignItems:'center', gap:32, padding:'0 40px', fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,22px)', fontWeight:900, letterSpacing:'.25em', textTransform:'uppercase', color:'#1a1a1a' }}>
+                  {brand} <span style={{ width:4, height:4, background:'#2a2a2a', borderRadius:'50%', display:'inline-block', flexShrink:0 }}/>
+                </span>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. FEATURES ── */}
       <section id="features" className={`scroll-section section-pad ${featuresVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
         <div className="section-inner">
           <div style={{ marginBottom:36 }}>
@@ -1315,39 +1556,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── BRAND LOGOS STRIP ── */}
-<section style={{ background:'#000', borderBottom:'1px solid #222', overflow:'hidden', padding:'28px 0' }}>
-  <div style={{ display:'flex', alignItems:'center', overflow:'hidden', whiteSpace:'nowrap' }}>
-    <div style={{ display:'inline-flex', animation:'ticker 20s linear infinite', gap:0 }}>
-      {[...Array(2)].map((_, r) =>
-        ['NIKE','ADIDAS','PUMA','NEW BALANCE','UNDER ARMOUR','UMBRO','MIZUNO','HUMMEL','KAPPA','JOMA'].map((brand, i) => (
-          <span key={`${r}-${i}`} style={{ display:'inline-flex', alignItems:'center', gap:32, padding:'0 40px', fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,22px)', fontWeight:900, letterSpacing:'.25em', textTransform:'uppercase', color:'#1a1a1a' }}>
-            {brand} <span style={{ width:4, height:4, background:'#2a2a2a', borderRadius:'50%', display:'inline-block', flexShrink:0 }}/>
-          </span>
-        ))
-      )}
-    </div>
-  </div>
-</section>
-
-
-    {/* ── BIG PROMO VIDEO ── */}
-      <section style={{ width:'100%', background:'#000', borderBottom:'1px solid #222' }}>
-        <video
-          autoPlay muted loop playsInline
-          style={{ width:'100%', height:'auto', display:'block' }}
-        >
-          <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
-        </video>
-        <div style={{ background:'#000', padding:'24px', display:'flex', alignItems:'center', justifyContent:'center', borderTop:'1px solid #1a1a1a' }}>
-          <button className="btn-primary" onClick={() => navigate("/more-products")}>
-            <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
-          </button>
-        </div>
-      </section>
-
-    
-      {/* ── CATEGORIES ── */}
+      {/* ── 5. CATEGORIES ── */}
       <section id="categories" className={`scroll-section section-pad ${categoriesVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
         <div className="section-inner">
           <div className="section-header-row">
@@ -1384,38 +1593,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── SPLIT SECTION ── */}
-<section id="split-section" style={{ borderBottom:'1px solid #222', display:'grid', gridTemplateColumns:'1fr 1fr' }} className="split-section">  <div style={{ position:'relative', overflow:'hidden', minHeight:500 }}>
-    <img
-      src="/images/pele.jpg"
-      alt="The Game"
-      style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
-      onMouseOver={e => e.currentTarget.style.transform='scale(1.04)'}
-      onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
-    />
-    <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, transparent 60%, #000 100%)' }}/>
-  </div>
-  <div style={{ background:'#000', display:'flex', flexDirection:'column', justifyContent:'center', padding:'clamp(32px,6vw,80px)' }}>
-    <div className="section-label" style={{ marginBottom:16 }}>The Game</div>
-    <h2 className="iLU-condensed" style={{ fontSize:'clamp(32px,5vw,64px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'-.01em', color:'#fff', lineHeight:.9, marginBottom:24 }}>
-      Gear Built<br/>
-      <span style={{ WebkitTextStroke:'1px rgba(255,255,255,.2)', color:'transparent' }}>For Legends</span>
-    </h2>
-    <p className="iLU-body" style={{ color:'#555', fontSize:14, lineHeight:1.8, marginBottom:32, maxWidth:340 }}>
-      From the training ground to the biggest stages in the world. Equipment that performs when it matters most.
-    </p>
-    <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-      <button className="btn-primary" onClick={() => navigate("/more-products")}>
-        <ShoppingBag size={14} strokeWidth={2}/> Shop Now
-      </button>
-      <button className="btn-outline" onClick={() => navigate("/about")}>
-        Our Story <ArrowRight size={13} strokeWidth={2}/>
-      </button>
-    </div>
-  </div>
-</section>
+      {/* ── 6. SPLIT SECTION ── */}
+      <section id="split-section" style={{ borderBottom:'1px solid #222', display:'grid', gridTemplateColumns:'1fr 1fr' }} className="split-section">
+        <div style={{ position:'relative', overflow:'hidden', minHeight:500 }}>
+          <img
+            src="/images/pele.jpg"
+            alt="The Game"
+            style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
+            onMouseOver={e => e.currentTarget.style.transform='scale(1.04)'}
+            onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
+          />
+          <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, transparent 60%, #000 100%)' }}/>
+        </div>
+        <div style={{ background:'#000', display:'flex', flexDirection:'column', justifyContent:'center', padding:'clamp(32px,6vw,80px)' }}>
+          <div className="section-label" style={{ marginBottom:16 }}>The Game</div>
+          <h2 className="iLU-condensed" style={{ fontSize:'clamp(32px,5vw,64px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'-.01em', color:'#fff', lineHeight:.9, marginBottom:24 }}>
+            Gear Built<br/>
+            <span style={{ WebkitTextStroke:'1px rgba(255,255,255,.2)', color:'transparent' }}>For Legends</span>
+          </h2>
+          <p className="iLU-body" style={{ color:'#555', fontSize:14, lineHeight:1.8, marginBottom:32, maxWidth:340 }}>
+            From the training ground to the biggest stages in the world. Equipment that performs when it matters most.
+          </p>
+          <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+            <button className="btn-primary" onClick={() => navigate("/more-products")}>
+              <ShoppingBag size={14} strokeWidth={2}/> Shop Now
+            </button>
+            <button className="btn-outline" onClick={() => navigate("/about")}>
+              Our Story <ArrowRight size={13} strokeWidth={2}/>
+            </button>
+          </div>
+        </div>
+      </section>
 
-      {/* ── FEATURED PRODUCTS ── */}
+      {/* ── 7. FEATURED PRODUCTS ── */}
       <section id="products-grid" className={`scroll-section section-pad ${productsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
         <div className="section-inner">
           <div className="section-header-row">
@@ -1505,83 +1715,94 @@ export default function Home() {
           )}
         </div>
       </section>
-      {/* ── 3-COLUMN IMAGE GRID ── */}
-<section style={{ borderBottom:'1px solid #222' }}>
-  <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:'#222' }} className="img-grid-3">
-    {[
-      { src:'/images/maradona.jpg', label:'The Legend' },
-      { src:'/videos/beckam.mp4',   label:'The Icon', isVideo:true },
-      { src:'/images/pelee.webp',     label:'The King' },
 
-    ].map((item, i) => (
-      <div key={i} style={{ position:'relative', overflow:'hidden', background:'#000', aspectRatio:'3/4' }}>
-        {item.isVideo ? (
-          <video autoPlay muted loop playsInline style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)' }}>
-            <source src={item.src} type="video/mp4"/>
-          </video>
-        ) : (
-          <img src={item.src} alt={item.label} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
-            onMouseOver={e => e.currentTarget.style.transform='scale(1.05)'}
-            onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
-          />
-        )}
-        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 50%)' }}/>
-        <div style={{ position:'absolute', bottom:20, left:20 }}>
-          <span className="iLU-condensed" style={{ fontSize:11, fontWeight:700, letterSpacing:'.25em', textTransform:'uppercase', color:'rgba(255,255,255,0.4)' }}>{item.label}</span>
+      {/* ── 8. BIG PROMO VIDEO (Messi) ── */}
+      <section style={{ width:'100%', background:'#000', borderBottom:'1px solid #222' }}>
+        <video
+          autoPlay muted loop playsInline
+          style={{ width:'100%', height:'auto', display:'block' }}
+        >
+          <source src="https://static.messi.com/wp-content/uploads/2025/07/MODULO_MESSI_2000x1400_JUL_2025.mp4" type="video/mp4" />
+        </video>
+        <div style={{ background:'#000', padding:'24px', display:'flex', alignItems:'center', justifyContent:'center', borderTop:'1px solid #1a1a1a' }}>
+          <button className="btn-primary" onClick={() => navigate("/more-products")}>
+            <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
+          </button>
         </div>
-      </div>
-    ))}
-  </div>
-</section>
+      </section>
 
-{/* ── NEYMAR FULLWIDTH VIDEO ── */}
-<section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
-  <video autoPlay muted loop playsInline
-    style={{ width:'100%', height:'auto', display:'block', filter:'grayscale(15%)' }}>
-    <source src="/videos/neymer.mp4" type="video/mp4"/>
-  </video>
-  <div style={{ position:'absolute', inset:0, background:'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%)' }}/>
+      {/* ── 9. 3-COLUMN IMAGE GRID ── */}
+      <section style={{ borderBottom:'1px solid #222' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:'#222' }} className="img-grid-3">
+          {[
+            { src:'/images/maradona.jpg', label:'The Legend' },
+            { src:'/images/beckam.jpg',   label:'The Icon' },
+            { src:'/images/pelee.webp',   label:'The King' },
+          ].map((item, i) => (
+            <div key={i} style={{ position:'relative', overflow:'hidden', background:'#000', aspectRatio:'3/4' }}>
+              {item.isVideo ? (
+                <video autoPlay muted loop playsInline style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)' }}>
+                  <source src={item.src} type="video/mp4"/>
+                </video>
+              ) : (
+                <img src={item.src} alt={item.label} style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'grayscale(20%)', transition:'transform .6s ease' }}
+                  onMouseOver={e => e.currentTarget.style.transform='scale(1.05)'}
+                  onMouseOut={e => e.currentTarget.style.transform='scale(1)'}
+                />
+              )}
+              <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 50%)' }}/>
+              <div style={{ position:'absolute', bottom:20, left:20 }}>
+                <span className="iLU-condensed" style={{ fontSize:11, fontWeight:700, letterSpacing:'.25em', textTransform:'uppercase', color:'rgba(255,255,255,0.4)' }}>{item.label}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-  {/* Left side text */}
-  <div style={{
-    position:'absolute', top:0, left:0, bottom:0,
-    display:'flex', flexDirection:'column', justifyContent:'flex-end',
-    padding:'clamp(24px,5vw,64px)',
-    maxWidth:'clamp(280px,45vw,560px)',
-  }}>
-    <div style={{ width:32, height:1, background:'rgba(255,255,255,0.3)', marginBottom:20 }}/>
-    <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,11px)', fontWeight:700, letterSpacing:'.35em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:14 }}>
-      New Season Drop
-    </p>
-    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
-      Play
-    </h2>
-    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'1px rgba(255,255,255,0.3)', color:'transparent', marginBottom:28 }}>
-      Beautiful
-    </h2>
-    <p className="iLU-body" style={{ color:'rgba(255,255,255,0.4)', fontSize:'clamp(12px,1.5vw,14px)', lineHeight:1.7, marginBottom:32, maxWidth:320 }}>
-      The finest football gear for those who play with passion. Premium quality, authentic performance.
-    </p>
-    <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-      <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
-        <ShoppingBag size={13} strokeWidth={2}/> Shop Now
-      </button>
-      <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
-        View All <ArrowRight size={13} strokeWidth={2}/>
-      </button>
-    </div>
-    <div style={{ width:32, height:1, background:'rgba(255,255,255,0.1)', marginTop:32 }}/>
-  </div>
+      {/* ── 10. NEYMAR FULLWIDTH VIDEO ── */}
+      <section style={{ position:'relative', width:'100%', overflow:'hidden', borderBottom:'1px solid #222' }}>
+        <video autoPlay muted loop playsInline
+          style={{ width:'100%', height:'auto', display:'block', filter:'grayscale(15%)' }}>
+          <source src="/videos/neymer.mp4" type="video/mp4"/>
+        </video>
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%)' }}/>
+        <div style={{
+          position:'absolute', top:0, left:0, bottom:0,
+          display:'flex', flexDirection:'column', justifyContent:'flex-end',
+          padding:'clamp(24px,5vw,64px)',
+          maxWidth:'clamp(280px,45vw,560px)',
+        }}>
+          <div style={{ width:32, height:1, background:'rgba(255,255,255,0.3)', marginBottom:20 }}/>
+          <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,11px)', fontWeight:700, letterSpacing:'.35em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:14 }}>
+            New Season Drop
+          </p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
+            Play
+          </h2>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(36px,7vw,96px)', fontWeight:900, lineHeight:.88, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'1px rgba(255,255,255,0.3)', color:'transparent', marginBottom:28 }}>
+            Beautiful
+          </h2>
+          <p className="iLU-body" style={{ color:'rgba(255,255,255,0.4)', fontSize:'clamp(12px,1.5vw,14px)', lineHeight:1.7, marginBottom:32, maxWidth:320 }}>
+            The finest football gear for those who play with passion. Premium quality, authentic performance.
+          </p>
+          <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
+            <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
+              <ShoppingBag size={13} strokeWidth={2}/> Shop Now
+            </button>
+            <button className="btn-outline" onClick={() => navigate("/more-products")} style={{ backdropFilter:'blur(4px)' }}>
+              View All <ArrowRight size={13} strokeWidth={2}/>
+            </button>
+          </div>
+          <div style={{ width:32, height:1, background:'rgba(255,255,255,0.1)', marginTop:32 }}/>
+        </div>
+        <div style={{ position:'absolute', bottom:'clamp(16px,3vw,40px)', right:'clamp(16px,3vw,40px)' }}>
+          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,10px)', fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>
+            Sport-X · Est. 2024
+          </span>
+        </div>
+      </section>
 
-  {/* Bottom right tag */}
-  <div style={{ position:'absolute', bottom:'clamp(16px,3vw,40px)', right:'clamp(16px,3vw,40px)' }}>
-    <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.2vw,10px)', fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>
-      Sport-X · Est. 2024
-    </span>
-  </div>
-</section>
-
-      {/* ── STATS ── */}
+      {/* ── 11. STATS ── */}
       <section id="stats" className={`scroll-section ${statsVisible?'scroll-visible':'scroll-hidden'}`} style={{ borderBottom:'1px solid #222' }}>
         <div style={{ maxWidth:1280, margin:'0 auto', padding:'0 32px' }}>
           <div className="stats-grid">
@@ -1595,34 +1816,35 @@ export default function Home() {
           </div>
         </div>
       </section>
-{/* ── CR7-STYLE FULLSCREEN VIDEO ── */}
-<section style={{ position:'relative', width:'100%', height:'100vh', overflow:'hidden', background:'#000', borderBottom:'1px solid #222' }}>
-  <video autoPlay muted loop playsInline
-    style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.55 }}>
-    <source src="/videos/messironaldo.mp4" type="video/mp4"/>
-  </video>
-  <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, rgba(0,0,0,.4) 0%, rgba(0,0,0,.2) 40%, rgba(0,0,0,.8) 100%)' }}/>
-  <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'0 24px' }}>
-    <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.5vw,11px)', fontWeight:700, letterSpacing:'.4em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:20 }}>
-      Sport-X · Official Store
-    </p>
-    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
-      SPORT
-    </h2>
-    <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'2px rgba(255,255,255,0.25)', color:'transparent', marginBottom:36 }}>
-      -X-
-    </h2>
-    <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ padding:'14px 40px' }}>
-      <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
-    </button>
-  </div>
-  {/* Scroll line */}
-  <div style={{ position:'absolute', bottom:32, left:'50%', transform:'translateX(-50%)', display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
-    <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:9, fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>Sport-X</p>
-    <div style={{ width:1, height:40, background:'linear-gradient(to bottom, rgba(255,255,255,0.2), transparent)' }}/>
-  </div>
-</section>
-      {/* ── Watermark ── */}
+
+      {/* ── 12. CR7-STYLE FULLSCREEN VIDEO ── */}
+      <section style={{ position:'relative', width:'100%', height:'100vh', overflow:'hidden', background:'#000', borderBottom:'1px solid #222' }}>
+        <video autoPlay muted loop playsInline
+          style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.55 }}>
+          <source src="/videos/messironaldo.mp4" type="video/mp4"/>
+        </video>
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, rgba(0,0,0,.4) 0%, rgba(0,0,0,.2) 40%, rgba(0,0,0,.8) 100%)' }}/>
+        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'0 24px' }}>
+          <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(9px,1.5vw,11px)', fontWeight:700, letterSpacing:'.4em', textTransform:'uppercase', color:'rgba(255,255,255,0.35)', marginBottom:20 }}>
+            Sport-X · Official Store
+          </p>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', color:'#fff', marginBottom:8 }}>
+            SPORT
+          </h2>
+          <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(60px,14vw,160px)', fontWeight:900, lineHeight:.85, textTransform:'uppercase', letterSpacing:'-.02em', WebkitTextStroke:'2px rgba(255,255,255,0.25)', color:'transparent', marginBottom:36 }}>
+            -X-
+          </h2>
+          <button className="btn-primary" onClick={() => navigate("/more-products")} style={{ padding:'14px 40px' }}>
+            <ShoppingBag size={14} strokeWidth={2}/> Shop The Collection
+          </button>
+        </div>
+        <div style={{ position:'absolute', bottom:32, left:'50%', transform:'translateX(-50%)', display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
+          <p style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:9, fontWeight:700, letterSpacing:'.3em', textTransform:'uppercase', color:'rgba(255,255,255,0.2)' }}>Sport-X</p>
+          <div style={{ width:1, height:40, background:'linear-gradient(to bottom, rgba(255,255,255,0.2), transparent)' }}/>
+        </div>
+      </section>
+
+      {/* ── 13. WATERMARK ── */}
       <section style={{ padding:'48px 24px', textAlign:'center', background:'#000', overflow:'hidden' }}>
         <p className="iLU-condensed" style={{ fontSize:'clamp(22px,6vw,72px)', fontWeight:900, textTransform:'uppercase', letterSpacing:'.02em', color:'#1a1a1a', lineHeight:1, whiteSpace:'nowrap' }}>
           Premium Football Gear · Est. 2024 · Sport-X
