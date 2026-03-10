@@ -1044,10 +1044,7 @@
 
 
 
-
-
-
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../Api/Axios_Instance";
 import { useCart } from "../context/CartContext";
@@ -1060,94 +1057,89 @@ import {
 import { useWishlist } from "../context/WishlistContext";
 import { toast } from "sonner";
 
-/* ─── responsive hook ─────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   BREAKPOINT HOOK — fires on mount + every resize
+───────────────────────────────────────────────────────────── */
 function useBreakpoint() {
-  const [bp, setBp] = useState(() => {
+  const get = () => {
     if (typeof window === "undefined") return "lg";
     const w = window.innerWidth;
-    if (w < 480) return "xs";
-    if (w < 640) return "sm";
-    if (w < 1024) return "md";
+    if (w < 400) return "xs";   // tiny phones  (320–399)
+    if (w < 640) return "sm";   // normal phones (400–639)
+    if (w < 1024) return "md";  // tablets
     return "lg";
-  });
+  };
+  const [bp, setBp] = useState(get);
   useEffect(() => {
-    const fn = () => {
-      const w = window.innerWidth;
-      if (w < 480) setBp("xs");
-      else if (w < 640) setBp("sm");
-      else if (w < 1024) setBp("md");
-      else setBp("lg");
-    };
+    const fn = () => setBp(get());
     window.addEventListener("resize", fn);
+    fn(); // run once on mount to ensure correct initial value
     return () => window.removeEventListener("resize", fn);
   }, []);
   return bp;
 }
 
-/* ─── helpers ─────────────────────────────────────────────── */
-const generateRandomRating = () => parseFloat((Math.random() * 2 + 3).toFixed(1));
+const rng = () => parseFloat((Math.random() * 2 + 3).toFixed(1));
 
 export default function MoreProducts({ searchTerm }) {
-  /* state */
-  const [products,          setProducts]          = useState([]);
   const [displayedProducts, setDisplayedProducts] = useState([]);
-  const [searchParams]                            = useSearchParams();
-  const navigate   = useNavigate();
-  const { user }   = useAuth();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { addToCart, cart } = useCart();
   const { wishlist = [], toggleWishlist } = useWishlist();
-  const bp         = useBreakpoint();
-  const isMobile   = bp === "xs" || bp === "sm";
+  const bp = useBreakpoint();
+  const isXs = bp === "xs";
+  const isMobile = bp === "xs" || bp === "sm";
+  const isTablet = bp === "md";
 
   const categoryParam = searchParams.get("category");
-
   const [selectedCategory, setSelectedCategory] = useState(categoryParam || "All");
-  const [minPrice,   setMinPrice]   = useState("");
-  const [maxPrice,   setMaxPrice]   = useState("");
-  const [minRating,  setMinRating]  = useState(0);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [minRating, setMinRating] = useState(0);
   const [sortOption, setSortOption] = useState("");
 
-  /* grid: "3" | "2" | "1" | "list" */
-  const [gridCols, setGridCols] = useState("3");
+  /* grid mode — default based on breakpoint */
+  const defaultGrid = () => {
+    const w = typeof window !== "undefined" ? window.innerWidth : 1280;
+    if (w < 400) return "1";
+    if (w < 640) return "2";
+    return "3";
+  };
+  const [gridCols, setGridCols] = useState(defaultGrid);
 
-  const [quickViewProduct,   setQuickViewProduct]   = useState(null);
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages,  setTotalPages]  = useState(1);
-  const [totalCount,  setTotalCount]  = useState(0);
-  const itemsPerPage = 9;
-
-  const [hoveredCard,  setHoveredCard]  = useState(null);
-  const [addedToCart,  setAddedToCart]  = useState(null);
-  const [isLoading,    setIsLoading]    = useState(true);
-  const [showScrollTop,setShowScrollTop]= useState(false);
-  const [imgLoaded,    setImgLoaded]    = useState({});
-  const [categories,   setCategories]   = useState(["All"]);
-
-  /* clamp grid to 1 or 2 cols on mobile */
+  /* sync grid to bp changes */
   useEffect(() => {
-    if (isMobile && gridCols === "3") setGridCols("2");
-    if (bp === "xs"  && gridCols === "3") setGridCols("1");
+    if (isXs && (gridCols === "3" || gridCols === "2")) setGridCols("1");
+    else if (bp === "sm" && gridCols === "3") setGridCols("2");
   }, [bp]);
 
-  /* scroll to top tracker */
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 9;
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [addedToCart, setAddedToCart] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState({});
+  const [categories, setCategories] = useState(["All"]);
+
   useEffect(() => {
     const fn = () => setShowScrollTop(window.scrollY > 500);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  /* fetch categories */
   useEffect(() => {
     api.get("/Products/categories-list")
-      .then(res => {
-        if (res.data.data) setCategories(["All", ...res.data.data.filter(c => c !== "All")]);
-      })
+      .then(r => { if (r.data.data) setCategories(["All", ...r.data.data.filter(c => c !== "All")]); })
       .catch(() => {});
   }, []);
 
-  /* fetch + filter products */
   useEffect(() => {
     (async () => {
       setIsLoading(true);
@@ -1159,66 +1151,55 @@ export default function MoreProducts({ searchTerm }) {
           category: p.category,
           image: p.imageUrl || "/placeholder.png",
           stock: p.stockQuantity ?? 0,
-          rating: generateRandomRating(),
+          rating: rng(),
           views: Math.floor(Math.random() * 1000) + 100,
           trending: Math.random() > 0.7,
         }));
-
         let f = [...all];
         if (selectedCategory !== "All") f = f.filter(p => p.category === selectedCategory);
         if (minPrice) f = f.filter(p => p.price >= +minPrice);
         if (maxPrice) f = f.filter(p => p.price <= +maxPrice);
         if (searchTerm?.trim()) f = f.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
         if (minRating > 0) f = f.filter(p => p.rating >= minRating);
-        if (sortOption === "price-low")  f.sort((a,b) => a.price - b.price);
-        if (sortOption === "price-high") f.sort((a,b) => b.price - a.price);
-        if (sortOption === "newest")     f.sort((a,b) => b.id - a.id);
-        if (sortOption === "trending")   f.sort(() => Math.random() - .5);
-        if (sortOption === "popular")    f.sort((a,b) => b.id - a.id);
-
-        const start = (currentPage - 1) * itemsPerPage;
-        setDisplayedProducts(f.slice(start, start + itemsPerPage));
+        if (sortOption === "price-low") f.sort((a, b) => a.price - b.price);
+        if (sortOption === "price-high") f.sort((a, b) => b.price - a.price);
+        if (sortOption === "newest") f.sort((a, b) => b.id - a.id);
+        if (sortOption === "trending") f.sort(() => Math.random() - .5);
+        if (sortOption === "popular") f.sort((a, b) => b.id - a.id);
+        const s = (currentPage - 1) * itemsPerPage;
+        setDisplayedProducts(f.slice(s, s + itemsPerPage));
         setTotalPages(Math.ceil(f.length / itemsPerPage));
         setTotalCount(f.length);
-      } catch {
-        setDisplayedProducts([]); setTotalPages(1); setTotalCount(0);
-      } finally {
-        setIsLoading(false);
-      }
+      } catch { setDisplayedProducts([]); setTotalPages(1); setTotalCount(0); }
+      finally { setIsLoading(false); }
     })();
   }, [currentPage, selectedCategory, minPrice, maxPrice, minRating, sortOption, searchTerm]);
 
   const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem   = Math.min(currentPage * itemsPerPage, totalCount);
+  const endItem = Math.min(currentPage * itemsPerPage, totalCount);
 
-  const handlePageChange = (page) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
+  const handlePageChange = (p) => {
+    if (p < 1 || p > totalPages) return;
+    setCurrentPage(p);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const getPageNumbers = () => {
+  const getPageNums = () => {
     const pages = [];
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else if (currentPage <= 3) {
-      pages.push(1,2,3,4,"...",totalPages);
-    } else if (currentPage >= totalPages - 2) {
-      pages.push(1,"...",totalPages-3,totalPages-2,totalPages-1,totalPages);
-    } else {
-      pages.push(1,"...",currentPage-1,currentPage,currentPage+1,"...",totalPages);
-    }
+    if (totalPages <= 5) { for (let i = 1; i <= totalPages; i++) pages.push(i); }
+    else if (currentPage <= 3) pages.push(1, 2, 3, 4, "...", totalPages);
+    else if (currentPage >= totalPages - 2) pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+    else pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
     return pages;
   };
 
-  const handleProductClick = (item) => navigate(`/Product/${item.id}`, { state: item });
-  const isItemInCart = (id) => cart.some(c => c.productId === id);
+  const isInCart = (id) => cart.some(c => c.productId === id);
 
   const handleAddToCart = (item, e) => {
     e.stopPropagation();
-    if (!user) { toast.warning("Please login to add items", { action:{ label:"Login", onClick:()=>navigate("/login") } }); return; }
+    if (!user) { toast.warning("Please login to add items", { action: { label: "Login", onClick: () => navigate("/login") } }); return; }
     if (item.stock <= 0) { toast.error("Out of stock"); return; }
-    if (isItemInCart(item.id)) { toast.info("Already in cart", { action:{ label:"View Cart", onClick:()=>navigate("/cart") } }); return; }
+    if (isInCart(item.id)) { toast.info("Already in cart", { action: { label: "View Cart", onClick: () => navigate("/cart") } }); return; }
     addToCart(item, 1);
     toast.success("Added to cart 🛒");
     setAddedToCart(item.id);
@@ -1227,11 +1208,9 @@ export default function MoreProducts({ searchTerm }) {
 
   const handleWishlist = (item, e) => {
     e?.stopPropagation();
-    if (!user) { toast.warning("Please login to save items", { action:{ label:"Login", onClick:()=>navigate("/login") } }); return; }
+    if (!user) { toast.warning("Please login to save items", { action: { label: "Login", onClick: () => navigate("/login") } }); return; }
     toggleWishlist(item);
   };
-
-  const handleQuickView = (item, e) => { e.stopPropagation(); setQuickViewProduct(item); };
 
   const clearFilters = () => {
     setSelectedCategory("All"); setMinPrice(""); setMaxPrice("");
@@ -1239,359 +1218,362 @@ export default function MoreProducts({ searchTerm }) {
   };
 
   const getStock = (s) => {
-    if (s <= 0)  return { text:"Out of Stock",  cls:"sx-out", dot:"#ef4444" };
-    if (s <= 5)  return { text:`Only ${s} left`, cls:"sx-low", dot:"#f59e0b" };
-    if (s <= 10) return { text:`${s} in stock`,  cls:"sx-mid", dot:"#eab308" };
-    return       { text:`${s} in stock`,          cls:"sx-ok",  dot:"#22c55e" };
+    if (s <= 0) return { text: "Out of Stock", short: "OOS", cls: "sx-out", dot: "#ef4444" };
+    if (s <= 5) return { text: `Only ${s} left`, short: "Low", cls: "sx-low", dot: "#f59e0b" };
+    if (s <= 10) return { text: `${s} in stock`, short: `${s}`, cls: "sx-mid", dot: "#eab308" };
+    return { text: `${s} in stock`, short: "✓", cls: "sx-ok", dot: "#22c55e" };
   };
 
   const hasFilters = selectedCategory !== "All" || minPrice || maxPrice || minRating > 0 || sortOption;
-
-  /* grid columns → CSS value */
   const isListView = gridCols === "list";
-  const gridColsCSS = isListView ? "1fr" : { "3":"repeat(3,1fr)", "2":"repeat(2,1fr)", "1":"1fr" }[gridCols];
 
-  /* ─────────────────────────────────────────────────────────── */
+  /* ── grid columns CSS ── */
+  const gridCSS = isListView ? "1fr"
+    : gridCols === "3" ? "repeat(3,1fr)"
+    : gridCols === "2" ? "repeat(2,1fr)"
+    : "1fr";
+
+  /* ── card image height based on grid + bp ── */
+  const imgH = (() => {
+    if (isListView) return 0;
+    if (isXs && gridCols === "1") return 220;
+    if (isXs && gridCols === "2") return 140;
+    if (bp === "sm" && gridCols === "1") return 240;
+    if (bp === "sm" && gridCols === "2") return 160;
+    if (isTablet && gridCols === "2") return 220;
+    if (isTablet && gridCols === "3") return 200;
+    if (gridCols === "2") return 280;
+    return 260;
+  })();
+
+  /* ── outer padding ── */
+  const outerPad = isXs ? "0 10px 48px" : isMobile ? "0 14px 48px" : "0 24px 60px";
+
   return (
-    <div style={{ minHeight:"100vh", background:"#000", fontFamily:"'Barlow',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#000", fontFamily: "'Barlow',sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-        .sx-c { font-family:'Barlow Condensed',sans-serif; }
-        .sx-b { font-family:'Barlow',sans-serif; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ── scrollbar hide ── */
-        .sx-ns::-webkit-scrollbar { display:none; }
-        .sx-ns { -ms-overflow-style:none; scrollbar-width:none; }
+        .sx-c { font-family: 'Barlow Condensed', sans-serif; }
+
+        /* scrollbar hide */
+        .sx-ns::-webkit-scrollbar { display: none; }
+        .sx-ns { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* ── stock badges ── */
         .sx-badge {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:9px; font-weight:800; letter-spacing:.15em; text-transform:uppercase;
-          padding:3px 8px; display:inline-flex; align-items:center; gap:5px;
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+          padding: 3px 6px; display: inline-flex; align-items: center; gap: 4px;
+          line-height: 1; white-space: nowrap; flex-shrink: 0;
         }
-        .sx-out { background:rgba(239,68,68,.08); color:#ef4444; border:1px solid rgba(239,68,68,.2); }
-        .sx-low { background:rgba(245,158,11,.08); color:#f59e0b; border:1px solid rgba(245,158,11,.2); }
-        .sx-mid { background:rgba(234,179,8,.08);  color:#eab308; border:1px solid rgba(234,179,8,.2); }
-        .sx-ok  { background:rgba(34,197,94,.08);  color:#22c55e; border:1px solid rgba(34,197,94,.2); }
-        .sx-hot { background:#fff; color:#000; }
+        .sx-out { background: rgba(239,68,68,.08); color: #ef4444; border: 1px solid rgba(239,68,68,.2); }
+        .sx-low { background: rgba(245,158,11,.08); color: #f59e0b; border: 1px solid rgba(245,158,11,.2); }
+        .sx-mid { background: rgba(234,179,8,.08);  color: #eab308; border: 1px solid rgba(234,179,8,.2); }
+        .sx-ok  { background: rgba(34,197,94,.08);  color: #22c55e; border: 1px solid rgba(34,197,94,.2); }
+        .sx-hot { background: #fff; color: #000; border: none; }
 
         /* ── icon button ── */
         .sx-ib {
-          width:36px; height:36px; background:transparent;
-          border:1px solid #222; display:flex; align-items:center;
-          justify-content:center; cursor:pointer; color:#555;
-          transition:all .15s; flex-shrink:0;
+          width: 34px; height: 34px; background: rgba(0,0,0,.7);
+          border: 1px solid #2a2a2a; display: flex; align-items: center;
+          justify-content: center; cursor: pointer; color: #666;
+          transition: all .15s; flex-shrink: 0; backdrop-filter: blur(4px);
         }
-        .sx-ib:hover, .sx-ib.on { background:#fff; color:#000; border-color:#fff; }
+        .sx-ib:hover, .sx-ib.on { background: #fff; color: #000; border-color: #fff; }
 
-        /* ── cat pill ── */
+        /* ── small icon button (mobile) ── */
+        .sx-ib-sm {
+          width: 28px; height: 28px; background: rgba(0,0,0,.75);
+          border: 1px solid #2a2a2a; display: flex; align-items: center;
+          justify-content: center; cursor: pointer; color: #666;
+          transition: all .15s; flex-shrink: 0; backdrop-filter: blur(4px);
+        }
+        .sx-ib-sm:hover, .sx-ib-sm.on { background: #fff; color: #000; border-color: #fff; }
+
+        /* ── category pill ── */
         .sx-cp {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-          padding:11px 18px; background:transparent; border:none; border-right:1px solid #1a1a1a;
-          color:#444; cursor:pointer; white-space:nowrap; flex-shrink:0; transition:all .15s;
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+          padding: 11px 16px; background: transparent; border: none;
+          border-right: 1px solid #1a1a1a; color: #444; cursor: pointer;
+          white-space: nowrap; flex-shrink: 0; transition: all .15s;
         }
-        .sx-cp:hover { color:#ccc; background:#0a0a0a; }
-        .sx-cp.on { background:#fff; color:#000; }
-        .sx-cp:last-child { border-right:none; }
+        .sx-cp:hover { color: #ccc; background: #0a0a0a; }
+        .sx-cp.on { background: #fff; color: #000; }
+        .sx-cp:last-child { border-right: none; }
 
-        /* ── view toggle btn ── */
+        /* ── view toggle button ── */
         .sx-vb {
-          width:44px; height:44px; background:transparent; border:none;
-          border-left:1px solid #1a1a1a; display:flex; align-items:center;
-          justify-content:center; cursor:pointer; color:#444; transition:all .15s;
-          flex-shrink:0;
+          width: 44px; height: 44px; background: transparent; border: none;
+          border-left: 1px solid #1a1a1a; display: flex; align-items: center;
+          justify-content: center; cursor: pointer; color: #444; transition: all .15s; flex-shrink: 0;
         }
-        .sx-vb:hover { color:#fff; background:#0d0d0d; }
-        .sx-vb.on { background:#fff; color:#000; }
-        .sx-vb:first-child { border-left:none; }
+        .sx-vb:hover { color: #fff; background: #0d0d0d; }
+        .sx-vb.on { background: #fff; color: #000; }
 
-        /* ── input ── */
+        /* ── inputs ── */
         .sx-inp {
-          width:100%; padding:10px 12px;
-          background:#080808; border:1px solid #1e1e1e;
-          color:#fff; font-family:'Barlow',sans-serif; font-size:13px;
-          outline:none; transition:border-color .15s;
+          width: 100%; padding: 10px 12px; background: #080808;
+          border: 1px solid #1e1e1e; color: #fff;
+          font-family: 'Barlow', sans-serif; font-size: 13px;
+          outline: none; transition: border-color .15s;
         }
-        .sx-inp:focus { border-color:#444; }
-        .sx-inp::placeholder { color:#282828; }
+        .sx-inp:focus { border-color: #444; }
+        .sx-inp::placeholder { color: #282828; }
 
         /* ── select ── */
         .sx-sel {
-          padding:8px 30px 8px 12px; background:#080808; border:1px solid #1e1e1e;
-          color:#888; font-family:'Barlow Condensed',sans-serif;
-          font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-          outline:none; cursor:pointer; appearance:none; width:100%;
+          padding: 8px 30px 8px 12px; background: #080808; border: 1px solid #1e1e1e;
+          color: #888; font-family: 'Barlow Condensed', sans-serif;
+          font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+          outline: none; cursor: pointer; appearance: none; width: 100%;
         }
-        .sx-sel option { background:#0d0d0d; color:#fff; }
-        .sx-sel:focus { border-color:#444; }
+        .sx-sel option { background: #0d0d0d; color: #fff; }
+        .sx-sel:focus { border-color: #444; }
 
         /* ── filter label ── */
         .sx-fl {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:9px; font-weight:700; letter-spacing:.28em; text-transform:uppercase;
-          color:#333; display:block; margin-bottom:9px;
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 9px; font-weight: 700; letter-spacing: .28em; text-transform: uppercase;
+          color: #333; display: block; margin-bottom: 9px;
         }
 
-        /* ── rate pill ── */
+        /* ── rating pill ── */
         .sx-rp {
-          flex:1; padding:9px 4px; display:flex; align-items:center;
-          justify-content:center; gap:4px;
-          background:#080808; border:1px solid #1e1e1e;
-          font-family:'Barlow Condensed',sans-serif; font-size:11px;
-          font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-          color:#444; cursor:pointer; transition:all .15s;
+          flex: 1; padding: 9px 4px; display: flex; align-items: center;
+          justify-content: center; gap: 4px; background: #080808;
+          border: 1px solid #1e1e1e; font-family: 'Barlow Condensed', sans-serif;
+          font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+          color: #444; cursor: pointer; transition: all .15s;
         }
-        .sx-rp:hover { border-color:#444; color:#ccc; }
-        .sx-rp.on { background:#fff; color:#000; border-color:#fff; }
+        .sx-rp:hover { border-color: #444; color: #ccc; }
+        .sx-rp.on { background: #fff; color: #000; border-color: #fff; }
 
         /* ── buttons ── */
         .sx-btn-w {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
-          background:#fff; color:#000; border:none; cursor:pointer; padding:11px 18px;
-          transition:background .15s; display:inline-flex; align-items:center; gap:7px;
-          white-space:nowrap;
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+          background: #fff; color: #000; border: none; cursor: pointer; padding: 11px 16px;
+          transition: background .15s; display: inline-flex; align-items: center; gap: 6px;
+          white-space: nowrap; flex-shrink: 0;
         }
-        .sx-btn-w:hover { background:#e5e5e5; }
-        .sx-btn-w:disabled { opacity:.3; cursor:not-allowed; }
+        .sx-btn-w:hover { background: #e5e5e5; }
+        .sx-btn-w:disabled { opacity: .3; cursor: not-allowed; }
 
         .sx-btn-d {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
-          background:#0d0d0d; color:#555; border:1px solid #1e1e1e;
-          cursor:pointer; padding:11px 18px;
-          transition:all .15s; display:inline-flex; align-items:center; gap:7px;
-          white-space:nowrap;
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+          background: #0d0d0d; color: #555; border: 1px solid #1e1e1e;
+          cursor: pointer; padding: 11px 16px; transition: all .15s;
+          display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
         }
-        .sx-btn-d:hover { border-color:#444; color:#ccc; }
+        .sx-btn-d:hover { border-color: #444; color: #ccc; }
 
         .sx-btn-o {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
-          background:transparent; color:#fff; border:1px solid #2a2a2a;
-          cursor:pointer; padding:11px 18px;
-          transition:all .15s; display:inline-flex; align-items:center; gap:7px;
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+          background: transparent; color: #fff; border: 1px solid #2a2a2a;
+          cursor: pointer; padding: 11px 16px; transition: all .15s;
+          display: inline-flex; align-items: center; gap: 6px;
         }
-        .sx-btn-o:hover { border-color:#666; background:#111; }
-        .sx-btn-o:disabled { opacity:.25; cursor:not-allowed; }
+        .sx-btn-o:hover { border-color: #666; background: #111; }
+        .sx-btn-o:disabled { opacity: .25; cursor: not-allowed; }
 
-        /* ── card ── */
+        /* ── PRODUCT CARD ── */
         .sx-card {
-          background:#000; border:1px solid #141414;
-          cursor:pointer; position:relative;
-          transition:border-color .2s;
-          display:flex; flex-direction:column;
+          background: #000; border: 1px solid #141414;
+          cursor: pointer; position: relative;
+          transition: border-color .2s;
+          display: flex; flex-direction: column;
+          overflow: hidden; /* CRITICAL: clips overflowing content */
+          min-width: 0;     /* CRITICAL: allows flex shrink inside grid */
         }
-        .sx-card:hover { border-color:#2a2a2a; }
+        .sx-card:hover { border-color: #2a2a2a; }
 
         .sx-card-img-wrap {
-          position:relative; overflow:hidden; background:#070707;
-          display:flex; align-items:center; justify-content:center;
+          position: relative; overflow: hidden; background: #070707;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; /* don't let image area shrink */
         }
         .sx-card-img {
-          object-fit:contain;
-          transition:transform .55s cubic-bezier(.25,.46,.45,.94);
+          object-fit: contain; display: block;
+          transition: transform .55s cubic-bezier(.25,.46,.45,.94);
+          /* Prevent image from overflowing its container */
+          max-width: 100%; max-height: 100%;
         }
-        .sx-card:hover .sx-card-img { transform:scale(1.06); }
+        .sx-card:hover .sx-card-img { transform: scale(1.06); }
 
-        .sx-card-overlay {
-          position:absolute; inset:0;
-          background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 55%);
-          opacity:0; transition:opacity .3s;
+        /* card bottom CTA — always visible on mobile, hover on desktop */
+        .sx-card-cta {
+          padding: 8px 10px;
+          display: flex; gap: 6px; align-items: center;
         }
-        .sx-card:hover .sx-card-overlay { opacity:1; }
 
+        /* hover overlay */
+        .sx-overlay {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 55%);
+          opacity: 0; transition: opacity .3s; pointer-events: none;
+        }
+        .sx-card:hover .sx-overlay { opacity: 1; }
+
+        /* wishlist + eye — top right, always visible on mobile */
         .sx-card-acts {
-          position:absolute; top:10px; right:10px;
-          display:flex; flex-direction:column; gap:5px;
-          opacity:0; transform:translateX(8px);
-          transition:opacity .2s, transform .2s;
-        }
-        .sx-card:hover .sx-card-acts { opacity:1; transform:translateX(0); }
-
-        /* always-visible on mobile */
-        @media(max-width:640px) {
-          .sx-card-acts { opacity:1 !important; transform:none !important; }
+          position: absolute; top: 8px; right: 8px;
+          display: flex; flex-direction: column; gap: 5px;
         }
 
-        .sx-card-bar {
-          position:absolute; bottom:0; left:0; right:0;
-          padding:10px 12px; opacity:0; transform:translateY(5px);
-          transition:opacity .25s, transform .25s;
-          display:flex; gap:6px;
+        /* ── LIST ROW ── */
+        .sx-row {
+          background: #000; border: 1px solid #141414;
+          display: flex; cursor: pointer;
+          transition: border-color .2s; overflow: hidden; min-width: 0;
         }
-        .sx-card:hover .sx-card-bar { opacity:1; transform:translateY(0); }
-
-        /* on mobile show the bar always */
-        @media(max-width:640px) {
-          .sx-card-bar { opacity:1 !important; transform:none !important; position:static; padding:0; }
-        }
-
-        /* ── list row ── */
-        .sx-list-row {
-          background:#000; border:1px solid #141414;
-          display:flex; cursor:pointer; transition:border-color .2s;
-        }
-        .sx-list-row:hover { border-color:#2a2a2a; }
-        @media(max-width:640px) {
-          .sx-list-row { flex-direction:column; }
-          .sx-list-img { width:100% !important; height:200px !important; border-right:none !important; border-bottom:1px solid #141414 !important; }
-        }
+        .sx-row:hover { border-color: #2a2a2a; }
 
         /* ── pagination btn ── */
         .sx-pg {
-          font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800;
-          min-width:38px; height:38px; padding:0 8px;
-          background:#000; border:1px solid #1e1e1e; color:#444;
-          cursor:pointer; transition:all .15s;
-          display:inline-flex; align-items:center; justify-content:center;
+          font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 800;
+          min-width: 36px; height: 36px; padding: 0 6px;
+          background: #000; border: 1px solid #1e1e1e; color: #444;
+          cursor: pointer; transition: all .15s;
+          display: inline-flex; align-items: center; justify-content: center;
         }
-        .sx-pg:hover:not(:disabled) { border-color:#555; color:#fff; }
-        .sx-pg.on { background:#fff; color:#000; border-color:#fff; }
-        .sx-pg:disabled { opacity:.2; cursor:not-allowed; }
+        .sx-pg:hover:not(:disabled) { border-color: #555; color: #fff; }
+        .sx-pg.on { background: #fff; color: #000; border-color: #fff; }
+        .sx-pg:disabled { opacity: .2; cursor: not-allowed; }
 
         /* ── modal ── */
         .sx-modal-bg {
-          position:fixed; inset:0; background:rgba(0,0,0,.97);
-          display:flex; align-items:center; justify-content:center;
-          z-index:200; padding:16px;
-          animation:sxFade .18s ease;
+          position: fixed; inset: 0; background: rgba(0,0,0,.97);
+          display: flex; align-items: center; justify-content: center;
+          z-index: 200; padding: 16px; animation: sxFade .18s ease;
         }
         .sx-modal {
-          background:#000; border:1px solid #222;
-          max-width:920px; width:100%; max-height:92vh; overflow-y:auto;
-          position:relative; animation:sxScale .18s ease;
+          background: #000; border: 1px solid #222;
+          max-width: 920px; width: 100%; max-height: 92vh; overflow-y: auto;
+          position: relative; animation: sxScale .18s ease;
         }
-        .sx-modal-grid { display:grid; grid-template-columns:1fr 1fr; }
-        @media(max-width:640px) {
-          .sx-modal-grid { grid-template-columns:1fr !important; }
-          .sx-modal-img-col { min-height:220px !important; border-right:none !important; border-bottom:1px solid #1a1a1a !important; }
+        .sx-modal-grid { display: grid; grid-template-columns: 1fr 1fr; }
+        @media(max-width: 600px) {
+          .sx-modal-grid { grid-template-columns: 1fr; }
+          .sx-modal-img { min-height: 220px !important; border-right: none !important; border-bottom: 1px solid #1a1a1a !important; }
         }
 
         /* ── drawer ── */
         .sx-drawer-bg {
-          position:fixed; inset:0; background:rgba(0,0,0,.93);
-          z-index:200; display:flex; flex-direction:column; justify-content:flex-end;
-          animation:sxFade .18s ease;
+          position: fixed; inset: 0; background: rgba(0,0,0,.93);
+          z-index: 200; display: flex; flex-direction: column; justify-content: flex-end;
+          animation: sxFade .18s ease;
         }
         .sx-drawer {
-          background:#000; border-top:1px solid #222;
-          padding:28px 20px 40px; max-height:90vh; overflow-y:auto;
-          animation:sxUp .28s ease;
+          background: #000; border-top: 1px solid #222;
+          padding: 28px 20px 40px; max-height: 90vh; overflow-y: auto;
+          animation: sxUp .28s ease;
         }
 
-        /* ── scroll top ── */
+        /* ── scroll to top ── */
         .sx-stb {
-          position:fixed; bottom:24px; right:20px; z-index:100;
-          width:44px; height:44px; background:#fff; color:#000;
-          border:none; cursor:pointer; display:flex; align-items:center;
-          justify-content:center; transition:background .15s;
-          animation:sxFade .2s ease;
+          position: fixed; bottom: 20px; right: 16px; z-index: 100;
+          width: 40px; height: 40px; background: #fff; color: #000;
+          border: none; cursor: pointer; display: flex; align-items: center;
+          justify-content: center; transition: background .15s; animation: sxFade .2s ease;
         }
-        .sx-stb:hover { background:#e5e5e5; }
 
         /* ── skeleton ── */
         @keyframes sxShim { 0%{background-position:-800px 0} 100%{background-position:800px 0} }
         .sx-shim {
-          background:linear-gradient(90deg,#090909 0%,#131313 50%,#090909 100%);
-          background-size:800px 100%; animation:sxShim 1.4s infinite;
+          background: linear-gradient(90deg, #090909 0%, #131313 50%, #090909 100%);
+          background-size: 800px 100%; animation: sxShim 1.4s infinite;
         }
 
-        @keyframes sxFade  { from{opacity:0} to{opacity:1} }
-        @keyframes sxScale { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:scale(1)} }
-        @keyframes sxUp    { from{transform:translateY(100%)} to{transform:translateY(0)} }
-        @keyframes sxDown  { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-
-        /* ── filter panel desktop ── */
-        .sx-adv-panel {
-          border:1px solid #1a1a1a; border-top:none;
-          background:#050505; padding:18px 20px;
-          display:grid; grid-template-columns:1fr 1fr auto;
-          gap:18px; align-items:end;
-          animation:sxDown .2s ease;
-        }
-        @media(max-width:1024px) {
-          .sx-adv-panel { grid-template-columns:1fr 1fr; }
-          .sx-adv-panel > *:last-child { grid-column:1/-1; }
-        }
-        @media(max-width:640px) { .sx-adv-panel { display:none; } }
-
-        /* ── chip ── */
+        /* ── chip (active filter) ── */
         .sx-chip {
-          display:inline-flex; align-items:center; gap:6px;
-          padding:4px 10px; border:1px solid #252525;
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-          color:#666; white-space:nowrap;
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 4px 10px; border: 1px solid #252525;
+          font-family: 'Barlow Condensed', sans-serif;
+          font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+          color: #666; white-space: nowrap;
         }
 
-        /* ── responsive text helpers ── */
-        @media(max-width:480px) {
-          .sx-page-title { font-size:36px !important; }
+        /* ── advanced filter panel (desktop) ── */
+        .sx-adv {
+          border: 1px solid #1a1a1a; border-top: none;
+          background: #050505; padding: 16px 20px;
+          display: grid; grid-template-columns: 1fr 1fr auto;
+          gap: 16px; align-items: end;
+          animation: sxDown .2s ease;
         }
+        @media(max-width: 1024px) {
+          .sx-adv { grid-template-columns: 1fr 1fr; }
+          .sx-adv > *:last-child { grid-column: 1 / -1; }
+        }
+
+        @keyframes sxFade  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes sxScale { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+        @keyframes sxUp    { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes sxDown  { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
-      <div style={{ maxWidth:1340, margin:"0 auto", padding: isMobile ? "0 12px 48px" : "0 24px 60px" }}>
+      <div style={{ maxWidth: 1340, margin: "0 auto", padding: outerPad }}>
 
-        {/* ══════════════════════════════════════════════
+        {/* ═══════════════════════════════
             HEADER
-        ══════════════════════════════════════════════ */}
-        <div style={{ padding: isMobile ? "24px 0 18px" : "36px 0 28px", borderBottom:"1px solid #1a1a1a" }}>
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
+        ═══════════════════════════════ */}
+        <div style={{ padding: isMobile ? "20px 0 16px" : "36px 0 28px", borderBottom: "1px solid #1a1a1a" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12 }}>
             <div>
-              <p className="sx-c" style={{ fontSize:9, fontWeight:700, letterSpacing:".32em", textTransform:"uppercase", color:"#333", marginBottom:6 }}>
+              <p className="sx-c" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#333", marginBottom: 5 }}>
                 Sport-X · Collection
               </p>
-              <h1 className="sx-c sx-page-title" style={{ fontSize:"clamp(34px,7vw,68px)", fontWeight:900, textTransform:"uppercase", letterSpacing:"-.01em", color:"#fff", lineHeight:.88 }}>
+              <h1 className="sx-c" style={{ fontSize: isXs ? 32 : isMobile ? 40 : "clamp(40px,6vw,68px)", fontWeight: 900, textTransform: "uppercase", color: "#fff", lineHeight: .88, letterSpacing: "-.01em" }}>
                 All Products
               </h1>
             </div>
             {totalCount > 0 && !isLoading && (
-              <p className="sx-c" style={{ fontSize:11, fontWeight:700, letterSpacing:".2em", textTransform:"uppercase", color:"#333" }}>
-                {startItem}–{endItem} <span style={{ color:"#222" }}>/ {totalCount}</span>
+              <p className="sx-c" style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".15em", textTransform: "uppercase", color: "#333", flexShrink: 0 }}>
+                {startItem}–{endItem}<span style={{ color: "#222" }}>/{totalCount}</span>
               </p>
             )}
           </div>
         </div>
 
-        {/* ══════════════════════════════════════════════
+        {/* ═══════════════════════════════
             CATEGORY STRIP
-        ══════════════════════════════════════════════ */}
-        <div className="sx-ns" style={{ display:"flex", overflowX:"auto", borderLeft:"1px solid #1a1a1a", borderRight:"1px solid #1a1a1a", borderBottom:"1px solid #1a1a1a" }}>
+        ═══════════════════════════════ */}
+        <div className="sx-ns" style={{ display: "flex", overflowX: "auto", border: "1px solid #1a1a1a", borderTop: "none" }}>
           {categories.map(cat => (
-            <button key={cat} className={`sx-cp${selectedCategory===cat?" on":""}`}
+            <button key={cat} className={`sx-cp${selectedCategory === cat ? " on" : ""}`}
               onClick={() => { setSelectedCategory(cat); setCurrentPage(1); }}>
               {cat}
             </button>
           ))}
         </div>
 
-        {/* ══════════════════════════════════════════════
+        {/* ═══════════════════════════════
             TOOLBAR
-        ══════════════════════════════════════════════ */}
-        <div style={{ display:"flex", alignItems:"stretch", border:"1px solid #1a1a1a", borderTop:"none", height:44 }}>
+        ═══════════════════════════════ */}
+        <div style={{ display: "flex", alignItems: "stretch", border: "1px solid #1a1a1a", borderTop: "none", height: 44, overflow: "hidden" }}>
 
-          {/* Mobile filter trigger */}
+          {/* Mobile: filter button */}
           {isMobile && (
             <button onClick={() => setIsMobileFilterOpen(true)}
-              style={{ display:"flex", alignItems:"center", gap:8, padding:"0 16px", height:"100%", background:"transparent", border:"none", borderRight:"1px solid #1a1a1a", cursor:"pointer", color:"#555", fontFamily:"'Barlow Condensed',sans-serif", fontSize:11, fontWeight:700, letterSpacing:".18em", textTransform:"uppercase", flexShrink:0, transition:"color .15s" }}
-              onMouseOver={e=>e.currentTarget.style.color="#fff"}
-              onMouseOut={e=>e.currentTarget.style.color="#555"}>
-              <Filter size={13}/>
+              style={{ display: "flex", alignItems: "center", gap: 7, padding: "0 14px", height: "100%", background: "transparent", border: "none", borderRight: "1px solid #1a1a1a", cursor: "pointer", color: "#555", fontFamily: "'Barlow Condensed',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", flexShrink: 0, transition: "color .15s" }}>
+              <Filter size={12} />
               Filters
-              {hasFilters && <span style={{ width:6, height:6, background:"#fff", borderRadius:"50%" }}/>}
+              {hasFilters && <span style={{ width: 5, height: 5, background: "#fff", borderRadius: "50%", flexShrink: 0 }} />}
             </button>
           )}
 
-          {/* Desktop sort */}
+          {/* Desktop: Sort */}
           {!isMobile && (
-            <div style={{ display:"flex", alignItems:"center", gap:8, padding:"0 16px", borderRight:"1px solid #1a1a1a", flexShrink:0 }}>
-              <span className="sx-c" style={{ fontSize:9, fontWeight:700, letterSpacing:".25em", textTransform:"uppercase", color:"#333" }}>Sort</span>
-              <div style={{ position:"relative" }}>
-                <select value={sortOption} onChange={e=>{ setSortOption(e.target.value); setCurrentPage(1); }} className="sx-sel"
-                  style={{ background:"transparent", border:"none", padding:"4px 24px 4px 4px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 14px", borderRight: "1px solid #1a1a1a", flexShrink: 0 }}>
+              <span className="sx-c" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".25em", textTransform: "uppercase", color: "#333" }}>Sort</span>
+              <div style={{ position: "relative" }}>
+                <select value={sortOption} onChange={e => { setSortOption(e.target.value); setCurrentPage(1); }}
+                  style={{ padding: "4px 22px 4px 4px", background: "transparent", border: "none", color: "#888", fontFamily: "'Barlow Condensed',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", outline: "none", cursor: "pointer", appearance: "none" }}>
                   <option value="">Featured</option>
                   <option value="price-low">Price ↑</option>
                   <option value="price-high">Price ↓</option>
@@ -1599,272 +1581,306 @@ export default function MoreProducts({ searchTerm }) {
                   <option value="newest">Newest</option>
                   <option value="trending">Trending</option>
                 </select>
-                <ChevronDown size={11} style={{ position:"absolute", right:2, top:"50%", transform:"translateY(-50%)", color:"#444", pointerEvents:"none" }}/>
+                <ChevronDown size={10} style={{ position: "absolute", right: 2, top: "50%", transform: "translateY(-50%)", color: "#444", pointerEvents: "none" }} />
               </div>
             </div>
           )}
 
-          {/* Active filter chips — desktop only */}
+          {/* Desktop: active filter chips */}
           {!isMobile && hasFilters && (
-            <div className="sx-ns" style={{ flex:1, display:"flex", alignItems:"center", gap:6, padding:"0 14px", overflowX:"auto" }}>
+            <div className="sx-ns" style={{ flex: 1, display: "flex", alignItems: "center", gap: 6, padding: "0 12px", overflowX: "auto" }}>
               {selectedCategory !== "All" && (
                 <span className="sx-chip">{selectedCategory}
-                  <button onClick={()=>setSelectedCategory("All")} style={{ background:"none", border:"none", cursor:"pointer", color:"#444", display:"flex", padding:0 }}><X size={10}/></button>
+                  <button onClick={() => setSelectedCategory("All")} style={{ background: "none", border: "none", cursor: "pointer", color: "#444", display: "flex", padding: 0 }}><X size={9} /></button>
                 </span>
               )}
-              {(minPrice||maxPrice) && (
-                <span className="sx-chip">${minPrice||0} – ${maxPrice||"∞"}
-                  <button onClick={()=>{ setMinPrice(""); setMaxPrice(""); }} style={{ background:"none", border:"none", cursor:"pointer", color:"#444", display:"flex", padding:0 }}><X size={10}/></button>
+              {(minPrice || maxPrice) && (
+                <span className="sx-chip">${minPrice || 0}–${maxPrice || "∞"}
+                  <button onClick={() => { setMinPrice(""); setMaxPrice(""); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#444", display: "flex", padding: 0 }}><X size={9} /></button>
                 </span>
               )}
               {minRating > 0 && (
-                <span className="sx-chip">{minRating}+ ★
-                  <button onClick={()=>setMinRating(0)} style={{ background:"none", border:"none", cursor:"pointer", color:"#444", display:"flex", padding:0 }}><X size={10}/></button>
+                <span className="sx-chip">{minRating}+★
+                  <button onClick={() => setMinRating(0)} style={{ background: "none", border: "none", cursor: "pointer", color: "#444", display: "flex", padding: 0 }}><X size={9} /></button>
                 </span>
               )}
-              <button onClick={clearFilters} style={{ background:"none", border:"none", cursor:"pointer", fontFamily:"'Barlow Condensed',sans-serif", fontSize:9, fontWeight:700, letterSpacing:".2em", textTransform:"uppercase", color:"#333", transition:"color .15s", flexShrink:0 }}
-                onMouseOver={e=>e.currentTarget.style.color="#fff"} onMouseOut={e=>e.currentTarget.style.color="#333"}>
+              <button onClick={clearFilters} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'Barlow Condensed',sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "#333", transition: "color .15s", flexShrink: 0 }}
+                onMouseOver={e => e.currentTarget.style.color = "#fff"} onMouseOut={e => e.currentTarget.style.color = "#333"}>
                 Clear all
               </button>
             </div>
           )}
 
-          <div style={{ flex: !isMobile && hasFilters ? 0 : 1 }}/>
+          <div style={{ flex: 1 }} />
 
-          {/* View toggle buttons */}
-          <div style={{ display:"flex", alignItems:"stretch", borderLeft:"1px solid #1a1a1a", flexShrink:0 }}>
-            {/* On desktop: 3-col, 2-col, 1-col, list */}
+          {/* VIEW TOGGLE */}
+          <div style={{ display: "flex", alignItems: "stretch", borderLeft: "1px solid #1a1a1a" }}>
+            {/* Desktop only: 3-col */}
             {!isMobile && (
-              <>
-                <button className={`sx-vb${gridCols==="3"?" on":""}`} onClick={()=>setGridCols("3")} title="3 columns">
-                  <Grid3X3 size={13}/>
-                </button>
-                <button className={`sx-vb${gridCols==="2"?" on":""}`} onClick={()=>setGridCols("2")} title="2 columns">
-                  <LayoutGrid size={13}/>
-                </button>
-              </>
+              <button className={`sx-vb${gridCols === "3" ? " on" : ""}`} onClick={() => setGridCols("3")} title="3 columns">
+                <Grid3X3 size={13} />
+              </button>
             )}
-            {/* On mobile: 2-col, 1-col */}
-            {isMobile && (
-              <>
-                <button className={`sx-vb${gridCols==="2"?" on":""}`} onClick={()=>setGridCols("2")} title="2 columns">
-                  <Grid3X3 size={13}/>
-                </button>
-                <button className={`sx-vb${gridCols==="1"?" on":""}`} onClick={()=>setGridCols("1")} title="1 column">
-                  <LayoutGrid size={13}/>
-                </button>
-              </>
+            {/* 2-col: desktop + sm phones */}
+            {!isXs && (
+              <button className={`sx-vb${gridCols === "2" ? " on" : ""}`} onClick={() => setGridCols("2")} title="2 columns">
+                <LayoutGrid size={13} />
+              </button>
             )}
-            <button className={`sx-vb${gridCols==="list"?" on":""}`} onClick={()=>setGridCols("list")} title="List view">
-              <Rows3 size={13}/>
+            {/* 1-col: always */}
+            <button className={`sx-vb${gridCols === "1" ? " on" : ""}`} onClick={() => setGridCols("1")} title="1 column">
+              <Grid3X3 size={13} style={{ transform: "scale(.7)" }} />
+            </button>
+            {/* List: always */}
+            <button className={`sx-vb${isListView ? " on" : ""}`} onClick={() => setGridCols("list")} title="List view">
+              <Rows3 size={13} />
             </button>
           </div>
         </div>
 
-        {/* ══════════════════════════════════════════════
-            ADVANCED FILTER PANEL (desktop)
-        ══════════════════════════════════════════════ */}
+        {/* ═══════════════════════════════
+            ADVANCED FILTER (desktop only)
+        ═══════════════════════════════ */}
         {!isMobile && (
-          <div className="sx-adv-panel">
+          <div className="sx-adv">
             <div>
               <span className="sx-fl">Price Range ($)</span>
-              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                <input type="number" placeholder="Min" value={minPrice}
-                  onChange={e=>{ setMinPrice(e.target.value); setCurrentPage(1); }}
-                  className="sx-inp" style={{ flex:1 }}/>
-                <span style={{ color:"#2a2a2a", fontFamily:"'Barlow Condensed',sans-serif" }}>—</span>
-                <input type="number" placeholder="Max" value={maxPrice}
-                  onChange={e=>{ setMaxPrice(e.target.value); setCurrentPage(1); }}
-                  className="sx-inp" style={{ flex:1 }}/>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input type="number" placeholder="Min" value={minPrice} onChange={e => { setMinPrice(e.target.value); setCurrentPage(1); }} className="sx-inp" style={{ flex: 1 }} />
+                <span style={{ color: "#2a2a2a", fontFamily: "'Barlow Condensed',sans-serif" }}>—</span>
+                <input type="number" placeholder="Max" value={maxPrice} onChange={e => { setMaxPrice(e.target.value); setCurrentPage(1); }} className="sx-inp" style={{ flex: 1 }} />
               </div>
             </div>
             <div>
               <span className="sx-fl">Min Rating</span>
-              <div style={{ display:"flex", gap:4 }}>
-                {[0,3,4,5].map(r => (
-                  <button key={r} onClick={()=>{ setMinRating(r); setCurrentPage(1); }}
-                    className={`sx-rp${minRating===r?" on":""}`}>
-                    {r===0?"All":`${r}+`}
-                    {r>0 && <Star size={10} fill={minRating===r?"#000":"none"} color={minRating===r?"#000":"#444"}/>}
+              <div style={{ display: "flex", gap: 4 }}>
+                {[0, 3, 4, 5].map(r => (
+                  <button key={r} onClick={() => { setMinRating(r); setCurrentPage(1); }} className={`sx-rp${minRating === r ? " on" : ""}`}>
+                    {r === 0 ? "All" : `${r}+`}
+                    {r > 0 && <Star size={10} fill={minRating === r ? "#000" : "none"} color={minRating === r ? "#000" : "#444"} />}
                   </button>
                 ))}
               </div>
             </div>
-            <button onClick={clearFilters} disabled={!hasFilters} className="sx-btn-o" style={{ width:"100%", justifyContent:"center" }}>
-              <X size={12}/> Clear All
+            <button onClick={clearFilters} disabled={!hasFilters} className="sx-btn-o" style={{ justifyContent: "center" }}>
+              <X size={12} /> Clear All
             </button>
           </div>
         )}
 
-        {/* separator */}
-        <div style={{ height:1, background:"#111", marginBottom:0 }}/>
+        {/* hairline */}
+        <div style={{ height: 1, background: "#111" }} />
 
-        {/* ══════════════════════════════════════════════
+        {/* ═══════════════════════════════
             SKELETON
-        ══════════════════════════════════════════════ */}
+        ═══════════════════════════════ */}
         {isLoading && (
-          <div style={{ display:"grid", gridTemplateColumns: isMobile ? (bp==="xs"?"1fr":"repeat(2,1fr)") : "repeat(3,1fr)", gap:1, background:"#111" }}>
-            {[...Array(bp==="xs"?4:6)].map((_,i) => (
-              <div key={i} style={{ background:"#000" }}>
-                <div className="sx-shim" style={{ height: isMobile ? 200 : 260 }}/>
-                <div style={{ padding:"14px 16px 18px" }}>
-                  <div className="sx-shim" style={{ height:12, width:"60%", marginBottom:10 }}/>
-                  <div className="sx-shim" style={{ height:22, width:"35%", marginBottom:14 }}/>
-                  <div className="sx-shim" style={{ height:36 }}/>
+          <div style={{ display: "grid", gridTemplateColumns: gridCSS, gap: 1, background: "#111" }}>
+            {[...Array(isXs ? 4 : 6)].map((_, i) => (
+              <div key={i} style={{ background: "#000" }}>
+                <div className="sx-shim" style={{ height: imgH || 200 }} />
+                <div style={{ padding: "12px 12px 16px" }}>
+                  <div className="sx-shim" style={{ height: 11, width: "60%", marginBottom: 8 }} />
+                  <div className="sx-shim" style={{ height: 20, width: "35%", marginBottom: 12 }} />
+                  <div className="sx-shim" style={{ height: 34 }} />
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* ══════════════════════════════════════════════
+        {/* ═══════════════════════════════
             PRODUCT GRID / LIST
-        ══════════════════════════════════════════════ */}
+        ═══════════════════════════════ */}
         {!isLoading && displayedProducts.length > 0 && (
-          <div style={{ display:"grid", gridTemplateColumns: gridColsCSS, gap:1, background:"#111" }}>
+          <div style={{ display: "grid", gridTemplateColumns: gridCSS, gap: 1, background: "#111" }}>
             {displayedProducts.map(item => {
-              const inWish  = (wishlist||[]).some(p => p.productId === item.id);
-              const stock   = getStock(item.stock||0);
-              const isOut   = (item.stock||0) <= 0;
-              const wasAdded= addedToCart === item.id;
-              const loaded  = imgLoaded[item.id];
+              const inWish = (wishlist || []).some(p => p.productId === item.id);
+              const stock = getStock(item.stock || 0);
+              const isOut = (item.stock || 0) <= 0;
+              const wasAdded = addedToCart === item.id;
+              const loaded = imgLoaded[item.id];
 
-              /* ── LIST ROW ── */
-              if (isListView) return (
-                <div key={item.id} className="sx-list-row" onClick={()=>handleProductClick(item)}
-                  onMouseEnter={()=>setHoveredCard(item.id)} onMouseLeave={()=>setHoveredCard(null)}
-                  style={{ opacity:isOut?.5:1 }}>
-
-                  {/* image */}
-                  <div className="sx-list-img" style={{ width: isMobile?"100%":200, height: isMobile?200:undefined, flexShrink:0, background:"#060606", display:"flex", alignItems:"center", justifyContent:"center", position:"relative", padding: isMobile?16:24, borderRight:"1px solid #141414" }}>
-                    {!loaded && <div className="sx-shim" style={{ position:"absolute", inset:0 }}/>}
-                    <img src={item.image} alt={item.name} onLoad={()=>setImgLoaded(p=>({...p,[item.id]:true}))}
-                      style={{ maxHeight:isMobile?160:150, maxWidth:"100%", objectFit:"contain", opacity:loaded?1:0, filter:isOut?"grayscale(1)":"none", transition:"transform .4s", transform:hoveredCard===item.id?"scale(1.05)":"scale(1)" }}/>
-                    {item.trending && <span className="sx-badge sx-hot" style={{ position:"absolute", top:10, left:10 }}><Flame size={8} fill="currentColor"/>Hot</span>}
-                  </div>
-
-                  {/* info */}
-                  <div style={{ flex:1, padding: isMobile?"16px":"20px 24px", display:"flex", flexDirection:"column", justifyContent:"space-between", minWidth:0, gap:12 }}>
-                    <div>
-                      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:12, marginBottom:8 }}>
-                        <div style={{ minWidth:0 }}>
-                          <p className="sx-c" style={{ fontSize:9, fontWeight:700, letterSpacing:".25em", textTransform:"uppercase", color:"#333", marginBottom:5 }}>{item.category}</p>
-                          <h3 className="sx-c" style={{ fontSize: isMobile?"clamp(16px,4vw,20px)":"clamp(18px,2.5vw,26px)", fontWeight:900, textTransform:"uppercase", letterSpacing:".02em", color:"#fff", lineHeight:1 }}>
+              /* ─── LIST ROW ─── */
+              if (isListView) {
+                const listImgW = isXs ? "100%" : isMobile ? "100%" : 180;
+                const listImgH = isXs ? 180 : isMobile ? 180 : undefined;
+                return (
+                  <div key={item.id} className="sx-row" onClick={() => navigate(`/Product/${item.id}`, { state: item })}
+                    style={{ flexDirection: isMobile ? "column" : "row", opacity: isOut ? .5 : 1 }}>
+                    {/* image */}
+                    <div style={{ width: listImgW, height: listImgH, flexShrink: 0, background: "#060606", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", padding: isMobile ? 14 : 20, borderRight: isMobile ? "none" : "1px solid #141414", borderBottom: isMobile ? "1px solid #141414" : "none" }}>
+                      {!loaded && <div className="sx-shim" style={{ position: "absolute", inset: 0 }} />}
+                      <img src={item.image} alt={item.name} onLoad={() => setImgLoaded(p => ({ ...p, [item.id]: true }))}
+                        style={{ maxHeight: isMobile ? 140 : 130, maxWidth: "100%", objectFit: "contain", opacity: loaded ? 1 : 0, filter: isOut ? "grayscale(1)" : "none" }} />
+                      {item.trending && <span className="sx-badge sx-hot" style={{ position: "absolute", top: 8, left: 8 }}><Flame size={7} fill="currentColor" />Hot</span>}
+                    </div>
+                    {/* info */}
+                    <div style={{ flex: 1, padding: isMobile ? "14px 14px" : "18px 20px", display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 10, minWidth: 0 }}>
+                      <div>
+                        <p className="sx-c" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".22em", textTransform: "uppercase", color: "#333", marginBottom: 4 }}>{item.category}</p>
+                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+                          <h3 className="sx-c" style={{ fontSize: isMobile ? 17 : 22, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".02em", color: "#fff", lineHeight: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {item.name}
                           </h3>
+                          <button onClick={e => handleWishlist(item, e)} className={`sx-ib${inWish ? " on" : ""}`} style={{ flexShrink: 0 }}>
+                            <Heart size={13} strokeWidth={1.5} fill={inWish ? "currentColor" : "none"} />
+                          </button>
                         </div>
-                        <button onClick={e=>handleWishlist(item,e)} className={`sx-ib${inWish?" on":""}`} style={{ flexShrink:0, marginTop:2 }}>
-                          <Heart size={14} strokeWidth={1.5} fill={inWish?"currentColor":"none"}/>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 8 }}>
+                          <p className="sx-c" style={{ fontSize: isMobile ? 22 : 28, fontWeight: 900, color: "#fff", lineHeight: 1 }}>${item.price}</p>
+                          <div style={{ display: "flex", gap: 2 }}>
+                            {[...Array(5)].map((_, i) => <Star key={i} size={10} fill={i < Math.floor(item.rating) ? "#fff" : "none"} color={i < Math.floor(item.rating) ? "#fff" : "#222"} />)}
+                            <span className="sx-c" style={{ fontSize: 9, fontWeight: 700, color: "#444", marginLeft: 3 }}>{item.rating}</span>
+                          </div>
+                          <span className={`sx-badge ${stock.cls}`}><span style={{ width: 4, height: 4, background: stock.dot, borderRadius: "50%" }} />{stock.text}</span>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        {!isMobile && <button onClick={e => { e.stopPropagation(); setQuickViewProduct(item); }} className="sx-btn-d">Quick View</button>}
+                        <button onClick={e => handleAddToCart(item, e)} disabled={isOut} className="sx-btn-w"
+                          style={{ flex: 1, justifyContent: "center", opacity: isOut ? .35 : 1, cursor: isOut ? "not-allowed" : "pointer" }}>
+                          <ShoppingCart size={12} />
+                          {isOut ? "Out of Stock" : isInCart(item.id) ? "In Cart" : wasAdded ? "✓ Added" : "Add to Cart"}
                         </button>
                       </div>
-
-                      <div style={{ display:"flex", alignItems:"center", gap:12, flexWrap:"wrap" }}>
-                        <p className="sx-c" style={{ fontSize: isMobile?24:30, fontWeight:900, color:"#fff", lineHeight:1 }}>${item.price}</p>
-                        <div style={{ display:"flex", gap:2 }}>
-                          {[...Array(5)].map((_,i)=>(
-                            <Star key={i} size={11} fill={i<Math.floor(item.rating)?"#fff":"none"} color={i<Math.floor(item.rating)?"#fff":"#222"}/>
-                          ))}
-                          <span className="sx-c" style={{ fontSize:10, fontWeight:700, color:"#444", marginLeft:4 }}>{item.rating}</span>
-                        </div>
-                        <span className={`sx-badge ${stock.cls}`}>
-                          <span style={{ width:5, height:5, background:stock.dot, borderRadius:"50%" }}/>
-                          {stock.text}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div style={{ display:"flex", gap:8 }}>
-                      {!isMobile && (
-                        <button onClick={e=>handleQuickView(item,e)} className="sx-btn-d" style={{ padding:"10px 16px", flexShrink:0 }}>
-                          Quick View
-                        </button>
-                      )}
-                      <button onClick={e=>handleAddToCart(item,e)} disabled={isOut} className="sx-btn-w"
-                        style={{ flex:1, justifyContent:"center", opacity:isOut?.35:1, cursor:isOut?"not-allowed":"pointer" }}>
-                        <ShoppingCart size={13}/>
-                        {isOut?"Out of Stock": isItemInCart(item.id)?"In Cart": wasAdded?"✓ Added":"Add to Cart"}
-                      </button>
                     </div>
                   </div>
-                </div>
-              );
+                );
+              }
 
-              /* ── GRID CARD ── */
-              const imgH = bp==="xs" ? 180 : bp==="sm" ? 200 : 260;
+              /* ─── GRID CARD ─── */
+              /* font size scales with card size */
+              const nameSz = (isXs && gridCols === "2") ? 11 : (isMobile && gridCols === "2") ? 12 : gridCols === "2" ? 14 : 14;
+              const priceSz = (isXs && gridCols === "2") ? 16 : (isMobile && gridCols === "2") ? 18 : 22;
+              const padSz = (isXs && gridCols === "2") ? "10px 10px 12px" : "12px 13px 14px";
+              const tinyCard = isXs && gridCols === "2";
+
               return (
-                <div key={item.id} className="sx-card" onClick={()=>handleProductClick(item)}
-                  onMouseEnter={()=>setHoveredCard(item.id)} onMouseLeave={()=>setHoveredCard(null)}
-                  style={{ opacity:isOut?.5:1 }}>
+                <div key={item.id} className="sx-card" onClick={() => navigate(`/Product/${item.id}`, { state: item })}
+                  onMouseEnter={() => setHoveredCard(item.id)} onMouseLeave={() => setHoveredCard(null)}
+                  style={{ opacity: isOut ? .5 : 1 }}>
 
-                  <div className="sx-card-img-wrap" style={{ height:imgH }}>
-                    {!loaded && <div className="sx-shim" style={{ position:"absolute", inset:0 }}/>}
-                    <img src={item.image} alt={item.name} className="sx-card-img"
-                      onLoad={()=>setImgLoaded(p=>({...p,[item.id]:true}))}
-                      style={{ maxHeight:imgH*.78, maxWidth:"82%", opacity:loaded?1:0, filter:isOut?"grayscale(1)":"none" }}/>
-                    <div className="sx-card-overlay"/>
+                  {/* IMAGE AREA */}
+                  <div className="sx-card-img-wrap" style={{ height: imgH }}>
+                    {!loaded && <div className="sx-shim" style={{ position: "absolute", inset: 0 }} />}
+                    <img
+                      src={item.image} alt={item.name}
+                      className="sx-card-img"
+                      onLoad={() => setImgLoaded(p => ({ ...p, [item.id]: true }))}
+                      style={{
+                        width: "100%", height: "100%",
+                        objectFit: "contain",
+                        padding: tinyCard ? "12px" : "16px",
+                        opacity: loaded ? 1 : 0,
+                        filter: isOut ? "grayscale(1)" : "none"
+                      }}
+                    />
+                    <div className="sx-overlay" />
 
-                    {/* hover actions — always visible on mobile */}
-                    <div className="sx-card-acts">
-                      <button onClick={e=>handleWishlist(item,e)} className={`sx-ib${inWish?" on":""}`} style={{ width:32, height:32 }}>
-                        <Heart size={12} strokeWidth={1.5} fill={inWish?"currentColor":"none"}/>
+                    {/* WISHLIST + EYE — always visible on mobile, hover-reveal on desktop */}
+                    <div className="sx-card-acts"
+                      style={{ opacity: isMobile ? 1 : (hoveredCard === item.id ? 1 : 0), transition: "opacity .2s" }}>
+                      <button onClick={e => handleWishlist(item, e)}
+                        className={tinyCard ? `sx-ib-sm${inWish ? " on" : ""}` : `sx-ib${inWish ? " on" : ""}`}>
+                        <Heart size={tinyCard ? 10 : 12} strokeWidth={1.5} fill={inWish ? "currentColor" : "none"} />
                       </button>
                       {!isMobile && (
-                        <button onClick={e=>handleQuickView(item,e)} className="sx-ib" style={{ width:32, height:32 }}>
-                          <Eye size={12} strokeWidth={1.5}/>
+                        <button onClick={e => { e.stopPropagation(); setQuickViewProduct(item); }}
+                          className="sx-ib">
+                          <Eye size={12} strokeWidth={1.5} />
                         </button>
                       )}
                     </div>
 
-                    {/* hover bottom bar */}
-                    {!isMobile && (
-                      <div className="sx-card-bar">
-                        <button onClick={e=>handleAddToCart(item,e)} disabled={isOut}
-                          className="sx-btn-w" style={{ flex:1, justifyContent:"center", fontSize:10, padding:"9px 10px" }}>
-                          <ShoppingCart size={11}/>
-                          {isOut?"Out of Stock": isItemInCart(item.id)?"In Cart": wasAdded?"✓ Added":"Add to Cart"}
-                        </button>
-                      </div>
-                    )}
-
-                    {/* badges */}
-                    <div style={{ position:"absolute", top:8, left:8, display:"flex", flexDirection:"column", gap:4 }}>
+                    {/* STOCK + HOT badges — top left */}
+                    <div style={{ position: "absolute", top: 7, left: 7, display: "flex", flexDirection: "column", gap: 3 }}>
                       <span className={`sx-badge ${stock.cls}`}>
-                        <span style={{ width:4, height:4, background:stock.dot, borderRadius:"50%" }}/>
-                        {isMobile && gridCols==="2" ? (isOut?"OOS":item.stock<=5?"Low":"In Stock") : stock.text}
+                        <span style={{ width: 4, height: 4, background: stock.dot, borderRadius: "50%", flexShrink: 0 }} />
+                        {tinyCard ? stock.short : stock.text}
                       </span>
-                      {item.trending && <span className="sx-badge sx-hot"><Flame size={8} fill="currentColor"/>Hot</span>}
+                      {item.trending && (
+                        <span className="sx-badge sx-hot">
+                          <Flame size={7} fill="currentColor" />Hot
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  {/* card info */}
-                  <div style={{ padding: gridCols==="1"?"14px 16px 16px":"12px 14px 14px", borderTop:"1px solid #0e0e0e", flex:1, display:"flex", flexDirection:"column" }}>
-                    <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:6, marginBottom:3 }}>
-                      <h3 className="sx-c" style={{ fontSize: gridCols==="1"?15:13, fontWeight:800, textTransform:"uppercase", letterSpacing:".04em", color:"#fff", lineHeight:1.1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1 }}>
+                  {/* INFO AREA */}
+                  <div style={{ padding: padSz, borderTop: "1px solid #0e0e0e", display: "flex", flexDirection: "column", gap: tinyCard ? 5 : 6, flex: 1 }}>
+                    {/* name + rating */}
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 4 }}>
+                      <h3 className="sx-c" style={{ fontSize: nameSz, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".03em", color: "#fff", lineHeight: 1.15, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, minWidth: 0 }}>
                         {item.name}
                       </h3>
-                      <div style={{ display:"flex", alignItems:"center", gap:2, flexShrink:0 }}>
-                        <Star size={9} fill="#fff" color="#fff"/>
-                        <span className="sx-c" style={{ fontSize:9, fontWeight:700, color:"#444" }}>{item.rating}</span>
-                      </div>
+                      {!tinyCard && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+                          <Star size={9} fill="#fff" color="#fff" />
+                          <span className="sx-c" style={{ fontSize: 9, fontWeight: 700, color: "#444" }}>{item.rating}</span>
+                        </div>
+                      )}
                     </div>
 
-                    <p className="sx-c" style={{ fontSize:8, fontWeight:700, letterSpacing:".18em", textTransform:"uppercase", color:"#222", marginBottom: isMobile?"auto":8 }}>
-                      {item.category}
-                    </p>
+                    {/* category */}
+                    {!tinyCard && (
+                      <p className="sx-c" style={{ fontSize: 8, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: "#252525" }}>
+                        {item.category}
+                      </p>
+                    )}
 
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginTop: isMobile?6:0 }}>
-                      <p className="sx-c" style={{ fontSize: gridCols==="1"?24:20, fontWeight:900, color:"#fff", lineHeight:1 }}>
+                    {/* price + CTA */}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", gap: 6 }}>
+                      <p className="sx-c" style={{ fontSize: priceSz, fontWeight: 900, color: "#fff", lineHeight: 1, flexShrink: 0 }}>
                         ${item.price}
                       </p>
+                      {/* On mobile: compact add-to-cart button inline */}
                       {isMobile && (
-                        <button onClick={e=>handleAddToCart(item,e)} disabled={isOut}
-                          className={isItemInCart(item.id)||wasAdded?"sx-btn-w":"sx-btn-w"}
-                          style={{ padding:"8px 12px", fontSize:10, opacity:isOut?.35:1, cursor:isOut?"not-allowed":"pointer" }}>
-                          {isOut?<X size={11}/>:<ShoppingCart size={11}/>}
-                          {isOut?"OOS": isItemInCart(item.id)?"In Cart": wasAdded?"✓":"Add"}
+                        <button
+                          onClick={e => handleAddToCart(item, e)}
+                          disabled={isOut}
+                          style={{
+                            fontFamily: "'Barlow Condensed',sans-serif",
+                            fontSize: tinyCard ? 9 : 10,
+                            fontWeight: 800,
+                            letterSpacing: ".12em",
+                            textTransform: "uppercase",
+                            background: isOut ? "#111" : "#fff",
+                            color: isOut ? "#333" : "#000",
+                            border: isOut ? "1px solid #1e1e1e" : "none",
+                            cursor: isOut ? "not-allowed" : "pointer",
+                            padding: tinyCard ? "6px 8px" : "7px 10px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 4,
+                            flexShrink: 0,
+                            whiteSpace: "nowrap",
+                            opacity: isOut ? .5 : 1,
+                          }}>
+                          {isOut ? <X size={10} /> : isInCart(item.id) ? <ShoppingCart size={10} /> : wasAdded ? "✓" : <ShoppingCart size={10} />}
+                          {tinyCard
+                            ? (isOut ? "OOS" : isInCart(item.id) ? "Cart" : wasAdded ? "✓" : "Add")
+                            : (isOut ? "OOS" : isInCart(item.id) ? "In Cart" : wasAdded ? "✓ Added" : "Add")}
                         </button>
                       )}
                     </div>
+
+                    {/* Desktop: full-width add to cart button shown on hover via card-bar */}
+                    {!isMobile && (
+                      <button
+                        onClick={e => handleAddToCart(item, e)}
+                        disabled={isOut}
+                        className="sx-btn-w"
+                        style={{
+                          width: "100%", justifyContent: "center",
+                          opacity: isOut ? .35 : 1,
+                          cursor: isOut ? "not-allowed" : "pointer",
+                          marginTop: 4,
+                        }}>
+                        <ShoppingCart size={12} />
+                        {isOut ? "Out of Stock" : isInCart(item.id) ? "In Cart" : wasAdded ? "✓ Added" : "Add to Cart"}
+                      </button>
+                    )}
                   </div>
                 </div>
               );
@@ -1872,66 +1888,61 @@ export default function MoreProducts({ searchTerm }) {
           </div>
         )}
 
-        {/* ══════════════════════════════════════════════
+        {/* ═══════════════════════════════
             EMPTY STATE
-        ══════════════════════════════════════════════ */}
+        ═══════════════════════════════ */}
         {!isLoading && displayedProducts.length === 0 && (
-          <div style={{ textAlign:"center", padding:"80px 20px", border:"1px solid #141414" }}>
-            <div style={{ width:52, height:52, border:"1px solid #1a1a1a", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>
-              <Package size={20} color="#2a2a2a"/>
+          <div style={{ textAlign: "center", padding: "70px 20px", border: "1px solid #141414" }}>
+            <div style={{ width: 48, height: 48, border: "1px solid #1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
+              <Package size={18} color="#2a2a2a" />
             </div>
-            <p className="sx-c" style={{ fontSize:20, fontWeight:900, textTransform:"uppercase", letterSpacing:".06em", color:"#222", marginBottom:8 }}>No Products Found</p>
-            <p className="sx-b" style={{ fontSize:13, color:"#333", marginBottom:24 }}>Adjust your filters to see more results</p>
-            <button onClick={clearFilters} className="sx-btn-w"><X size={12}/> Clear Filters</button>
+            <p className="sx-c" style={{ fontSize: 20, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".06em", color: "#222", marginBottom: 8 }}>No Products Found</p>
+            <p style={{ fontFamily: "'Barlow',sans-serif", fontSize: 13, color: "#333", marginBottom: 22 }}>Adjust your filters</p>
+            <button onClick={clearFilters} className="sx-btn-w"><X size={12} /> Clear Filters</button>
           </div>
         )}
 
-        {/* ══════════════════════════════════════════════
+        {/* ═══════════════════════════════
             PAGINATION
-        ══════════════════════════════════════════════ */}
+        ═══════════════════════════════ */}
         {!isLoading && totalCount > 0 && (
-          <div style={{ marginTop:0, padding:"18px 0", borderTop:"1px solid #141414", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
-            <p className="sx-c" style={{ fontSize:10, fontWeight:700, letterSpacing:".2em", textTransform:"uppercase", color:"#333" }}>
+          <div style={{ padding: "16px 0", borderTop: "1px solid #141414", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+            <p className="sx-c" style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#333" }}>
               {startItem}–{endItem} of {totalCount}
             </p>
-            <div style={{ display:"flex", gap:2, flexWrap:"wrap" }}>
-              <button onClick={()=>handlePageChange(currentPage-1)} disabled={currentPage===1} className="sx-pg" aria-label="Prev">
-                <ChevronLeft size={14}/>
-              </button>
-              {getPageNumbers().map((page,i) =>
-                page==="..." ? (
-                  <span key={`e${i}`} style={{ width:38, height:38, display:"flex", alignItems:"center", justifyContent:"center", color:"#2a2a2a", fontFamily:"'Barlow Condensed',sans-serif", fontSize:13 }}>…</span>
+            <div style={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="sx-pg"><ChevronLeft size={13} /></button>
+              {getPageNums().map((page, i) =>
+                page === "..." ? (
+                  <span key={`e${i}`} style={{ width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", color: "#2a2a2a", fontFamily: "'Barlow Condensed',sans-serif", fontSize: 12 }}>…</span>
                 ) : (
-                  <button key={page} onClick={()=>handlePageChange(page)} className={`sx-pg${currentPage===page?" on":""}`}>{page}</button>
+                  <button key={page} onClick={() => handlePageChange(page)} className={`sx-pg${currentPage === page ? " on" : ""}`}>{page}</button>
                 )
               )}
-              <button onClick={()=>handlePageChange(currentPage+1)} disabled={currentPage===totalPages} className="sx-pg" aria-label="Next">
-                <ChevronRight size={14}/>
-              </button>
+              <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="sx-pg"><ChevronRight size={13} /></button>
             </div>
           </div>
         )}
       </div>
 
-      {/* ══════════════════════════════════════════════
+      {/* ═══════════════════════════════
           MOBILE FILTER DRAWER
-      ══════════════════════════════════════════════ */}
+      ═══════════════════════════════ */}
       {isMobileFilterOpen && (
-        <div className="sx-drawer-bg" onClick={()=>setIsMobileFilterOpen(false)}>
-          <div className="sx-drawer" onClick={e=>e.stopPropagation()}>
-            <div style={{ width:32, height:2, background:"#2a2a2a", margin:"0 auto 24px" }}/>
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:28 }}>
-              <span className="sx-c" style={{ fontSize:22, fontWeight:900, textTransform:"uppercase", letterSpacing:".04em", color:"#fff" }}>Filters</span>
-              <button onClick={()=>setIsMobileFilterOpen(false)} className="sx-ib"><X size={15}/></button>
+        <div className="sx-drawer-bg" onClick={() => setIsMobileFilterOpen(false)}>
+          <div className="sx-drawer" onClick={e => e.stopPropagation()}>
+            <div style={{ width: 32, height: 2, background: "#2a2a2a", margin: "0 auto 22px" }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 26 }}>
+              <span className="sx-c" style={{ fontSize: 22, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".04em", color: "#fff" }}>Filters</span>
+              <button onClick={() => setIsMobileFilterOpen(false)} className="sx-ib"><X size={14} /></button>
             </div>
-            <div style={{ display:"flex", flexDirection:"column", gap:28 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               <div>
                 <span className="sx-fl">Category</span>
-                <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {categories.map(cat => (
-                    <button key={cat} onClick={()=>{ setSelectedCategory(cat); setCurrentPage(1); }}
-                      className={`sx-cp${selectedCategory===cat?" on":""}`}
-                      style={{ border:"1px solid #222", borderRight:"1px solid #222", padding:"9px 14px" }}>
+                    <button key={cat} onClick={() => { setSelectedCategory(cat); setCurrentPage(1); }}
+                      style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", padding: "8px 14px", background: selectedCategory === cat ? "#fff" : "transparent", color: selectedCategory === cat ? "#000" : "#444", border: "1px solid " + (selectedCategory === cat ? "#fff" : "#222"), cursor: "pointer" }}>
                       {cat}
                     </button>
                   ))}
@@ -1939,8 +1950,8 @@ export default function MoreProducts({ searchTerm }) {
               </div>
               <div>
                 <span className="sx-fl">Sort By</span>
-                <div style={{ position:"relative" }}>
-                  <select value={sortOption} onChange={e=>{ setSortOption(e.target.value); setCurrentPage(1); }} className="sx-sel">
+                <div style={{ position: "relative" }}>
+                  <select value={sortOption} onChange={e => { setSortOption(e.target.value); setCurrentPage(1); }} className="sx-sel">
                     <option value="">Featured</option>
                     <option value="price-low">Price: Low → High</option>
                     <option value="price-high">Price: High → Low</option>
@@ -1948,37 +1959,32 @@ export default function MoreProducts({ searchTerm }) {
                     <option value="newest">Newest First</option>
                     <option value="trending">Trending</option>
                   </select>
-                  <ChevronDown size={12} style={{ position:"absolute", right:10, top:"50%", transform:"translateY(-50%)", color:"#444", pointerEvents:"none" }}/>
+                  <ChevronDown size={11} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: "#444", pointerEvents: "none" }} />
                 </div>
               </div>
               <div>
                 <span className="sx-fl">Price Range</span>
-                <div style={{ display:"flex", gap:10 }}>
-                  <input type="number" placeholder="Min $0" value={minPrice}
-                    onChange={e=>{ setMinPrice(e.target.value); setCurrentPage(1); }}
-                    className="sx-inp" style={{ flex:1 }}/>
-                  <input type="number" placeholder="Max" value={maxPrice}
-                    onChange={e=>{ setMaxPrice(e.target.value); setCurrentPage(1); }}
-                    className="sx-inp" style={{ flex:1 }}/>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <input type="number" placeholder="Min $0" value={minPrice} onChange={e => { setMinPrice(e.target.value); setCurrentPage(1); }} className="sx-inp" style={{ flex: 1 }} />
+                  <input type="number" placeholder="Max" value={maxPrice} onChange={e => { setMaxPrice(e.target.value); setCurrentPage(1); }} className="sx-inp" style={{ flex: 1 }} />
                 </div>
               </div>
               <div>
                 <span className="sx-fl">Min Rating</span>
-                <div style={{ display:"flex", gap:6 }}>
-                  {[0,3,4,5].map(r => (
-                    <button key={r} onClick={()=>{ setMinRating(r); setCurrentPage(1); }}
-                      className={`sx-rp${minRating===r?" on":""}`}>
-                      {r===0?"All":`${r}+`}
-                      {r>0 && <Star size={10} fill={minRating===r?"#000":"none"} color={minRating===r?"#000":"#444"}/>}
+                <div style={{ display: "flex", gap: 6 }}>
+                  {[0, 3, 4, 5].map(r => (
+                    <button key={r} onClick={() => { setMinRating(r); setCurrentPage(1); }} className={`sx-rp${minRating === r ? " on" : ""}`}>
+                      {r === 0 ? "All" : `${r}+`}
+                      {r > 0 && <Star size={10} fill={minRating === r ? "#000" : "none"} color={minRating === r ? "#000" : "#444"} />}
                     </button>
                   ))}
                 </div>
               </div>
-              <div style={{ display:"flex", gap:10 }}>
-                <button onClick={()=>{ clearFilters(); setIsMobileFilterOpen(false); }} className="sx-btn-o" style={{ flex:1, justifyContent:"center" }}>
-                  <X size={12}/> Clear
+              <div style={{ display: "flex", gap: 10, paddingTop: 4 }}>
+                <button onClick={() => { clearFilters(); setIsMobileFilterOpen(false); }} className="sx-btn-o" style={{ flex: 1, justifyContent: "center" }}>
+                  <X size={12} /> Clear
                 </button>
-                <button onClick={()=>setIsMobileFilterOpen(false)} className="sx-btn-w" style={{ flex:1, justifyContent:"center" }}>
+                <button onClick={() => setIsMobileFilterOpen(false)} className="sx-btn-w" style={{ flex: 1, justifyContent: "center" }}>
                   Apply
                 </button>
               </div>
@@ -1987,62 +1993,39 @@ export default function MoreProducts({ searchTerm }) {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════
+      {/* ═══════════════════════════════
           QUICK VIEW MODAL
-      ══════════════════════════════════════════════ */}
+      ═══════════════════════════════ */}
       {quickViewProduct && (
-        <div className="sx-modal-bg" onClick={()=>setQuickViewProduct(null)}>
-          <div className="sx-modal" onClick={e=>e.stopPropagation()}>
-            <button onClick={()=>setQuickViewProduct(null)} className="sx-ib"
-              style={{ position:"absolute", top:14, right:14, zIndex:10 }}>
-              <X size={15}/>
-            </button>
+        <div className="sx-modal-bg" onClick={() => setQuickViewProduct(null)}>
+          <div className="sx-modal" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setQuickViewProduct(null)} className="sx-ib" style={{ position: "absolute", top: 14, right: 14, zIndex: 10 }}><X size={14} /></button>
             <div className="sx-modal-grid">
-              <div className="sx-modal-img-col" style={{ background:"#060606", display:"flex", alignItems:"center", justifyContent:"center", padding:48, minHeight:360, borderRight:"1px solid #1a1a1a", position:"relative" }}>
+              <div className="sx-modal-img" style={{ background: "#060606", display: "flex", alignItems: "center", justifyContent: "center", padding: 40, minHeight: 340, borderRight: "1px solid #1a1a1a", position: "relative" }}>
                 <img src={quickViewProduct.image} alt={quickViewProduct.name}
-                  style={{ maxHeight:280, maxWidth:"100%", objectFit:"contain", filter:"drop-shadow(0 24px 48px rgba(0,0,0,.9))" }}/>
-                {quickViewProduct.trending && (
-                  <span className="sx-badge sx-hot" style={{ position:"absolute", top:14, left:14 }}>
-                    <Flame size={9} fill="currentColor"/> Trending
-                  </span>
-                )}
+                  style={{ maxHeight: 260, maxWidth: "100%", objectFit: "contain", filter: "drop-shadow(0 20px 40px rgba(0,0,0,.9))" }} />
+                {quickViewProduct.trending && <span className="sx-badge sx-hot" style={{ position: "absolute", top: 14, left: 14 }}><Flame size={8} fill="currentColor" />Trending</span>}
               </div>
-              <div style={{ padding:isMobile?"24px 20px":"40px 36px", display:"flex", flexDirection:"column" }}>
-                <p className="sx-c" style={{ fontSize:9, fontWeight:700, letterSpacing:".3em", textTransform:"uppercase", color:"#333", marginBottom:10 }}>
-                  {quickViewProduct.category}
-                </p>
-                <h3 className="sx-c" style={{ fontSize:"clamp(22px,4vw,36px)", fontWeight:900, textTransform:"uppercase", letterSpacing:".01em", color:"#fff", lineHeight:.9, marginBottom:16 }}>
-                  {quickViewProduct.name}
-                </h3>
-                <p className="sx-c" style={{ fontSize:44, fontWeight:900, color:"#fff", lineHeight:1, marginBottom:20 }}>
-                  ${quickViewProduct.price}
-                </p>
-                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:22 }}>
-                  <div style={{ display:"flex", gap:2 }}>
-                    {[...Array(5)].map((_,i)=>(
-                      <Star key={i} size={13} fill={i<Math.floor(quickViewProduct.rating)?"#fff":"none"} color={i<Math.floor(quickViewProduct.rating)?"#fff":"#2a2a2a"}/>
-                    ))}
+              <div style={{ padding: "36px 28px", display: "flex", flexDirection: "column" }}>
+                <p className="sx-c" style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".28em", textTransform: "uppercase", color: "#333", marginBottom: 8 }}>{quickViewProduct.category}</p>
+                <h3 className="sx-c" style={{ fontSize: "clamp(20px,3.5vw,34px)", fontWeight: 900, textTransform: "uppercase", color: "#fff", lineHeight: .9, letterSpacing: ".01em", marginBottom: 14 }}>{quickViewProduct.name}</h3>
+                <p className="sx-c" style={{ fontSize: 42, fontWeight: 900, color: "#fff", lineHeight: 1, marginBottom: 18 }}>${quickViewProduct.price}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+                  <div style={{ display: "flex", gap: 2 }}>
+                    {[...Array(5)].map((_, i) => <Star key={i} size={12} fill={i < Math.floor(quickViewProduct.rating) ? "#fff" : "none"} color={i < Math.floor(quickViewProduct.rating) ? "#fff" : "#2a2a2a"} />)}
                   </div>
-                  <span className="sx-c" style={{ fontSize:11, fontWeight:700, color:"#444" }}>{quickViewProduct.rating}</span>
-                  <span className="sx-c" style={{ fontSize:9, color:"#2a2a2a", display:"flex", alignItems:"center", gap:4 }}>
-                    <Eye size={9}/> {quickViewProduct.views}
-                  </span>
+                  <span className="sx-c" style={{ fontSize: 11, fontWeight: 700, color: "#444" }}>{quickViewProduct.rating}</span>
                 </div>
-                <div style={{ height:1, background:"#141414", marginBottom:20 }}/>
-                <div style={{ marginBottom:24 }}>
-                  {(() => { const s=getStock(quickViewProduct.stock||0); return (
-                    <span className={`sx-badge ${s.cls}`}>
-                      <span style={{ width:6, height:6, background:s.dot, borderRadius:"50%" }}/>{s.text}
-                    </span>
-                  ); })()}
-                </div>
-                <div style={{ display:"flex", gap:8, marginTop:"auto" }}>
-                  <button onClick={e=>handleWishlist(quickViewProduct,e)}
-                    className={`sx-ib${wishlist.some(p=>p.productId===quickViewProduct.id)?" on":""}`}
-                    style={{ width:46, height:46, flexShrink:0 }}>
-                    <Heart size={16} strokeWidth={1.5} fill={wishlist.some(p=>p.productId===quickViewProduct.id)?"currentColor":"none"}/>
+                <div style={{ height: 1, background: "#141414", marginBottom: 18 }} />
+                {(() => { const s = getStock(quickViewProduct.stock || 0); return <span className={`sx-badge ${s.cls}`} style={{ marginBottom: 22 }}><span style={{ width: 6, height: 6, background: s.dot, borderRadius: "50%" }} />{s.text}</span>; })()}
+                <div style={{ display: "flex", gap: 8, marginTop: "auto" }}>
+                  <button onClick={e => handleWishlist(quickViewProduct, e)}
+                    className={`sx-ib${wishlist.some(p => p.productId === quickViewProduct.id) ? " on" : ""}`}
+                    style={{ width: 46, height: 46, flexShrink: 0 }}>
+                    <Heart size={16} strokeWidth={1.5} fill={wishlist.some(p => p.productId === quickViewProduct.id) ? "currentColor" : "none"} />
                   </button>
-                  <button onClick={()=>handleProductClick(quickViewProduct)} className="sx-btn-w" style={{ flex:1, justifyContent:"center", padding:"14px 20px" }}>
+                  <button onClick={() => { navigate(`/Product/${quickViewProduct.id}`, { state: quickViewProduct }); setQuickViewProduct(null); }}
+                    className="sx-btn-w" style={{ flex: 1, justifyContent: "center", padding: "13px 18px" }}>
                     View Full Details
                   </button>
                 </div>
@@ -2052,10 +2035,9 @@ export default function MoreProducts({ searchTerm }) {
         </div>
       )}
 
-      {/* scroll to top */}
       {showScrollTop && (
-        <button onClick={()=>window.scrollTo({top:0,behavior:"smooth"})} className="sx-stb" aria-label="Scroll to top">
-          <ArrowUp size={18}/>
+        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="sx-stb">
+          <ArrowUp size={16} />
         </button>
       )}
     </div>
